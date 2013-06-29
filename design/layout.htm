@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>PHP Newsgroups</title>
+    <style type="text/css">
+
+        body {
+            background-color: #CCCCCC;
+        }
+
+        #tblcolumns {
+            background-color: white;
+            border-collapse: collapse;
+            border: solid 1px black;
+        }
+
+        #grouplist {
+            vertical-align: top;
+            width: 200px;
+            border-right: solid black 1px;
+            padding: 10px;
+        }
+
+        #grouplistheader {
+            font-size: 16pt;
+            font-weight: bold;
+        }
+
+        #groupcontents {
+            vertical-align: top;
+            padding: 10px;
+            width: 700px;
+        }
+
+        #groupcontentsheader {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #postlisting {
+            border-left: solid black 1px;
+            border-right: solid black 1px;
+            border-bottom: solid black 1px;
+            width: 100%;
+            padding: 0;
+            height: 200px;
+            overflow: auto;
+        }
+
+        .post {
+            border-top: 1px solid black;
+            font-size: 10pt;
+        }
+
+        .post:hover {
+            background-color: #CCCCCC;
+        }
+
+        .i0 {
+            padding-left: 10px;
+        }
+
+        .i1 {
+            padding-left: 40px;
+        }
+
+        .i2 {
+            padding-left: 70px;
+        }
+
+        .posttitle {
+        }
+
+        .postmetadata {
+            float: right;
+            margin-right: 10px;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .read {
+            color: black;
+        }
+
+        .unread {
+            font-weight: bold;
+            color: #505050;
+        }
+
+        .expander {
+            font-family: monospace;
+        }
+
+        .selected {
+            background-color: cyan !important;
+        }
+
+        #postview {
+            margin-top: 20px;
+        }
+
+        #postcontents {
+            border: solid black 1px;
+            font-family: monospace;
+            padding: 10px;
+        }
+
+        .quote {
+            border-left: solid blue 1px;
+            margin-left: 10px;
+            padding-left: 10px;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            margin-top: 7px;
+            margin-bottom: 7px;
+        }
+
+        #viewtitle {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <table id="tblcolumns">
+        <tr>
+            <td id="grouplist">
+                <div id="grouplistheader">
+                    Groups
+                </div>
+                <ul>
+                    <li><a href="#"><strong>d.general</strong></a></li>
+                    <li><a href="#">d.security</a></li>
+                    <li><a href="#">d.ring0</a></li>
+                </ul>
+            </td>
+            <td id="groupcontents">
+                <div id="groupcontentsheader">
+                    defuse.general
+                </div>
+
+                <div id="postlisting">
+                    <!-- TODO: this really should be a table. -->
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root 
+                        </div>
+                        &ndash;
+                        <span class="posttitle">
+                            Why newsgroup tree style discussions are awesome.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i1 selected">
+                        <div class="postmetadata">
+                            foobar
+                        </div>
+                        <span class="posttitle">
+                            Re: Why newsgroup tree style discussions are awesome.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post unread i2">
+                        <div class="postmetadata">
+                            baz
+                        </div>
+                        <span class="posttitle">
+                            Re: Why newsgroup tree style discussions are awesome.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i2">
+                        <div class="postmetadata">
+                            baz
+                        </div>
+                        <span class="posttitle">
+                            Re: Why newsgroup tree style discussions are awesome.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post unread i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Why PHP forums suck.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="post read i0">
+                        <div class="postmetadata">
+                            root
+                        </div>
+                        +
+                        <span class="posttitle">
+                            Dummy post to make this thing scroll.
+                        </span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+
+                <div id="postview">
+                    <div style="float: right;">
+                        <input type="button" value="Reply"/>
+                    </div>
+                    From: foobar <br />
+                    Date: Jun 29, 2013 13:37 <br /><br />
+                    <div id="postcontents">
+                        On Jun 29, root said:
+                        <div class="quote">
+                            They are just awesome.
+                        </div>
+                        Agreed!
+                        <div class="quote">
+                            They make discussion so much easier, because you can reply to the person
+                            directly, and immediately see which posts are in reply to which.
+                        </div>
+                        Yes, you're absolutely right! I don't know how people can stand PHP forums,
+                        where you have to search for the text in the quote to find the original
+                        post.
+                    </div>
+                    <div style="float: right; margin-top: 10px;">
+                        <input type="button" value="Reply"/>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
