@@ -18,6 +18,10 @@ function display_post_tree($post, $indent = 0)
                     <td class="expander">
                             +
                     </td>
+                <? } else { ?>
+                    <td class="expander-dummy">
+                        &nbsp;
+                    </td>
                 <? } ?>
                 <td class="titlecell" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
                     <span class="posttitle">
@@ -90,9 +94,13 @@ function display_post_tree($post, $indent = 0)
 
                 if ($group !== null) {
             ?>
+                <input type="hidden" id="groupname" value="<?php echo
+                htmlentities($group->getName(), ENT_QUOTES); ?>" />
+                <input type="button" class="newpostbutton" value="New Post" />
                 <div id="groupcontentsheader">
                     <?php echo htmlentities($group->getName(), ENT_QUOTES); ?>
                 </div>
+                <div style="clear: both;">
 
                 <div id="postlisting">
                     <?php

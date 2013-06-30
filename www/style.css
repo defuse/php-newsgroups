@@ -89,6 +89,13 @@ body {
     background: #CCCCCC;
 }
 
+.expander-dummy {
+    font-family: monospace;
+    width: 20px;
+    text-align: center;
+    background: #CCCCCC;
+}
+
 .selected {
     background-color: cyan !important;
 }
@@ -117,4 +124,8 @@ body {
 #viewtitle {
     font-size: 12pt;
     font-weight: bold;
+}
+
+.newpostbutton {
+    float: right;
 }

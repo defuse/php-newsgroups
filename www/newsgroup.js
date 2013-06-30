@@ -2,7 +2,7 @@ $( document ).ready(function () {
 
     var viewing_id = -1;
 
-    /* Expanding and collapsing posts */
+    /* Expanding and collapsing posts in the list */
     $( '.expander' ).click(function (e) {
         if ($.trim($(this).text()) === '+') {
             $(this).parents('.post').next().show(100);
@@ -35,16 +35,31 @@ $( document ).ready(function () {
         }
     });
 
-    /* Clicking reply */
+    /* Clicking 'Reply' */
     $( '.replybutton' ).click(function () {
         var w = window.open(
-            'newpost.php?replyto=' + viewing_id,
+            'replypost.php?replyto=' + viewing_id,
             '_blank'
         );
         if (window.focus) {
             w.focus();
         }
     });
+
+    /* Clicking 'New Post' */
+    $( '.newpostbutton' ).click(function () {
+        var w = window.open(
+            'newpost.php?group=' + groupName(),
+            '_blank'
+        );
+        if (window.focus) {
+            w.focus();
+        }
+    });
+
+    function groupName() {
+        return $('#groupname').attr('value');
+    }
 
     function getPost(id, f) {
         var data = {

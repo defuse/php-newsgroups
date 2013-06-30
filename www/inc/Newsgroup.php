@@ -37,6 +37,19 @@ class Post
         $this->contents = $row['contents'];
     }
 
+    function getGroupName()
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT name FROM groups WHERE id = :id"
+        );
+        $q->bindValue(':id', $this->group_id);
+        $q->execute();
+        $row = $q->fetch();
+        return $row['name'];
+    }
+
     function getID()
     {
         return $this->id;
