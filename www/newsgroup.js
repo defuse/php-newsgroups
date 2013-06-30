@@ -28,8 +28,7 @@ $( document ).ready(function () {
         var id = $(this).children('.postid').attr('value');
         var w = window.open(
             'viewpost.php?id=' + id,
-            "vp_" + id,
-            'width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
+            '_blank'
         );
         if (window.focus) {
             w.focus();
@@ -40,8 +39,7 @@ $( document ).ready(function () {
     $( '.replybutton' ).click(function () {
         var w = window.open(
             'newpost.php?replyto=' + viewing_id,
-            'ep_' + viewing_id,
-            'width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0'
+            '_blank'
         );
         if (window.focus) {
             w.focus();
