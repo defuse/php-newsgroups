@@ -1,33 +1,45 @@
 <?php
 require_once('inc/Newsgroup.php');
 
-try {
-    Newsgroup::CreateGroup("defuse.ring0");
-} catch (GroupExistsException $e) {
-    echo "Group already exists.";
-}
-
 function display_post_tree($post, $indent = 0)
 {
     /* display the post itself */
     $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
     $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
-    $safe_indent = htmlentities($indent, ENT_QUOTES);
+    $safe_id = (int)$post->getID();
+    $safe_indent = (int)$indent;
+    $children = $post->getChildren();
 ?>
-    <div class="post read i<?php echo $safe_indent; ?>">
-        <div class="postmetadata">
-            <?php echo $safe_user; ?>
-        </div>
-        <div class="posttitle">
-            <?php echo $safe_title; ?>
-        </div>
+    <div class="post read" >
+        <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
+        <table class="posttable" cellspacing="0">
+            <tr>
+                <?php if ($indent == 0 && !empty($children)) { ?>
+                    <td class="expander">
+                            +
+                    </td>
+                <? } ?>
+                <td class="titlecell" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
+                    <span class="posttitle">
+                        <?php echo $safe_title; ?>
+                    </span>
+                </td>
+                <td class="metadatacell">
+                    <?php echo $safe_user; ?>
+                </td>
+            </tr>
+        </table>
     </div>
 <?
-    
     /* recursively display the children */
-    $children = $post->getChildren();
+    if ($indent == 0) {
+        echo '<div class="hiddenposts">';
+    }
     foreach ($children as $child) {
         display_post_tree($child, $indent + 1);
+    }
+    if ($indent == 0) {
+        echo '</div>';
     }
 }
 
@@ -36,136 +48,9 @@ function display_post_tree($post, $indent = 0)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>PHP Newsgroups</title>
-    <style type="text/css">
-
-        body {
-            background-color: #CCCCCC;
-        }
-
-        #tblcolumns {
-            background-color: white;
-            border-collapse: collapse;
-            border: solid 1px black;
-        }
-
-        #grouplist {
-            vertical-align: top;
-            width: 200px;
-            border-right: solid black 1px;
-            padding: 10px;
-        }
-
-        #grouplistheader {
-            font-size: 16pt;
-            font-weight: bold;
-        }
-
-        #groupcontents {
-            vertical-align: top;
-            padding: 10px;
-            width: 700px;
-        }
-
-        #groupcontentsheader {
-            font-size: 16pt;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        #postlisting {
-            border-left: solid black 1px;
-            border-right: solid black 1px;
-            border-bottom: solid black 1px;
-            width: 100%;
-            padding: 0;
-            height: 200px;
-            overflow: auto;
-        }
-
-        .post {
-            border-top: 1px solid black;
-            font-size: 10pt;
-        }
-
-        .post:hover {
-            background-color: #CCCCCC;
-        }
-
-        .i0 {
-            padding-left: 10px;
-        }
-
-        .i1 {
-            padding-left: 40px;
-        }
-
-        .i2 {
-            padding-left: 70px;
-        }
-
-        .i3 {
-            padding-left: 100px;
-        }
-
-        .i4 {
-            padding-left: 130px;
-        }
-
-        .posttitle {
-        }
-
-        .postmetadata {
-            float: right;
-            margin-right: 10px;
-        }
-
-        .clear {
-            clear: both;
-        }
-
-        .read {
-            color: black;
-        }
-
-        .unread {
-            font-weight: bold;
-            color: #505050;
-        }
-
-        .expander {
-            font-family: monospace;
-        }
-
-        .selected {
-            background-color: cyan !important;
-        }
-
-        #postview {
-            margin-top: 20px;
-        }
-
-        #postcontents {
-            border: solid black 1px;
-            font-family: monospace;
-            padding: 10px;
-        }
-
-        .quote {
-            border-left: solid blue 1px;
-            margin-left: 10px;
-            padding-left: 10px;
-            padding-bottom: 5px;
-            padding-top: 5px;
-            margin-top: 7px;
-            margin-bottom: 7px;
-        }
-
-        #viewtitle {
-            font-size: 12pt;
-            font-weight: bold;
-        }
-
-    </style>
+    <script src="jquery-1.10.1.min.js"></script>
+    <script src="newsgroup.js"></script>
+    <link rel="stylesheet" media="all" type="text/css" href="style.css" />
 </head>
 <body>
     <table id="tblcolumns">
@@ -181,7 +66,11 @@ function display_post_tree($post, $indent = 0)
                         $safe_name = htmlentities($name, ENT_QUOTES);
                         echo '<li>';
                         echo '<a href="index.php?group=' . $safe_name . '">';
-                        echo $safe_name;
+                        if (isset($_GET['group']) && $_GET['group'] === $name) {
+                            echo '<b>' . $safe_name . '</b>';
+                        } else  {
+                            echo $safe_name;
+                        }
                         echo '</a>';
                         echo '</li>';
                     }
@@ -217,10 +106,24 @@ function display_post_tree($post, $indent = 0)
             <?
                 } else {
             ?>
-                <b>Please select a group.</li>
+                <b>Please select a group.</b></li>
             <?
                 }
             ?>
+
+                <div id="postview">
+                    <div style="float: right;">
+                        <input type="button" class="replybutton" value="Reply"/>
+                    </div>
+                    From: <span class="vp_user">USER GOES HERE</span> <br />
+                    Date: <span class="vp_date">DATE GOES HERE</span> <br /><br />
+                    <div id="postcontents">
+                    </div>
+                    <div style="float: right; margin-top: 10px;">
+                        <input type="button" class="replybutton" value="Reply"/>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
 
             </td>
         </tr>

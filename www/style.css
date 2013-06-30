@@ -1,0 +1,120 @@
+body {
+    background-color: #CCCCCC;
+}
+
+#tblcolumns {
+    background-color: white;
+    border-collapse: collapse;
+    border: solid 1px black;
+}
+
+#grouplist {
+    vertical-align: top;
+    width: 200px;
+    border-right: solid black 1px;
+    padding: 10px;
+}
+
+#grouplistheader {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+#groupcontents {
+    vertical-align: top;
+    padding: 10px;
+    width: 700px;
+}
+
+#groupcontentsheader {
+    font-size: 16pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#postlisting {
+    border: solid black 1px;
+    width: 100%;
+    padding: 0;
+    height: 400px;
+    overflow: auto;
+    resize: vertical;
+}
+
+.post {
+    border-bottom: 1px solid black;
+    font-size: 10pt;
+}
+
+.post:hover {
+    background-color: #CCCCCC;
+}
+
+.posttitle {
+    cursor: pointer;
+}
+
+.posttable {
+    width: 100%;
+}
+
+.metadatacell {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.clear {
+    clear: both;
+}
+
+.read {
+    color: black;
+}
+
+.unread {
+    font-weight: bold;
+    color: #505050;
+}
+
+.hiddenposts {
+    display: none;
+    background-color: #F0F0F0;
+}
+
+.expander {
+    font-family: monospace;
+    width: 20px;
+    text-align: center;
+    cursor: crosshair;
+    background: #CCCCCC;
+}
+
+.selected {
+    background-color: cyan !important;
+}
+
+#postview {
+    display: none;
+    margin-top: 20px;
+}
+
+#postcontents {
+    border: solid black 1px;
+    font-family: monospace;
+    padding: 10px;
+}
+
+.quote {
+    border-left: solid blue 1px;
+    margin-left: 10px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+#viewtitle {
+    font-size: 12pt;
+    font-weight: bold;
+}
