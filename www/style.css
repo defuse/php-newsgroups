@@ -44,6 +44,7 @@ body {
 .post {
     border-bottom: 1px solid black;
     font-size: 10pt;
+    cursor: pointer;
 }
 
 .post:hover {
@@ -51,7 +52,6 @@ body {
 }
 
 .posttitle {
-    cursor: pointer;
 }
 
 .posttable {
