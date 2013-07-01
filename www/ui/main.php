@@ -118,7 +118,11 @@ class MainView
     {
         /* display the post itself */
         $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
-        $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
+        if ($post->getUser() !== "") {
+            $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
+        } else {
+            $safe_user = '<i>Anonymous</i>';
+        }
         $safe_id = (int)$post->getID();
         $safe_indent = (int)$indent;
         $children = $post->getChildren();

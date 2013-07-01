@@ -4,7 +4,7 @@ require_once('inc/mysql.php');
 require_once('inc/PasswordHash.php');
 
 class UserExistsException extends Exception { /* empty */ }
-class BadUsernameOrPasswordException extends Exception { /* empty */ }
+class UserDoesNotExistException extends Exception { /* empty */ }
 
 /* FIXME: This is vulnerable to session fixation and all of that */
 class Login
@@ -12,12 +12,12 @@ class Login
     public static function TryLogin($username, $password)
     {
         self::StartSession();
-        try {
-            $account = new Account($username, $password);
+        if (Account::CheckPassword($username, $password)) {
+            $account = new Account($username);
             $_SESSION = array();
             $_SESSION['account'] = $account;
             return TRUE;
-        } catch (BadUsernameOrPasswordException $e) {
+        } else {
             return FALSE;
         }
     }
@@ -36,7 +36,7 @@ class Login
     {
         $current_user = Login::GetLoggedInUser();
         if ($current_user === FALSE) {
-            header("Location $location");
+            header("Location: $location");
             die();
         }
     }
@@ -45,7 +45,7 @@ class Login
     {
         $current_user = Login::GetLoggedInUser();
         if ($current_user === FALSE || !$current_user->isAdmin()) {
-            header("Location $location");
+            header("Location: $location");
             die();
         }
     }
@@ -108,10 +108,43 @@ class Account
         return !empty($records);
     }
 
+    public static function CheckPassword($username, $password)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT password_hash FROM accounts WHERE username = :username");
+        $q->bindValue(':username', $username);
+        $q->execute();
+        $row = $q->fetch();
+        if ($row === FALSE) {
+            return FALSE;
+        }
+
+        $correct_hash = $row['password_hash'];
+        if (!validate_password($password, $correct_hash)) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    public static function GetAllUsers()
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT username FROM accounts");
+        $q->execute();
+        $all_users = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $all_users[] = new Account($row['username']);
+        }
+        return $all_users;
+    }
+
     private $id;
     private $username;
 
-    function __construct($username, $password)
+    function __construct($username)
     {
         global $DB;
 
@@ -119,13 +152,9 @@ class Account
         $q->bindValue(':username', $username);
         $q->execute();
         $row = $q->fetch();
-        if ($row === FALSE) {
-            throw new BadUsernameOrPasswordException('The username is incorrect.');
-        }
 
-        $correct_hash = $row['password_hash'];
-        if (!validate_password($password, $correct_hash)) {
-            throw new BadUsernameOrPasswordException('The password is incorrect.');
+        if ($row === FALSE) {
+            throw new UserDoesNotExistException('User does not exist.');
         }
 
         $this->id = $row['id'];
@@ -152,6 +181,17 @@ class Account
         $row = $q->fetch();
 
         return $row['is_admin'] == 1;
+    }
+
+    function setAdmin($is_admin)
+    {
+        $is_admin = ($is_admin) ? 1 : 0;
+        global $DB;
+
+        $q = $DB->prepare("UPDATE accounts SET is_admin = :is_admin WHERE id = :id");
+        $q->bindValue(':is_admin', $is_admin);
+        $q->bindValue(':id', $this->id);
+        $q->execute();
     }
 }
 

@@ -85,7 +85,11 @@ $( document ).ready(function () {
         getPost(id, function (post) {
             if (post !== null) {
                 viewing_id = id;
-                $(".vp_user").text(post.user);
+                if (post.user === "") {
+                    $(".vp_user").html('<i>Anonymous</i>');
+                } else  {
+                    $(".vp_user").text(post.user);
+                }
                 $(".vp_date").text(post.time);
                 $("#postcontents").html(post.contents);
                 $("#postview").show("fast");

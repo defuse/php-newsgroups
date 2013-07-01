@@ -28,6 +28,30 @@ if (isset($_POST['deletegroup'])) {
     }
 }
 
+if (isset($_POST['admin_give'])) {
+    $username = $_POST['username'];
+    try {
+        $user = new Account($username);
+        $user->setAdmin(true);
+    } catch (UserDoesNotExistException $e) {
+        $view->user_noexist = true;
+    }
+}
+
+if (isset($_POST['admin_revoke'])) {
+    $username = $_POST['username'];
+    if ($username !== Login::GetLoggedInUser()->getUsername()) {
+        try {
+            $user = new Account($username);
+            $user->setAdmin(false);
+        } catch (UserDoesNotExistException $e) {
+            $view->user_noexist = true;
+        }
+    } else {
+        $view->user_no_revoke_own = true;
+    }
+}
+
 
 $layout = new Layout($view);
 $layout->show();

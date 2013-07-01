@@ -9,6 +9,9 @@ class AdministrationView extends View
     public $delete_success = false;
     public $delete_failed = false;
 
+    public $user_noexist = false;
+    public $user_no_revoke_own = false;
+
     public function show()
     {
 ?>
@@ -24,6 +27,12 @@ class AdministrationView extends View
         }
         if ($this->delete_failed) {
             echo '<b>Failed deleting group.</b>';
+        }
+        if ($this->user_noexist) {
+            echo '<b>User does not exist.</b>';
+        }
+        if ($this->user_no_revoke_own) {
+            echo '<b>You cannot revoke your own permissions.</b>';
         }
     ?>
 
@@ -60,6 +69,42 @@ class AdministrationView extends View
     </table>
 
     <h1>Users</h1>
+    <table>
+    <tr>
+        <th>Username</th>
+        <th>Administrator</th>
+        <th>Delete</th>
+    </tr>
+    <?php
+        $all_users = Account::GetAllUsers();
+        foreach ($all_users as $user) {
+            $safe_name = htmlentities($user->getUsername(), ENT_QUOTES);
+            echo '<tr>';
+            echo "<td>$safe_name</td>";
+            if ($user->isAdmin()) {
+                ?>
+                <td>
+                    <form action="admin.php" method="POST">
+                        <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                        <input type="submit" name="admin_revoke" value="Revoke Administrator" />
+                    </form>
+                </td>
+                <?
+            } else {
+                ?>
+                <td>
+                    <form action="admin.php" method="POST">
+                        <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                        <input type="submit" name="admin_give" value="Make Administrator" />
+                    </form>
+                </td>
+                <?
+            }
+            echo '</tr>';
+        }
+    ?>
+    </table>
+
 <?
     }
 }
