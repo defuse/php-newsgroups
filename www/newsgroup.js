@@ -73,7 +73,7 @@ $( document ).ready(function () {
                 post.user = $(data).find('user').text();
                 post.time = $(data).find('time').text();
                 post.title = $(data).find('title').text();
-                post.contents = $(data).find('contents').html();
+                post.contents = $(data).find('contents').text();
                 f(post);
             } else {
                 f(null);
@@ -90,8 +90,7 @@ $( document ).ready(function () {
                 $("#postcontents").html(post.contents);
                 $("#postview").show("fast");
             } else {
-                // TODO
-                alert(1);
+                alert('That post has been deleted.');
             }
         });
     }

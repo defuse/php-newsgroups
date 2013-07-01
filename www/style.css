@@ -113,12 +113,12 @@ body {
 
 .quote {
     border-left: solid blue 1px;
-    margin-left: 10px;
+    margin-left: 0px;
     padding-left: 10px;
-    padding-bottom: 5px;
-    padding-top: 5px;
-    margin-top: 7px;
-    margin-bottom: 7px;
+    padding-top: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    padding-bottom: 3px;
 }
 
 #viewtitle {
@@ -128,4 +128,11 @@ body {
 
 .newpostbutton {
     float: right;
+}
+
+#header {
+    background-color: white;
+    border: solid black 1px;
+    padding: 10px;
+    margin: 10px;
 }

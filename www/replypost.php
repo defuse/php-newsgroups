@@ -25,6 +25,9 @@ if (isset($_GET['replyto']) && !empty($_GET['replyto'])) {
         } else {
             $title_guess = "Re: " . $title;
         }
+        $safe_quote = htmlentities($post->getUser() . " said:\n", ENT_QUOTES);
+        $quoted = preg_replace('/^/m', "> ", $post->getContents());
+        $safe_quote .= htmlentities($quoted, ENT_QUOTES);
     } catch (PostDoesNotExistException $e) {
         die('Post does not exist.');
     }
@@ -42,7 +45,7 @@ if (isset($_GET['replyto']) && !empty($_GET['replyto'])) {
             Username: <input type="text" name="user" value="Anonymous" /> <br />
             Subject: <input type="text" name="title" value="<?php echo htmlentities($title_guess, ENT_QUOTES); ?>" /> <br />
             Post body: <br />
-            <textarea name="contents" rows="30" cols="80">Type here...</textarea>
+            <textarea name="contents" rows="30" cols="80"><?php echo $safe_quote; ?></textarea>
             <br />
             <input type="submit" name="submit" value="Submit" />
         </form>

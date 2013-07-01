@@ -75,6 +75,46 @@ class Post
         return $this->contents;
     }
 
+    function getContentsHtml()
+    {
+        $html = "";
+        $lines = explode("\n", $this->contents);
+        $indent = 0;
+        foreach ($lines as $line) {
+            $leading_brackets = $this->stripLeadingBrackets($line);
+            if ($indent < $leading_brackets) {
+                while ($indent < $leading_brackets) {
+                    $html .= '<div class="quote">';
+                    $indent++;
+                }
+            } else if ($indent > $leading_brackets) { 
+                while ($indent > $leading_brackets) {
+                    $html .= "</div>";
+                    $indent--;
+                }
+            }
+            $html .= htmlentities($line, ENT_QUOTES) . '<br />';
+        }
+        return $html;
+    }
+
+    function stripLeadingBrackets(&$str)
+    {
+        $count = 0;
+        $last_index = -1;
+        for ($i = 0; $i < strlen($str); $i++) {
+            if ($str[$i] !== ">" && $str[$i] !== " " && $str[$i] !== "\t") {
+                break;
+            }
+            if ($str[$i] === ">") {
+                $last_index = $i;
+                $count++;
+            }
+        }
+        $str = substr($str, $last_index + 1);
+        return $count;
+    }
+
     function getChildren()
     {
         global $DB;

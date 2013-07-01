@@ -23,7 +23,7 @@ function send_ajax_post($post)
         $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
         $safe_time = htmlentities($post->getTime(), ENT_QUOTES);
         $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
-        $safe_contents = htmlentities($post->getContents(), ENT_QUOTES);
+        $safe_contents = htmlentities($post->getContentsHtml(), ENT_QUOTES);
         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
         $xml .= "<response>";
         $xml .= "<status>success</status>";

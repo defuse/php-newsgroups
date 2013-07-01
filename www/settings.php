@@ -1,9 +1,11 @@
 <?php
 require_once('inc/account.php');
+require_once('ui/settings.php');
 require_once('ui/layout.php');
-require_once('ui/administration.php');
-Login::RequireAdmin('index.php');
-$view = new AdministrationView();
+
+Login::RequireLogin('index.php');
+
+$view = new SettingsView();
 $layout = new Layout($view);
 $layout->show();
 ?>
