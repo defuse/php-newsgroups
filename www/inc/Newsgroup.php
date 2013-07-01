@@ -199,6 +199,36 @@ class Newsgroup
         return $root->getChildren();
     }
 
+    public function fullDelete()
+    {
+        global $DB;
+        $this->deletePostAndReplies($this->root_post_id);
+        $q = $DB->prepare("DELETE FROM groups WHERE id = :id");
+        $q->bindValue(':id', $this->group_id);
+        $q->execute();
+    }
+
+    private function deletePostAndReplies($id)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT child_id FROM replies WHERE parent_id = :parent_id");
+        $q->bindValue(':parent_id', $id);
+        $q->execute();
+
+        while (($row = $q->fetch()) !== FALSE) {
+            $this->deletePostAndReplies($row['child_id']);
+        }
+
+        $q = $DB->prepare("DELETE FROM posts WHERE id = :id");
+        $q->bindValue(':id', $id);
+        $q->execute();
+
+        $q = $DB->prepare("DELETE FROM replies WHERE parent_id = :parent_id");
+        $q->bindValue(':parent_id', $id);
+        $q->execute();
+    }
+
     public static function CreateGroup($group_name)
     {
         global $DB;
