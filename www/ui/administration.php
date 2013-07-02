@@ -1,6 +1,7 @@
 <?php
 require_once('ui/view.php');
 require_once('inc/Newsgroup.php');
+require_once('inc/permissions.php');
 class AdministrationView extends View
 {
     public $add_success = false;
@@ -41,7 +42,16 @@ class AdministrationView extends View
     <h2>Add a group</h2>
     <form action="admin.php" method="POST">
         Group name: <input type="text" name="groupname" value="" />
+        <select name="default_ability">
+        <?php
+            $abilities = UserClass::GetAllAbilities();
+            foreach ($abilities as $ability) {
+                $safe_ability = htmlentities($ability, ENT_QUOTES);
+                echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
+            }
+        ?>
         <input type="submit" name="newgroup" value="Add" />
+        </select>
     </form>
 
     <table>
@@ -103,6 +113,48 @@ class AdministrationView extends View
             echo '</tr>';
         }
     ?>
+    </table>
+
+    <h1>User Classes</h1>
+    <h2>Add User Class</h2>
+    <form action="admin.php" method="POST">
+        <input type="text" name="name" value="" />
+        <select name="default_ability">
+        <?php
+            $abilities = UserClass::GetAllAbilities();
+            foreach ($abilities as $ability) {
+                $safe_ability = htmlentities($ability, ENT_QUOTES);
+                echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
+            }
+        ?>
+        </select>
+        <input type="submit" name="new_userclass" value="Add" />
+    </form>
+
+    <h2>Edit User Classes</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Delete</th>
+        </tr>
+        <?php
+            $all_ucs = UserClass::GetAllUserClasses();
+            foreach ($all_ucs as $uc) {
+                $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                $safe_uc_id = (int)$uc->getID();
+                echo '<tr>';
+                echo "<td>$safe_uc_name</td>";
+            ?>
+                <td>
+                    <form action="admin.php" method="POST">
+                        <input type="hidden" name="id" value="<?php echo $safe_uc_id; ?>" />
+                        <input type="submit" name="delete_userclass" value="Delete" />
+                    </form>
+                </td>
+            <?
+                echo '</tr>';
+            }
+        ?>
     </table>
 
 <?

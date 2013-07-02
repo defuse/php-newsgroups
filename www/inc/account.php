@@ -2,6 +2,7 @@
 
 require_once('inc/mysql.php');
 require_once('inc/PasswordHash.php');
+require_once('inc/permissions.php');
 
 class UserExistsException extends Exception { /* empty */ }
 class UserDoesNotExistException extends Exception { /* empty */ }
@@ -85,12 +86,13 @@ class Account
         if (!self::UserExists($username)) {
             $q = $DB->prepare(
                 "INSERT INTO accounts 
-                (username, password_hash, is_admin) 
-                VALUES (:username, :password_hash, :is_admin)"
+                (username, password_hash, is_admin, :user_class) 
+                VALUES (:username, :password_hash, :is_admin, :user_class)"
             );
             $q->bindValue(':username', $username);
             $q->bindValue(':password_hash', create_hash($password));
             $q->bindValue(':is_admin', 0);
+            $q->bindValue(':user_class', UserClass::GetDefaultUserClass()->getID());
             $q->execute();
 
         } else {

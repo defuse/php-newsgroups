@@ -1,6 +1,7 @@
 <?php
 
 require_once('inc/mysql.php');
+require_once('inc/permissions.php');
 
 class GroupExistsException extends Exception { /* empty */ }
 class GroupDoesNotExistException extends Exception { /* empty */ }
@@ -155,6 +156,11 @@ class Newsgroup
         $this->root_post_id = $result['root_post_id'];
     }
 
+    public function getID()
+    {
+        return $this->group_id;
+    }
+
     public function getName()
     {
         return $this->group_name;
@@ -202,7 +208,13 @@ class Newsgroup
     public function fullDelete()
     {
         global $DB;
+
         $this->deletePostAndReplies($this->root_post_id);
+
+        $q = $DB->prepare("DELETE FROM permissions WHERE group_id = :group_id");
+        $q->bindValue(':group_id', $this->group_id);
+        $q->execute();
+
         $q = $DB->prepare("DELETE FROM groups WHERE id = :id");
         $q->bindValue(':id', $this->group_id);
         $q->execute();
@@ -229,7 +241,7 @@ class Newsgroup
         $q->execute();
     }
 
-    public static function CreateGroup($group_name)
+    public static function CreateGroup($group_name, $default_ability)
     {
         global $DB;
 
@@ -269,6 +281,19 @@ class Newsgroup
         $q->bindValue(':group_id', $group_name_id);
         $q->bindValue(':id', $root_post_id);
         $q->execute();
+
+        /* Create the permissions for all user classes */
+        $user_classes = UserClass::GetAllUserClasses();
+        foreach ($user_classes as $uc) {
+            $q = $DB->prepare(
+                "INSERT INTO permissions (class_id, group_id, ability)
+                 VALUES (:class_id, :group_id, :ability)"
+             );
+            $q->bindValue(':class_id', $uc->getID());
+            $q->bindValue(':group_id', $group_name_id);
+            $q->bindValue(':ability', $default_ability);
+            $q->execute();
+        }
     }
 
     public static function GroupExists($group_name)
@@ -284,6 +309,7 @@ class Newsgroup
         return $q->fetch() !== FALSE;
     }
 
+    /* TODO: deprecate this, or make it private, use GetAllGroups */
     public static function GetGroupNames()
     {
         global $DB;
@@ -297,6 +323,16 @@ class Newsgroup
             $names[] = $row['name'];
         }
         return $names;
+    }
+
+    public static function GetAllGroups()
+    {
+        $names = self::GetGroupNames();
+        $groups = array();
+        foreach ($names as $name) {
+            $groups[] = new Newsgroup($name);
+        }
+        return $groups;
     }
 
 }
