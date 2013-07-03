@@ -51,20 +51,6 @@ class Post
         return new Newsgroup($row['name']);
     }
 
-    /* TODO: stop using this, use getGroup instead */
-    function getGroupName()
-    {
-        global $DB;
-
-        $q = $DB->prepare(
-            "SELECT name FROM groups WHERE id = :id"
-        );
-        $q->bindValue(':id', $this->group_id);
-        $q->execute();
-        $row = $q->fetch();
-        return $row['name'];
-    }
-
     function getID()
     {
         return $this->id;

@@ -8,7 +8,7 @@ $view = new PostEditView();
 if (isset($_POST['submit'])) {
     try {
         $post = new Post($_POST['replyto']);
-        $group = new Newsgroup($post->getGroupName());
+        $group = new Newsgroup($post->getGroup()->getName());
         $user = Login::GetLoggedInUser();
         if ($user === false) {
             $username = "";
