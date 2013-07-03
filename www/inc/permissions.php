@@ -5,6 +5,7 @@ require_once('inc/Newsgroup.php');
 
 class UserClassExistsException extends Exception { /* empty */ }
 class UserClassDoesNotExistException extends Exception { /* empty */ }
+class UserClassIsSpecialException extends Exception { /* empty */ }
 
 class UserClass
 {
@@ -95,6 +96,34 @@ class UserClass
         $q->execute();
         $row = $q->fetch();
         return $row['name'];
+    }
+
+    public function fullDelete()
+    {
+        global $DB;
+
+        /* Make sure it isn't a 'special' class that can't be deleted. */
+        $default_id = Settings::GetSetting("class.default");
+        $anonymous_id = Settings::GetSetting("class.anonymous");
+        if ($this->id == $default_id || $this->id == $anonymous_id) {
+            throw new UserClassIsSpecialException('Cannot delete anonymous or default class.');
+        }
+
+        /* Move all users in this class to the default class. */
+        $q = $DB->prepare("UPDATE accounts SET user_class = :new WHERE user_class = :old");
+        $q->bindValue(':new', $default_id);
+        $q->bindValue(':old', $this->id);
+        $q->execute();
+
+        /* Delete all permissions regarding this class */
+        $q = $DB->prepare("DELETE FROM permissions WHERE class_id = :class_id");
+        $q->bindValue(':class_id', $this->id);
+        $q->execute();
+
+        /* Delete the actual user class */
+        $q = $DB->prepare("DELETE FROM user_classes WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
     }
 
     /* TODO: permission checking functions in here */

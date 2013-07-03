@@ -173,6 +173,27 @@ class Account
         return $this->username;
     }
 
+    function getUserClass()
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT user_class FROM accounts WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+        $row = $q->fetch();
+        return new UserClass($row['user_class']);
+    }
+
+    function setUserClass($uc)
+    {
+        global $DB;
+
+        $q = $DB->prepare("UPDATE accounts SET user_class = :user_class WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->bindValue(':user_class', $uc->getID());
+        $q->execute();
+    }
+
     function isAdmin()
     {
         global $DB;

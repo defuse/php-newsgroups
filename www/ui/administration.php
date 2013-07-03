@@ -4,39 +4,9 @@ require_once('inc/Newsgroup.php');
 require_once('inc/permissions.php');
 class AdministrationView extends View
 {
-    public $add_success = false;
-    public $add_group_exists = false;
-
-    public $delete_success = false;
-    public $delete_failed = false;
-
-    public $user_noexist = false;
-    public $user_no_revoke_own = false;
-
     public function show()
     {
 ?>
-    <?php
-        if ($this->add_success) {
-            echo '<b>Group added.</b>';
-        }
-        if ($this->add_group_exists) {
-            echo '<b>A group with that name already exists.</b>';
-        }
-        if ($this->delete_success) {
-            echo '<b>Group deleted.</b>';
-        }
-        if ($this->delete_failed) {
-            echo '<b>Failed deleting group.</b>';
-        }
-        if ($this->user_noexist) {
-            echo '<b>User does not exist.</b>';
-        }
-        if ($this->user_no_revoke_own) {
-            echo '<b>You cannot revoke your own permissions.</b>';
-        }
-    ?>
-
     <h1>Groups</h1>
 
     <h2>Add a group</h2>
@@ -83,6 +53,7 @@ class AdministrationView extends View
     <tr>
         <th>Username</th>
         <th>Administrator</th>
+        <th>User Class</th>
         <th>Delete</th>
     </tr>
     <?php
@@ -110,6 +81,30 @@ class AdministrationView extends View
                 </td>
                 <?
             }
+
+            ?>
+                <td>
+                    <form action="admin.php" method="POST">
+                        <select name="user_class">
+                        <?php
+                            $all_ucs = UserClass::GetAllUserClasses();
+                            foreach ($all_ucs as $uc) {
+                                $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                                $safe_uc_id = (int)$uc->getID();
+                                if ($uc->getID() == $user->getUserClass()->getID()) {
+                                    echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
+                                } else {
+                                    echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
+                                }
+                            }
+                        ?>
+                        </select>
+                        <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                        <input type="submit" name="set_userclass" value="Set" />
+                    </form>
+                </td>
+            <?
+
             echo '</tr>';
         }
     ?>
@@ -156,6 +151,43 @@ class AdministrationView extends View
             }
         ?>
     </table>
+
+    <h2>Special User Classes</h2>
+    <form action="admin.php" method="POST">
+        Default (New Users):
+        <select name="default_class">
+            <?php
+                $all_ucs = UserClass::GetAllUserClasses();
+                foreach ($all_ucs as $uc) {
+                    $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                    $safe_uc_id = (int)$uc->getID();
+                    if ($uc->getID() == (int)Settings::GetSetting("class.default")) {
+                        echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
+                    } else {
+                        echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
+                    }
+                }
+            ?>
+        </select>
+        <br />
+        Anonymous (Not Logged In):
+        <select name="anonymous_class">
+            <?php
+                $all_ucs = UserClass::GetAllUserClasses();
+                foreach ($all_ucs as $uc) {
+                    $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                    $safe_uc_id = (int)$uc->getID();
+                    if ($uc->getID() == (int)Settings::GetSetting("class.anonymous")) {
+                        echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
+                    } else {
+                        echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
+                    }
+                }
+            ?>
+        </select>
+        <br />
+        <input type="submit" name="special_userclasses" value="Save" />
+    </form>
 
 <?
     }

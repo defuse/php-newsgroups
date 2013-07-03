@@ -5,6 +5,8 @@ class Layout
     private $header_view;
     private $contents_view;
 
+    public $flash = null;
+
     function __construct($view)
     {
         $this->header_view = new HeaderView();
@@ -26,6 +28,13 @@ class Layout
     <div id="header">
         <?php $this->header_view->show(); ?>
     </div>
+    <?php
+        if ($this->flash !== null) {
+    ?>
+    <div id="flash">
+        <strong><?php echo htmlentities($this->flash, ENT_QUOTES); ?></strong>
+    </div>
+    <? } ?>
     <?php $this->contents_view->show(); ?>
 </body>
 </html>
