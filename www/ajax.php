@@ -1,10 +1,19 @@
 <?php
 require_once('inc/Newsgroup.php');
+require_once('inc/account.php');
+require_once('inc/permissions.php');
+
+$user = Login::GetLoggedInUser();
+$user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
 
 if (isset($_POST['id']) && !empty($_POST['id'])) {
     try {
         $post = new Post($_POST['id']);
-        send_ajax_post($post);
+        if ($user_class->canReadGroup($post->getGroup())) {
+            send_ajax_post($post);
+        } else {
+            send_ajax_post(null);
+        }
     } catch (PostDoesNotExistException $e) {
         send_ajax_post(null);
     }

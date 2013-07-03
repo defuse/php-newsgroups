@@ -11,7 +11,16 @@ $main = new MainView();
 
 $main->sidebar_groups = $user_class->getVisibleGroups();
 if (isset($_GET['group'])) {
-    $main->setCurrentGroup($_GET['group']);
+    try {
+        $group = new Newsgroup($_GET['group']);
+        if ($user_class->canReadGroup($group)) {
+            $main->setCurrentGroup($_GET['group']);
+        } else {
+            $main->setCurrentGroup(null);
+        }
+    } catch (GroupDoesNotExistException $e) {
+        $main->setCurrentGroup(null);
+    }
 } else {
     $main->setCurrentGroup(null);
 }

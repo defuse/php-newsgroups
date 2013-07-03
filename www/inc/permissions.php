@@ -206,11 +206,16 @@ class UserClass
         $groups = Newsgroup::GetAllGroups();
         $visible_groups = array();
         foreach ($groups as $group) {
-            if (self::Read($this->getAbilityForGroup($group))) {
+            if ($this->canReadGroup($group)) {
                 $visible_groups[] = $group;
             }
         }
         return $visible_groups;
+    }
+
+    public function canReadGroup($group)
+    {
+        return self::Read($this->getAbilityForGroup($group));
     }
 
     private function abilityForGroupExplicit($group)
@@ -224,6 +229,7 @@ class UserClass
         $row = $q->fetch();
         return $row !== false;
     }
+
 
 
     /* TODO: permission checking functions in here */
