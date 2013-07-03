@@ -189,6 +189,49 @@ class AdministrationView extends View
         <input type="submit" name="special_userclasses" value="Save" />
     </form>
 
+    <h1>Permissions</h1>
+    <form action="admin.php" method="POST">
+    <table border="1">
+        <tr>
+            <th>Group</th>
+            <?php
+                $all_ucs = UserClass::GetAllUserClasses();
+
+                foreach ($all_ucs as $uc) {
+                    $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                    echo "<th>$safe_uc_name</th>";
+                }
+            ?>
+        </tr>
+        <?php
+            $all_groups = Newsgroup::GetAllGroups();
+            $all_ucs = UserClass::GetAllUserClasses();
+            $all_abilities = UserClass::GetAllAbilities();
+            foreach ($all_groups as $group) {
+                $safe_group_name = htmlentities($group->getName(), ENT_QUOTES);
+                echo '<tr>';
+                echo "<td>$safe_group_name</td>";
+                foreach ($all_ucs as $uc) {
+                    $select_name = htmlentities("gu_" . $group->getID() . "_" . $uc->getID(), ENT_QUOTES);
+                    echo "<td>";
+                    echo "<select name=\"$select_name\">";
+                    foreach ($all_abilities as $ability) {
+                        $safe_ability = htmlentities($ability, ENT_QUOTES);
+                        if ($ability === $uc->getAbilityForGroup($group)) {
+                            echo "<option value=\"$safe_ability\" selected=\"selected\">$safe_ability</option>";
+                        } else {
+                            echo "<option value=\"$safe_ability\">$safe_ability</option>";
+                        }
+                    }
+                    echo "</select>";
+                }
+                echo '<tr>';
+            }
+        ?>
+    </table>
+    <input type="submit" name="save_permissions" value="Save" />
+    </form>
+
 <?
     }
 }

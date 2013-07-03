@@ -10,10 +10,7 @@ Login::RequireAdmin('index.php');
 $view = new AdministrationView();
 $layout = new Layout($view);
 
-$redirect = false;
-
 if (isset($_POST['newgroup'])) {
-    $redirect = true;
     $groupname = $_POST['groupname'];
     try {
         NewsGroup::CreateGroup($groupname, $_POST['default_ability']);
@@ -24,7 +21,6 @@ if (isset($_POST['newgroup'])) {
 }
 
 if (isset($_POST['deletegroup'])) {
-    $redirect = true;
     $groupname = $_POST['groupname'];
     $group = new Newsgroup($groupname);
     $group->fullDelete();
@@ -32,7 +28,6 @@ if (isset($_POST['deletegroup'])) {
 }
 
 if (isset($_POST['admin_give'])) {
-    $redirect = true;
     $username = $_POST['username'];
     try {
         $user = new Account($username);
@@ -43,7 +38,6 @@ if (isset($_POST['admin_give'])) {
 }
 
 if (isset($_POST['admin_revoke'])) {
-    $redirect = true;
     $username = $_POST['username'];
     if ($username !== Login::GetLoggedInUser()->getUsername()) {
         try {
@@ -58,7 +52,6 @@ if (isset($_POST['admin_revoke'])) {
 }
 
 if (isset($_POST['new_userclass'])) {
-    $redirect = true;
     try {
         UserClass::CreateUserClass($_POST['name'], $_POST['default_ability']);
         $layout->flash = "User class added.";
@@ -68,7 +61,6 @@ if (isset($_POST['new_userclass'])) {
 }
 
 if (isset($_POST['delete_userclass'])) {
-    $redirect = true;
     $uc_id = $_POST['id'];
     try {
         $uc = new UserClass($uc_id);
@@ -80,7 +72,6 @@ if (isset($_POST['delete_userclass'])) {
 }
 
 if (isset($_POST['special_userclasses'])) {
-    $redirect = true;
     try {
         $default_uc = new UserClass((int)$_POST['default_class']);
         $anonymous_uc = new UserClass((int)$_POST['anonymous_class']);
@@ -94,7 +85,6 @@ if (isset($_POST['special_userclasses'])) {
 }
 
 if (isset($_POST['set_userclass'])) {
-    $redirect = true;
     try {
         $uc = new UserClass((int)$_POST['user_class']);
         $user = new Account($_POST['username']);
@@ -107,8 +97,21 @@ if (isset($_POST['set_userclass'])) {
 
 }
 
-if ($redirect) {
-    header('Location: admin.php');
+if (isset($_POST['save_permissions'])) {
+    $all_groups = Newsgroup::GetAllGroups();
+    $all_ucs = UserClass::GetAllUserClasses();
+    foreach ($all_groups as $group) {
+        foreach ($all_ucs as $uc) {
+            $select_name = "gu_" . $group->getID() . "_" . $uc->getID();
+            $ability = $_POST[$select_name];
+            try {
+                $uc->setAbilityForGroup($group, $ability);
+            } catch (InvalidAbilityException $e) {
+                $layout->flash = "Invalid ability.";
+            }
+        }
+    }
+    $layout->flash = "Permissions saved.";
 }
 
 $layout->show();

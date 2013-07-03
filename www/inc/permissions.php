@@ -6,6 +6,7 @@ require_once('inc/Newsgroup.php');
 class UserClassExistsException extends Exception { /* empty */ }
 class UserClassDoesNotExistException extends Exception { /* empty */ }
 class UserClassIsSpecialException extends Exception { /* empty */ }
+class InvalidAbilityException extends Exception { /* empty */ }
 
 class UserClass
 {
@@ -124,6 +125,60 @@ class UserClass
         $q = $DB->prepare("DELETE FROM user_classes WHERE id = :id");
         $q->bindValue(':id', $this->id);
         $q->execute();
+    }
+
+    public function getAbilityForGroup($group)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT ability FROM permissions WHERE class_id = :class_id AND group_id = :group_id");
+        $q->bindValue(':class_id', $this->id);
+        $q->bindValue(':group_id', $group->getID());
+        $q->execute();
+        $row = $q->fetch();
+        if ($row === FALSE) {
+            return 'NOACCESS'; // fail safe.
+        }
+        return $row['ability'];
+    }
+
+    public function setAbilityForGroup($group, $ability)
+    {
+        global $DB;
+
+        $all_abilities = self::GetAllAbilities();
+        if (!in_array($ability, $all_abilities)) {
+            throw new InvalidAbilityException("$ability is not a valid ability.");
+        }
+
+        /* There's a possiblity that the entry in the permissions table doesn't
+         * already exist. So we have to check for that, and add it if so. */
+        if ($this->abilityForGroupExplicit($group)) {
+            $q = $DB->prepare("UPDATE permissions SET ability = :ability WHERE class_id = :class_id AND group_id = :group_id");
+            $q->bindValue(':class_id', $this->id);
+            $q->bindValue(':group_id', $group->getID());
+            $q->bindValue(':ability', $ability);
+            $q->execute();
+        } else {
+            $q = $DB->prepare("INSERT INTO permissions (class_id, group_id, ability)
+                               VALUES (:class_id, :group_id, :ability)");
+            $q->bindValue(':class_id', $this->id);
+            $q->bindValue(':group_id', $group->getID());
+            $q->bindValue(':ability', $ability);
+            $q->execute();
+        }
+    }
+
+    private function abilityForGroupExplicit($group)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT ability FROM permissions WHERE class_id = :class_id AND group_id = :group_id");
+        $q->bindValue(':class_id', $this->id);
+        $q->bindValue(':group_id', $group->getID());
+        $q->execute();
+        $row = $q->fetch();
+        return $row !== false;
     }
 
     /* TODO: permission checking functions in here */
