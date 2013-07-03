@@ -3,13 +3,8 @@ require_once('ui/view.php');
 require_once('inc/Newsgroup.php');
 class MainView
 {
-    private $group_names;
+    public $sidebar_groups;
     private $current_group;
-
-    public function setGroupNames($names_array)
-    {
-        $this->group_names = $names_array;
-    }
 
     public function setCurrentGroup($current_group)
     {
@@ -40,7 +35,8 @@ class MainView
             </div>
             <ul>
             <?php
-                foreach ($this->group_names as $name) {
+                foreach ($this->sidebar_groups as $group) {
+                    $name = $group->getName();
                     $safe_name = htmlentities($name, ENT_QUOTES);
                     echo '<li>';
                     echo '<a href="index.php?group=' . $safe_name . '">';

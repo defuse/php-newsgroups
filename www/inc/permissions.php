@@ -33,9 +33,30 @@ class UserClass
         return $user_classes;
     }
 
+    public static function Anonymous()
+    {
+        $anonymous_id = Settings::GetSetting("class.anonymous");
+        return new UserClass($anonymous_id);
+    }
+
     public static function GetAllAbilities()
     {
         return array('NOACCESS', 'READONLY', 'READWRITECAPTCHA', 'READWRITE');
+    }
+
+    public static function Read($ability)
+    {
+        return $ability == 'READONLY' || $ability == 'READWRITECAPTCHA' || $ability == 'READWRITE';
+    }
+
+    public static function Write($ability)
+    {
+        return $ability == 'READWRITECAPTCHA' || $ability == 'READWRITE';
+    }
+
+    public static function Captcha($ability)
+    {
+        return $ability == 'READWRITECAPTCHA';
     }
 
     public static function UserClassExists($name)
@@ -43,6 +64,16 @@ class UserClass
         global $DB;
         $q = $DB->prepare("SELECT id FROM user_classes WHERE name = :name");
         $q->bindValue(':name', $name);
+        $q->execute();
+        $row = $q->fetch();
+        return $row !== FALSE;
+    }
+
+    public static function UserClassIdExists($id)
+    {
+        global $DB;
+        $q = $DB->prepare("SELECT id FROM user_classes WHERE id = :id");
+        $q->bindValue(':id', $id);
         $q->execute();
         $row = $q->fetch();
         return $row !== FALSE;
@@ -80,7 +111,9 @@ class UserClass
 
     function __construct($id)
     {
-        // TODO: check that it exists
+        if (!self::UserClassIdExists($id)) {
+            throw new UserClassDoesNotExistException("User class with id $id does not exist.");
+        }
         $this->id = $id;
     }
 
@@ -137,7 +170,8 @@ class UserClass
         $q->execute();
         $row = $q->fetch();
         if ($row === FALSE) {
-            return 'NOACCESS'; // fail safe.
+            // If the row doesn't exist, we assume NOACCESS (fail safe).
+            return 'NOACCESS'; 
         }
         return $row['ability'];
     }
@@ -151,8 +185,6 @@ class UserClass
             throw new InvalidAbilityException("$ability is not a valid ability.");
         }
 
-        /* There's a possiblity that the entry in the permissions table doesn't
-         * already exist. So we have to check for that, and add it if so. */
         if ($this->abilityForGroupExplicit($group)) {
             $q = $DB->prepare("UPDATE permissions SET ability = :ability WHERE class_id = :class_id AND group_id = :group_id");
             $q->bindValue(':class_id', $this->id);
@@ -169,6 +201,18 @@ class UserClass
         }
     }
 
+    public function getVisibleGroups()
+    {
+        $groups = Newsgroup::GetAllGroups();
+        $visible_groups = array();
+        foreach ($groups as $group) {
+            if (self::Read($this->getAbilityForGroup($group))) {
+                $visible_groups[] = $group;
+            }
+        }
+        return $visible_groups;
+    }
+
     private function abilityForGroupExplicit($group)
     {
         global $DB;
@@ -180,6 +224,7 @@ class UserClass
         $row = $q->fetch();
         return $row !== false;
     }
+
 
     /* TODO: permission checking functions in here */
 }
