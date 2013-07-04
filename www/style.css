@@ -176,3 +176,10 @@ body {
 #pager_number {
     margin-right: 10px;
 }
+
+#flash {
+    font-weight: bold;
+    border: solid blue 2px;
+    padding: 20px;
+    margin: 20px;
+}
