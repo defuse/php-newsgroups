@@ -40,7 +40,7 @@ class PostEditView extends View
                 value="<?php echo htmlentities($this->title, ENT_QUOTES); ?>" />
             <br />
             Post body: <br />
-            <textarea name="contents" rows="30" cols="80"><?php 
+            <textarea name="contents" rows="30" cols="80" class="posteditbox"><?php 
                 echo $this->body_html;
             ?></textarea> <br />
             <?php

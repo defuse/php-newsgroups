@@ -143,3 +143,7 @@ body {
     margin: 0;
     padding: 10px;
 }
+
+.posteditbox {
+    font-family: monospace;
+}
