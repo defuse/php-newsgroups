@@ -148,7 +148,7 @@ class MainView
         $children = $post->getChildren();
         usort($children, "post_date_asc");
     ?>
-        <div class="post read" >
+        <div class="post" >
             <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
             <table class="posttable" cellspacing="0">
                 <tr>
@@ -161,13 +161,23 @@ class MainView
                             &nbsp;
                         </td>
                     <? } ?>
-                    <td class="titlecell" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
+                    <td class="titlecell read" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
                         <span class="posttitle">
                             <?php echo $safe_title; ?>
                         </span>
                     </td>
-                    <td class="metadatacell">
-                        <?php echo $safe_user; ?>
+                    <td class="metadatacell read">
+                        <table class="metadatatable" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td style="text-align: left; width:200px;">
+                                <?php echo $safe_user; ?>
+                            </td>
+                            <td style="text-align: left; width: 200px;">
+                                <?php echo htmlentities($post->getFormattedTime(), ENT_QUOTES); ?>
+                            </td>
+                        </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
