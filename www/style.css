@@ -1,5 +1,7 @@
 body {
     background-color: #CCCCCC;
+    margin: 0;
+    padding: 0;
 }
 
 #tblcolumns {
@@ -7,6 +9,10 @@ body {
     border-collapse: collapse;
     border: solid 1px black;
     width: 100%;
+}
+
+#main_content {
+    margin: 10px;
 }
 
 #grouplist {

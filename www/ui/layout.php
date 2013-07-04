@@ -35,6 +35,7 @@ class Layout
     <div id="header">
         <?php $this->header_view->show(); ?>
     </div>
+    <div id="main_content">
     <table id="tblcolumns">
         <tr>
             <td id="grouplist">
@@ -74,6 +75,7 @@ class Layout
             </td>
         </tr>
     </table>
+    </div>
 </body>
 </html>
 <?

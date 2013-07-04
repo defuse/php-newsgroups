@@ -14,13 +14,15 @@ class HeaderView extends View
             <?
             } else {
             ?>
-                You are logged in as <?php echo $current_user->getUsername(); ?>.
                 <a href="index.php">Home</a> |
-                <a href="logout.php">Log out</a> |
                 <a href="settings.php">Settings</a>
                 <?php if ($current_user->isAdmin()) { ?>
                     | <a href="admin.php">Administration</a>
                 <? } ?>
+                <div style="float: right;">
+                You are logged in as <?php echo $current_user->getUsername(); ?>.
+                <a href="logout.php">Log out</a>.
+                </div>
             <?
         }
     }
