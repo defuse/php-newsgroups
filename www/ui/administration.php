@@ -40,7 +40,7 @@ class AdministrationView extends View
             <td>
                 <form action="admin.php" method="POST">
                 <input type="hidden" name="groupname" value="<?php echo $safe_name; ?>" />
-                <input type="submit" name="deletegroup" value="Delete" />
+                <input type="submit" name="deletegroup" value="Delete" onclick="return confirm('Are you sure?')"/>
                 </form>
             </td>
 <?
@@ -104,8 +104,13 @@ class AdministrationView extends View
                         <input type="submit" name="set_userclass" value="Set" />
                     </form>
                 </td>
+                <td>
+                    <form action="admin.php" method="POST">
+                        <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                        <input type="submit" name="delete_user" value="Delete" onclick="return confirm('Are you sure?');"/>
+                    </form>
+                </td>
             <?
-
             echo '</tr>';
         }
     ?>
@@ -144,7 +149,7 @@ class AdministrationView extends View
                 <td>
                     <form action="admin.php" method="POST">
                         <input type="hidden" name="id" value="<?php echo $safe_uc_id; ?>" />
-                        <input type="submit" name="delete_userclass" value="Delete" />
+                        <input type="submit" name="delete_userclass" value="Delete" onclick="return confirm('Are you sure?');" />
                     </form>
                 </td>
             <?

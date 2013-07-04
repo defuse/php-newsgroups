@@ -216,6 +216,15 @@ class Account
         $q->bindValue(':id', $this->id);
         $q->execute();
     }
+
+    function delete()
+    {
+        global $DB;
+
+        $q = $DB->prepare("DELETE FROM accounts WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+    }
 }
 
 ?>

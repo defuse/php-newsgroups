@@ -97,6 +97,16 @@ if (isset($_POST['set_userclass'])) {
 
 }
 
+if (isset($_POST['delete_user'])) {
+    try {
+        $user = new Account($_POST['username']);
+        $user->delete();
+    } catch (UserDoesNotExistException $e) {
+        /* ignore it, it's gone */
+    }
+    $layout->flash = "The user has been deleted.";
+}
+
 if (isset($_POST['save_permissions'])) {
     $all_groups = Newsgroup::GetAllGroups();
     $all_ucs = UserClass::GetAllUserClasses();
