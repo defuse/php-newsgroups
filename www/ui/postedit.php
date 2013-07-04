@@ -1,6 +1,7 @@
 <?php
 require_once('ui/view.php');
 require_once('inc/Newsgroup.php');
+require_once('inc/captcha.php');
 class PostEditView extends View
 {
     /* If new post, set this to the Newsgroup object. */
@@ -10,6 +11,8 @@ class PostEditView extends View
 
     public $title = "";
     public $body_html = "";
+
+    public $captcha = false;
 
     public function title()
     {
@@ -40,6 +43,11 @@ class PostEditView extends View
             <textarea name="contents" rows="30" cols="80"><?php 
                 echo $this->body_html;
             ?></textarea> <br />
+            <?php
+                if ($this->captcha) {
+                    Captcha::ShowCaptcha();
+                }
+            ?>
             <input type="submit" name="submit" value="Submit" />
         </form>
 <?

@@ -218,6 +218,16 @@ class UserClass
         return self::Read($this->getAbilityForGroup($group));
     }
 
+    public function canWriteGroup($group)
+    {
+        return self::Write($this->getAbilityForGroup($group));
+    }
+
+    public function captchaForGroup($group)
+    {
+        return self::Captcha($this->getAbilityForGroup($group));
+    }
+
     private function abilityForGroupExplicit($group)
     {
         global $DB;
