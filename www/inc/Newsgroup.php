@@ -86,8 +86,7 @@ class Post
     function getContentsHtml()
     {
         $html = "";
-        $contents = HtmlEscape::escapeText($this->contents, false, 4);
-        $lines = explode("\n", $contents);
+        $lines = explode("\n", $this->contents);
         $indent = 0;
         foreach ($lines as $line) {
             $leading_brackets = $this->stripLeadingBrackets($line);
@@ -102,7 +101,7 @@ class Post
                     $indent--;
                 }
             }
-            $html .= $line . '<br />';
+            $html .= HtmlEscape::escapeText($line, false, 4) . '<br />';
         }
         return $html;
     }
