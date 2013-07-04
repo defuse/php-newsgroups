@@ -89,6 +89,7 @@ body {
 
 .unread {
     background-color: #FFFFD0;
+    font-weight: bold;
 }
 
 .hiddenposts {
