@@ -310,22 +310,6 @@ class Newsgroup
         return $q->fetch() !== FALSE;
     }
 
-    /* TODO: deprecate this, or make it private, use GetAllGroups */
-    public static function GetGroupNames()
-    {
-        global $DB;
-
-        $q = $DB->prepare(
-            "SELECT name FROM groups"
-        );
-        $q->execute();
-        $names = array();
-        while (($row = $q->fetch()) !== FALSE) {
-            $names[] = $row['name'];
-        }
-        return $names;
-    }
-
     public static function GetAllGroups()
     {
         $names = self::GetGroupNames();
@@ -334,6 +318,21 @@ class Newsgroup
             $groups[] = new Newsgroup($name);
         }
         return $groups;
+    }
+
+    private static function GetGroupNames()
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT name FROM groups ORDER BY name ASC"
+        );
+        $q->execute();
+        $names = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $names[] = $row['name'];
+        }
+        return $names;
     }
 
 }

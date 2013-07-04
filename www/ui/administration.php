@@ -31,9 +31,9 @@ class AdministrationView extends View
             <th>Delete</th>
         </tr>
     <?php
-        $groups = Newsgroup::GetGroupNames();
+        $groups = Newsgroup::GetAllGroups();
         foreach ($groups as $group) {
-            $safe_name = htmlentities($group, ENT_QUOTES);
+            $safe_name = htmlentities($group->getName(), ENT_QUOTES);
             echo '<tr>';
             echo "<td>$safe_name</td>";
 ?>
