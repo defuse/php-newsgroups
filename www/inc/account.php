@@ -216,6 +216,17 @@ class Account
         $q->execute();
     }
 
+    function setPassword($new_password)
+    {
+        global $DB;
+
+        $correct_hash = create_hash($new_password);
+        $q = $DB->prepare("UPDATE accounts SET password_hash = :password_hash WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->bindValue(':password_hash', $correct_hash);
+        $q->execute();
+    }
+
     function delete()
     {
         global $DB;
