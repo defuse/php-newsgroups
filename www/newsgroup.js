@@ -20,6 +20,7 @@ $( document ).ready(function () {
         var id = $(this).children('.postid').attr('value');
         $('.post').css('background-color', 'inherit');
         $(this).css('background-color', 'cyan');
+        $(this).find('.unread').removeClass('unread').addClass('read');
         showPost(id);
     });
 

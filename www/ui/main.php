@@ -28,6 +28,7 @@ class MainView
 {
     public $sidebar_groups;
     public $page;
+    public $user;
     private $current_group;
 
     public function setCurrentGroup($current_group)
@@ -186,6 +187,10 @@ class MainView
         $safe_indent = (int)$indent;
         $children = $post->getChildren();
         usort($children, "post_date_asc");
+        $safe_read = "read";
+        if ($this->user && !$this->user->hasReadPost($post)) {
+            $safe_read = "unread";
+        }
     ?>
         <div class="post" >
             <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
@@ -200,12 +205,12 @@ class MainView
                             &nbsp;
                         </td>
                     <? } ?>
-                    <td class="titlecell read" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
+                    <td class="titlecell <?php echo $safe_read; ?>" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
                         <span class="posttitle">
                             <?php echo $safe_title; ?>
                         </span>
                     </td>
-                    <td class="metadatacell read">
+                    <td class="metadatacell <?php echo $safe_read; ?>">
                         <table class="metadatatable" cellspacing="0" cellpadding="0">
                         <tr>
                             <td>&nbsp;</td>

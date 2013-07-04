@@ -235,6 +235,43 @@ class Account
         $q->bindValue(':id', $this->id);
         $q->execute();
     }
+
+    function hasReadPost($post)
+    {
+        global $DB;
+        $q = $DB->prepare("SELECT has_read FROM read_status WHERE user_id = :user_id AND post_id = :post_id");
+        $q->bindValue(':user_id', $this->id);
+        $q->bindValue(':post_id', $post->getID());
+        $q->execute();
+        $row = $q->fetch();
+        if ($row === FALSE) {
+            return null;
+        }
+        return $row['has_read'] == "1";
+    }
+
+    function setRead($post, $read)
+    {
+        global $DB;
+
+        $read = $read ? "1" : "0";
+
+        if ($this->hasReadPost($post) === null) {
+            $q = $DB->prepare(
+                "INSERT INTO read_status (user_id, post_id, has_read)
+                VALUES (:user_id, :post_id, :has_read)"
+            );
+        } else {
+            $q = $DB->prepare(
+                "UPDATE read_status SET has_read = :has_read
+                WHERE user_id = :user_id AND post_id = :post_id"
+            );
+        }
+        $q->bindValue(':user_id', $this->id);
+        $q->bindValue(':post_id', $post->getID());
+        $q->bindValue(':has_read', $read);
+        $q->execute();
+    }
 }
 
 ?>

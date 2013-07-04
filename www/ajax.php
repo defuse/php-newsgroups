@@ -10,6 +10,9 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
     try {
         $post = new Post($_POST['id']);
         if ($user_class->canReadGroup($post->getGroup())) {
+            if ($user) {
+                $user->setRead($post, true);
+            }
             send_ajax_post($post);
         } else {
             send_ajax_post(null);

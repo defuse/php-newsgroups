@@ -8,6 +8,7 @@ $user = Login::GetLoggedInUser();
 $user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
 
 $main = new MainView();
+$main->user = $user;
 
 $main->sidebar_groups = $user_class->getVisibleGroups();
 if (isset($_GET['group'])) {
