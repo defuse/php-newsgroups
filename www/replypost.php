@@ -38,7 +38,7 @@ if (isset($_GET['replyto']) && !empty($_GET['replyto'])) {
         $safe_quote = htmlentities("On $date, $user wrote:\n", ENT_QUOTES);
         $quoted = preg_replace('/^/m', "> ", $post->getContents());
         $safe_quote .= htmlentities($quoted, ENT_QUOTES);
-        $view->body_html = $safe_quote;
+        $view->body_html = $safe_quote . "\n";
 
     } catch (PostDoesNotExistException $e) {
         header('Location: index.php');
