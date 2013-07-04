@@ -14,6 +14,8 @@ class PostEditView extends View
 
     public $captcha = false;
 
+    public $post_accepted = false;
+
     public function title()
     {
         if ($this->new_post_group !== null) {
@@ -25,6 +27,12 @@ class PostEditView extends View
 
     public function show()
     {
+        if ($this->post_accepted) {
+            echo '<script type="text/javascript"> window.close(); </script>';
+            echo '<strong>Post accepted.</strong>';
+            return;
+        }
+
         if ($this->new_post_group) {
             $action = "newpost.php?group=" . $this->new_post_group->getName();
         } else {

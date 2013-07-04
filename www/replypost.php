@@ -72,7 +72,7 @@ if (isset($_POST['submit'])) {
             $title = $_POST['title'];
             $contents = $_POST['contents'];
             $group->replyPost($post->getID(), $username, $title, $contents);
-            die('Reply accepted.');
+            $view->post_accepted = true;
         }
     } catch (PostDoesNotExistException $e) {
         die('Post replying to does not exist.');

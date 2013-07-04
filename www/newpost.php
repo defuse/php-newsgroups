@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
         $title = $_POST['title'];
         $contents = $_POST['contents'];
         $group->newPost($username, $title, $contents);
-        die('Post accepted.');
+        $view->post_accepted = true;
     }
 }
 
