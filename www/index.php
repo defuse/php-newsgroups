@@ -8,16 +8,18 @@ $user = Login::GetLoggedInUser();
 $user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
 
 $main = new MainView();
+$layout = new Layout($main);
 $main->user = $user;
 
-$main->sidebar_groups = $user_class->getVisibleGroups();
 if (isset($_GET['group'])) {
     try {
         $group = new Newsgroup($_GET['group']);
         if ($user_class->canReadGroup($group)) {
-            $main->setCurrentGroup($group);
+            $main->current_group = $group;
+            $layout->current_group = $group;
         } else {
-            $main->setCurrentGroup(null);
+            $main->current_group = null;
+            $layout->current_group = null;
         }
         if (isset($_GET['page']) && (int)$_GET['page'] > 0) {
             $main->page = (int)$_GET['page'] - 1;
@@ -25,12 +27,11 @@ if (isset($_GET['group'])) {
             $main->page = 0;
         }
     } catch (GroupDoesNotExistException $e) {
-        $main->setCurrentGroup(null);
+        $main->current_group = null;
     }
 } else {
-    $main->setCurrentGroup(null);
+    $main->current_group = null;
 }
 
-$layout = new Layout($main);
 $layout->show();
 ?>

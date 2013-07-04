@@ -26,15 +26,9 @@ function post_date_desc($p1, $p2)
 
 class MainView
 {
-    public $sidebar_groups;
     public $page;
     public $user;
-    private $current_group;
-
-    public function setCurrentGroup($current_group)
-    {
-        $this->current_group = $current_group;
-    }
+    public $current_group;
 
     public function head()
     {
@@ -52,54 +46,20 @@ class MainView
     public function show()
     {
 ?>
-<table id="tblcolumns">
-    <tr>
-        <td id="grouplist">
-            <div id="grouplistheader">
-                Groups
-            </div>
-            <ul>
-            <?php
-                foreach ($this->sidebar_groups as $group) {
-                    $name = $group->getName();
-                    $safe_name = htmlentities($name, ENT_QUOTES);
-                    echo '<li>';
-                    echo '<a href="index.php?group=' . $safe_name . '">';
-                    if ($this->current_group !== null && $this->current_group->getName() === $name) {
-                        echo '<b>' . $safe_name . '</b>';
-                    } else  {
-                        echo $safe_name;
-                    }
-                    echo '</a>';
-                    echo '</li>';
-                }
-            ?>
-            </ul>
-        </td>
-        <td id="groupcontents">
         <?php
-            $group = null;
             if ($this->current_group !== null) {
-                try {
-                    $group = new Newsgroup($_GET['group']);
-                } catch (GroupDoesNotExistException $e) {
-                    echo "The group does not exist.";
-                }
-            }
-
-            if ($group !== null) {
         ?>
             <input type="hidden" id="groupname" value="<?php echo
-            htmlentities($group->getName(), ENT_QUOTES); ?>" />
+            htmlentities($this->current_group->getName(), ENT_QUOTES); ?>" />
             <input type="button" class="newpostbutton" value="New Post" />
             <div id="groupcontentsheader">
-                <?php echo htmlentities($group->getName(), ENT_QUOTES); ?>
+                <?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>
             </div>
             <div style="clear: both;">
 
             <div id="postlisting">
                 <?php
-                    $posts = $group->getTopLevelPosts($this->page);
+                    $posts = $this->current_group->getTopLevelPosts($this->page);
                     usort($posts, "post_date_desc");
                     foreach ($posts as $post) {
                         $this->display_post_tree($post);
@@ -167,9 +127,6 @@ class MainView
                 <div style="clear: both;"></div>
             </div>
 
-        </td>
-    </tr>
-</table>
 <?
     }
 

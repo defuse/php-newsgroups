@@ -6,6 +6,7 @@ class Layout
     private $contents_view;
 
     public $flash = null;
+    public $current_group = null;
 
     function __construct($view)
     {
@@ -41,7 +42,38 @@ class Layout
         <strong><?php echo htmlentities($this->flash, ENT_QUOTES); ?></strong>
     </div>
     <? } ?>
-    <?php $this->contents_view->show(); ?>
+    <table id="tblcolumns">
+        <tr>
+            <td id="grouplist">
+                <div id="grouplistheader">
+                    Groups
+                </div>
+                <ul>
+                <?php
+                    $user = Login::GetLoggedInUser();
+                    $user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
+                    $sidebar_groups = $user_class->getVisibleGroups();
+                    foreach ($sidebar_groups as $group) {
+                        $name = $group->getName();
+                        $safe_name = htmlentities($name, ENT_QUOTES);
+                        echo '<li>';
+                        echo '<a href="index.php?group=' . $safe_name . '">';
+                        if ($this->current_group !== null && $this->current_group->getName() === $name) {
+                            echo '<b>' . $safe_name . '</b>';
+                        } else  {
+                            echo $safe_name;
+                        }
+                        echo '</a>';
+                        echo '</li>';
+                    }
+                ?>
+                </ul>
+            </td>
+            <td id="groupcontents">
+                <?php $this->contents_view->show(); ?>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
 <?
