@@ -25,6 +25,12 @@ class Layout
     <?php $this->contents_view->head(); ?>
 </head>
 <body>
+    <noscript>
+        <div id="noscript_banner">
+            <strong>JavaScript Notice:</strong> This web site needs JavaScript
+            to function. Please enable JavaScript in your browser.
+        </div>
+    </noscript>
     <div id="header">
         <?php $this->header_view->show(); ?>
     </div>

@@ -136,3 +136,10 @@ body {
     padding: 10px;
     margin: 10px;
 }
+
+#noscript_banner {
+    background-color: white;
+    border: solid #FF0000 5px;
+    margin: 0;
+    padding: 10px;
+}
