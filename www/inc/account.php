@@ -7,15 +7,14 @@ require_once('inc/permissions.php');
 class UserExistsException extends Exception { /* empty */ }
 class UserDoesNotExistException extends Exception { /* empty */ }
 
-/* FIXME: This is vulnerable to session fixation and all of that */
 class Login
 {
     public static function TryLogin($username, $password)
     {
         self::StartSession();
+        session_regenerate_id(true);
         if (Account::CheckPassword($username, $password)) {
             $account = new Account($username);
-            $_SESSION = array();
             $_SESSION['account'] = $account;
             return TRUE;
         } else {
