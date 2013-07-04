@@ -8,13 +8,11 @@ class HeaderView extends View
         $current_user = Login::GetLoggedInUser();
         if ($current_user === FALSE) {
             ?>
-                <a href="index.php">Home</a> |
                 <a href="login.php">Log In</a> | 
                 <a href="register.php">Register</a>
             <?
             } else {
             ?>
-                <a href="index.php">Home</a> |
                 <a href="settings.php">Settings</a>
                 <?php if ($current_user->isAdmin()) { ?>
                     | <a href="admin.php">Administration</a>
