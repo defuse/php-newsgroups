@@ -33,7 +33,7 @@ body {
 }
 
 #postlisting {
-    border: solid black 1px;
+    border: solid black 3px;
     width: 100%;
     padding: 0;
     height: 400px;
@@ -81,8 +81,7 @@ body {
 }
 
 .unread {
-    font-weight: bold;
-    color: #505050;
+    background-color: #FFFFD0;
 }
 
 .hiddenposts {
