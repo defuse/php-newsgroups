@@ -86,7 +86,7 @@ class Account
         if (!self::UserExists($username)) {
             $q = $DB->prepare(
                 "INSERT INTO accounts 
-                (username, password_hash, is_admin, :user_class) 
+                (username, password_hash, is_admin, user_class) 
                 VALUES (:username, :password_hash, :is_admin, :user_class)"
             );
             $q->bindValue(':username', $username);
