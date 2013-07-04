@@ -4,9 +4,12 @@ require_once('inc/mysql.php');
 require_once('inc/permissions.php');
 require_once('libs/HtmlEscape.php');
 
+define('POSTS_PER_PAGE', 50);
+
 class GroupExistsException extends Exception { /* empty */ }
 class GroupDoesNotExistException extends Exception { /* empty */ }
 class PostDoesNotExistException extends Exception { /* empty */ }
+class InvalidPageNumberException extends Exception { /* empty */ }
 
 class Post
 {
@@ -123,11 +126,31 @@ class Post
         return $count;
     }
 
-    function getChildren()
+    function getChildren($page = null)
     {
         global $DB;
+
+        /*
+         * To sort by post date, we sort by child_id, which is an auto increment
+         * so it should give a reliable enough sort. However, this is very 
+         * innefficient for large amounts of posts, so in the future we should
+         * improve it...
+         * http://www.xarg.org/2011/10/optimized-pagination-using-mysql/
+         */
+
+        $limit = "";
+        if ($page !== null) {
+            // Be VERY careful about SQL injection when modifying this code.
+            $page = (int)$page;
+            if ($page < 0) {
+                throw new InvalidPageNumberException("Page number $page is not valid.");
+            }
+            $start = $page * POSTS_PER_PAGE;
+            $duration = POSTS_PER_PAGE;
+            $limit = "LIMIT $start, $duration";
+        }
         $q = $DB->prepare(
-            "SELECT child_id FROM replies WHERE parent_id = :parent_id"
+            "SELECT child_id FROM replies WHERE parent_id = :parent_id ORDER BY child_id DESC $limit"
         );
         $q->bindValue(':parent_id', $this->id);
         $q->execute();
@@ -207,10 +230,10 @@ class Newsgroup
         $q->execute();
     }
 
-    public function getTopLevelPosts()
+    public function getTopLevelPosts($page = null)
     {
         $root = new Post($this->root_post_id);
-        return $root->getChildren();
+        return $root->getChildren($page);
     }
 
     public function fullDelete()

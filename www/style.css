@@ -157,3 +157,24 @@ body {
 .posteditbox {
     font-family: monospace;
 }
+
+#pager {
+    text-align: right;
+    font-size: 12pt;
+}
+
+#pager a {
+    text-decoration: none;
+}
+
+#pager_first {
+    margin-right: 10px;
+}
+
+#pager_prev {
+    margin-right: 10px;
+}
+
+#pager_number {
+    margin-right: 10px;
+}

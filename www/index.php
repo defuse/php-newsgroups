@@ -14,9 +14,14 @@ if (isset($_GET['group'])) {
     try {
         $group = new Newsgroup($_GET['group']);
         if ($user_class->canReadGroup($group)) {
-            $main->setCurrentGroup($_GET['group']);
+            $main->setCurrentGroup($group);
         } else {
             $main->setCurrentGroup(null);
+        }
+        if (isset($_GET['page']) && (int)$_GET['page'] > 0) {
+            $main->page = (int)$_GET['page'] - 1;
+        } else {
+            $main->page = 0;
         }
     } catch (GroupDoesNotExistException $e) {
         $main->setCurrentGroup(null);

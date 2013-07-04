@@ -27,6 +27,7 @@ function post_date_desc($p1, $p2)
 class MainView
 {
     public $sidebar_groups;
+    public $page;
     private $current_group;
 
     public function setCurrentGroup($current_group)
@@ -63,7 +64,7 @@ class MainView
                     $safe_name = htmlentities($name, ENT_QUOTES);
                     echo '<li>';
                     echo '<a href="index.php?group=' . $safe_name . '">';
-                    if ($this->current_group === $name) {
+                    if ($this->current_group !== null && $this->current_group->getName() === $name) {
                         echo '<b>' . $safe_name . '</b>';
                     } else  {
                         echo $safe_name;
@@ -97,12 +98,50 @@ class MainView
 
             <div id="postlisting">
                 <?php
-                    $posts = $group->getTopLevelPosts();
+                    $posts = $group->getTopLevelPosts($this->page);
                     usort($posts, "post_date_desc");
                     foreach ($posts as $post) {
                         $this->display_post_tree($post);
                     }
                 ?>
+            </div>
+            <div id="pager">
+            <?php
+                $safe_group = htmlentities($this->current_group->getName(), ENT_QUOTES);
+
+                /* Go back to the first page */
+                echo '<span id="pager_first">';
+                if ($this->page != 0) {
+                    echo '<a href="index.php?group=' . $safe_group . '">&lt;&lt;</a>';
+                } else {
+                    echo '&lt;&lt;';
+                }
+                echo '</span>';
+
+                /* Go to the previous page */
+                echo '<span id="pager_prev">';
+                if ($this->page > 0) {
+                    $safe_page = htmlentities($this->page + 1 - 1, ENT_QUOTES);
+                    echo '<a href="index.php?group=' . $safe_group . '&page=' . $safe_page
+                        . '">&lt;</a>';
+                } else {
+                    echo '&lt;';
+                }
+                echo '</span>';
+
+                /* Show the current page nubmer */
+                echo '<span id="pager_number">';
+                echo htmlentities('Page: ' . ($this->page + 1), ENT_QUOTES);
+                echo '</span>';
+
+                /* Go to the next page. */
+                echo '<span id="pager_next">';
+                $safe_page = htmlentities($this->page + 1 + 1, ENT_QUOTES);
+                echo '<a href="index.php?group=' . $safe_group . '&page=' . $safe_page
+                    . '">&gt;</a>';
+                echo '</span>';
+            ?>
+
             </div>
 
         <?
