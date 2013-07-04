@@ -2,6 +2,7 @@
 require_once('ui/view.php');
 require_once('inc/Newsgroup.php');
 require_once('inc/permissions.php');
+require_once('inc/settings.php');
 class AdministrationView extends View
 {
     public function show()
@@ -232,6 +233,35 @@ class AdministrationView extends View
     <input type="submit" name="save_permissions" value="Save" />
     </form>
 
+    <h1>CAPTCHA</h1>
+    <form action="admin.php" method="POST">
+        <?php
+            if (Settings::GetSetting("recaptcha.onregister") == "1") {
+                echo '<input type="checkbox" name="recaptcha_register_enable" checked="checked">';
+            } else {
+                echo '<input type="checkbox" name="recaptcha_register_enable">';
+            }
+        ?>
+        Require CAPTCHA to register.
+        <br />
+        Recaptcha Public Key:
+        <input name="recaptcha_public" value="<?php
+            $recaptcha_public = Settings::GetSetting("recaptcha.public_key");
+            if ($recaptcha_public !== FALSE) {
+                echo htmlentities($recaptcha_public, ENT_QUOTES);
+            }
+        ?>" />
+        <br />
+        Recaptcha Private Key:
+        <input name="recaptcha_private" value="<?php
+            $recaptcha_private = Settings::GetSetting("recaptcha.private_key");
+            if ($recaptcha_private !== FALSE) {
+                echo htmlentities($recaptcha_private, ENT_QUOTES);
+            }
+        ?>" />
+        <br />
+        <input type="submit" name="recaptcha_save" value="Save" />
+    </form>
 <?
     }
 }

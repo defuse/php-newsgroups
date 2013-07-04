@@ -114,5 +114,16 @@ if (isset($_POST['save_permissions'])) {
     $layout->flash = "Permissions saved.";
 }
 
+if (isset($_POST['recaptcha_save'])) {
+    Settings::SetSetting('recaptcha.public_key', trim($_POST['recaptcha_public']));
+    Settings::SetSetting('recaptcha.private_key', trim($_POST['recaptcha_private']));
+    if (isset($_POST['recaptcha_register_enable'])) {
+        Settings::SetSetting('recaptcha.onregister', "1");
+    } else {
+        Settings::SetSetting('recaptcha.onregister', "0");
+    }
+    $layout->flash = "Captcha settings saved.";
+}
+
 $layout->show();
 ?>
