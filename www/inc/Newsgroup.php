@@ -67,6 +67,12 @@ class Post
         return $this->post_date;
     }
 
+    function getFormattedTime()
+    {
+        date_default_timezone_set("UTC");
+        return date("F j, Y, H:i T", $this->getTime());
+    }
+
     function getTitle()
     {
         return $this->title;
