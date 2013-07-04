@@ -130,6 +130,7 @@ class Post
         }
         return $children;
     }
+
 }
 
 class Newsgroup

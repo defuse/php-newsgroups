@@ -1,6 +1,29 @@
 <?php
 require_once('ui/view.php');
 require_once('inc/Newsgroup.php');
+
+function post_date_asc($p1, $p2)
+{
+    if ($p1->getTime() > $p2->getTime()) {
+        return -1;
+    } elseif ($p1->getTime() < $p2->getTime()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+function post_date_desc($p1, $p2)
+{
+    if ($p1->getTime() > $p2->getTime()) {
+        return -1;
+    } elseif ($p1->getTime() < $p2->getTime()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 class MainView
 {
     public $sidebar_groups;
@@ -75,6 +98,7 @@ class MainView
             <div id="postlisting">
                 <?php
                     $posts = $group->getTopLevelPosts();
+                    usort($posts, "post_date_desc");
                     foreach ($posts as $post) {
                         $this->display_post_tree($post);
                     }
@@ -122,6 +146,7 @@ class MainView
         $safe_id = (int)$post->getID();
         $safe_indent = (int)$indent;
         $children = $post->getChildren();
+        usort($children, "post_date_asc");
     ?>
         <div class="post read" >
             <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
