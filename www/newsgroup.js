@@ -26,6 +26,8 @@ $( document ).ready(function () {
 
     /* Double clicking posts in the list */
     $( '.post' ).dblclick(function(e) {
+        alert("Normally this would open the post in a new window, but isn't implemented.");
+        return;
         var id = $(this).children('.postid').attr('value');
         var w = window.open(
             'viewpost.php?id=' + id,
