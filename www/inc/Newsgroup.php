@@ -2,6 +2,7 @@
 
 require_once('inc/mysql.php');
 require_once('inc/permissions.php');
+require_once('libs/HtmlEscape.php');
 
 class GroupExistsException extends Exception { /* empty */ }
 class GroupDoesNotExistException extends Exception { /* empty */ }
@@ -79,7 +80,8 @@ class Post
     function getContentsHtml()
     {
         $html = "";
-        $lines = explode("\n", $this->contents);
+        $contents = HtmlEscape::escapeText($this->contents, false, 4);
+        $lines = explode("\n", $contents);
         $indent = 0;
         foreach ($lines as $line) {
             $leading_brackets = $this->stripLeadingBrackets($line);
@@ -94,7 +96,7 @@ class Post
                     $indent--;
                 }
             }
-            $html .= htmlentities($line, ENT_QUOTES) . '<br />';
+            $html .= $line . '<br />';
         }
         return $html;
     }
