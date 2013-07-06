@@ -42,7 +42,7 @@ class Layout
                 <div id="grouplistheader">
                     Groups
                 </div>
-                <ul>
+                <div id="grouplistlist">
                 <?php
                     $user = Login::GetLoggedInUser();
                     $user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
@@ -50,18 +50,18 @@ class Layout
                     foreach ($sidebar_groups as $group) {
                         $name = $group->getName();
                         $safe_name = htmlentities($name, ENT_QUOTES);
-                        echo '<li>';
                         echo '<a href="index.php?group=' . $safe_name . '">';
                         if ($this->current_group !== null && $this->current_group->getName() === $name) {
-                            echo '<b>' . $safe_name . '</b>';
+                            echo '<div class="grouplistitem grouplist_selected">';
                         } else  {
-                            echo $safe_name;
+                            echo '<div class="grouplistitem">';
                         }
+                        echo $safe_name;
+                        echo '</div>';
                         echo '</a>';
-                        echo '</li>';
                     }
                 ?>
-                </ul>
+                </div>
             </td>
             <td id="groupcontents">
                 <?php

@@ -27,6 +27,32 @@ body {
     font-weight: bold;
 }
 
+#grouplistlist {
+    border-left: solid black 1px;
+    border-right: solid black 1px;
+    border-bottom: solid black 1px;
+}
+
+#grouplistlist a {
+    text-decoration: none;
+    color: black;
+}
+
+.grouplistitem {
+    border-top: solid black 1px;
+    padding: 5px;
+}
+
+.grouplistitem:hover {
+    background-color: #CCCCCC;
+}
+
+.grouplist_selected {
+    font-weight: bold;
+    background-color: #00FFFF;
+}
+
+
 #groupcontents {
     vertical-align: top;
     padding: 10px;
@@ -116,7 +142,7 @@ body {
 }
 
 .selected {
-    background-color: cyan !important;
+    background-color: #00FFFF !important;
 }
 
 #postview {
