@@ -112,6 +112,7 @@ $( document ).ready(function () {
                 } else  {
                     $(".vp_user").text(post.user);
                 }
+                $(".vp_subject").text(post.title);
                 $(".vp_date").text(post.time);
                 $("#postcontents").html(post.contents);
                 $("#postview").show("fast");

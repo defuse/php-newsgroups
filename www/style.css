@@ -1,5 +1,5 @@
 body {
-    background-color: #CCCCCC;
+    background-color: white;
     margin: 0;
     padding: 0;
 }
@@ -7,12 +7,10 @@ body {
 #tblcolumns {
     background-color: white;
     border-collapse: collapse;
-    border: solid 1px black;
     width: 100%;
 }
 
 #main_content {
-    margin: 10px;
 }
 
 #grouplist {
@@ -56,17 +54,17 @@ body {
 
 #groupcontents {
     vertical-align: top;
-    padding: 10px;
 }
 
 #groupcontentsheader {
     font-size: 16pt;
     font-weight: bold;
-    margin-bottom: 10px;
+    padding: 10px;
 }
 
 #postlisting {
-    border: solid black 3px;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
     padding: 0;
     height: 400px;
     overflow: auto;
@@ -148,14 +146,14 @@ body {
 
 #postview {
     display: none;
-    margin-top: 20px;
-    max-width: 800px;
+    padding: 10px;
+    border-top: solid 1px black;
 }
 
 #postcontents {
-    border: solid black 1px;
     font-family: monospace;
     padding: 10px;
+    max-width: 800px;
 }
 
 .quote {
@@ -174,14 +172,14 @@ body {
 }
 
 .newpostbutton {
+    margin: 10px;
     float: right;
 }
 
 #header {
     background-color: white;
-    border: solid black 1px;
+    border-bottom: solid black 1px;
     padding: 10px;
-    margin: 10px;
 }
 
 #noscript_banner {
@@ -198,6 +196,7 @@ body {
 #pager {
     text-align: right;
     font-size: 12pt;
+    padding: 10px;
 }
 
 #pager a {
@@ -221,4 +220,8 @@ body {
     border: solid blue 2px;
     padding: 20px;
     margin: 20px;
+}
+
+.postattr {
+    font-weight: bold;
 }

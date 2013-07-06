@@ -117,8 +117,11 @@ class MainView
                 <div style="float: right;">
                     <input type="button" class="replybutton" value="Reply"/>
                 </div>
-                From: <span class="vp_user">USER GOES HERE</span> <br />
-                Date: <span class="vp_date">DATE GOES HERE</span> <br /><br />
+                <table id="postattrs">
+                <tr><td class="postattr">Subject:&nbsp;&nbsp;&nbsp;</td><td><span class="vp_subject">SUBJECT GOES HERE</span></td>
+                <tr><td class="postattr">From:</td><td><span class="vp_user">USER GOES HERE</span></td>
+                <tr><td class="postattr">Date:</td><td><span class="vp_date">DATE GOES HERE</span></td>
+                </table>
                 <div id="postcontents">
                 </div>
                 <div style="float: right; margin-top: 10px;">
@@ -194,7 +197,7 @@ class MainView
                     <td class="metadatacell <?php echo $safe_read; ?>">
                         <table class="metadatatable" cellspacing="0" cellpadding="0">
                         <tr>
-                            <td>&nbsp;</td>
+                            <td></td>
                             <td style="text-align: left; width:200px;">
                                 <?php echo $safe_user; ?>
                             </td>

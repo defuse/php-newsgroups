@@ -18,7 +18,7 @@ class HeaderView extends View
                     | <a href="admin.php">Administration</a>
                 <? } ?>
                 <div style="float: right;">
-                You are logged in as <?php echo $current_user->getUsername(); ?>.
+                You are logged in as <b><?php echo $current_user->getUsername(); ?></b>.
                 <a href="logout.php">Log out</a>.
                 </div>
             <?
