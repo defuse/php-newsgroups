@@ -5,10 +5,10 @@ $( document ).ready(function () {
     /* Expanding and collapsing posts in the list */
     $( '.expander' ).click(function (e) {
         if ($.trim($(this).text()) === '+') {
-            $(this).parents('.post').next().show(100);
+            $(this).parents('.post').next().show();
             $(this).html('&ndash;');
         } else {
-            $(this).parents('.post').next().hide(100);
+            $(this).parents('.post').next().hide();
             $(this).html('+');
         }
         /* don't trigger the post view click event */
@@ -115,7 +115,7 @@ $( document ).ready(function () {
                 $(".vp_subject").text(post.title);
                 $(".vp_date").text(post.time);
                 $("#postcontents").html(post.contents);
-                $("#postview").show("fast");
+                $("#postview").show();
             } else {
                 alert('That post has been deleted.');
             }
