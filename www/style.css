@@ -62,6 +62,12 @@ body {
     padding: 10px;
 }
 
+#othercontentsheader {
+    font-size: 16pt;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
 #postlisting {
     border-top: solid black 1px;
     border-bottom: solid black 1px;
@@ -234,4 +240,8 @@ body {
 
 .postattr {
     font-weight: bold;
+}
+
+.contentpadding {
+    padding: 10px;
 }
