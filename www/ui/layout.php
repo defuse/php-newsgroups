@@ -36,7 +36,7 @@ class Layout
         <?php $this->header_view->show(); ?>
     </div>
     <div id="main_content">
-    <table id="tblcolumns">
+    <table id="tblcolumns" cellpadding="0" cellspacing="0">
         <tr>
             <td id="grouplist">
                 <div id="grouplistheader">

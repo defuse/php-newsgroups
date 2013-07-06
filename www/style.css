@@ -19,23 +19,24 @@ body {
     vertical-align: top;
     width: 200px;
     border-right: solid black 1px;
-    padding: 10px;
 }
 
 #grouplistheader {
     font-size: 16pt;
     font-weight: bold;
+    padding: 10px;
 }
 
 #grouplistlist {
-    border-left: solid black 1px;
-    border-right: solid black 1px;
     border-bottom: solid black 1px;
+    margin-bottom: 20px;
 }
 
 #grouplistlist a {
     text-decoration: none;
     color: black;
+    margin: 0;
+    padding: 0;
 }
 
 .grouplistitem {
