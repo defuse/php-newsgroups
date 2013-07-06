@@ -28,9 +28,11 @@ if (isset($_GET['group'])) {
         }
     } catch (GroupDoesNotExistException $e) {
         $main->current_group = null;
+        $layout->flash = "Please select a group.";
     }
 } else {
     $main->current_group = null;
+    $layout->flash = "Please select a group.";
 }
 
 $layout->show();

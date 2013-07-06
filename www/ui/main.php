@@ -105,13 +105,7 @@ class MainView
 
             </div>
 
-        <?
-            } else {
-        ?>
-            <b>Please select a group.</b></li>
-        <?
-            }
-        ?>
+        <?  } ?>
 
             <div id="postview">
                 <div style="float: right;">
