@@ -8,23 +8,37 @@ class AdministrationView extends View
     public function show()
     {
 ?>
+    <div class="contentpadding">
     <h1>Groups</h1>
 
-    <h2>Add a group</h2>
+    <h2>Add Group</h2>
     <form action="admin.php" method="POST">
-        Group name: <input type="text" name="groupname" value="" />
-        <select name="default_ability">
-        <?php
-            $abilities = UserClass::GetAllAbilities();
-            foreach ($abilities as $ability) {
-                $safe_ability = htmlentities($ability, ENT_QUOTES);
-                echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
-            }
-        ?>
-        <input type="submit" name="newgroup" value="Add" />
-        </select>
+        <table class="formalign">
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" name="groupname" value="" /></td>
+            </tr>
+            <tr>
+                <td>Permissions:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <select name="default_ability">
+                    <?php
+                        $abilities = UserClass::GetAllAbilities();
+                        foreach ($abilities as $ability) {
+                            $safe_ability = htmlentities($ability, ENT_QUOTES);
+                            echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
+                        }
+                    ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" name="newgroup" value="Add" /></td>
+            </tr>
+        </table>
     </form>
 
+    <h2>Group List</h2>
     <table>
         <tr>
             <th>Group Name</th>
@@ -119,20 +133,32 @@ class AdministrationView extends View
     <h1>User Classes</h1>
     <h2>Add User Class</h2>
     <form action="admin.php" method="POST">
-        <input type="text" name="name" value="" />
-        <select name="default_ability">
-        <?php
-            $abilities = UserClass::GetAllAbilities();
-            foreach ($abilities as $ability) {
-                $safe_ability = htmlentities($ability, ENT_QUOTES);
-                echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
-            }
-        ?>
-        </select>
-        <input type="submit" name="new_userclass" value="Add" />
+        <table class="formalign">
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" name="name" value="" /></td>
+            </tr>
+            <tr>
+                <td>Permissions:&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <select name="default_ability">
+                    <?php
+                        $abilities = UserClass::GetAllAbilities();
+                        foreach ($abilities as $ability) {
+                            $safe_ability = htmlentities($ability, ENT_QUOTES);
+                            echo '<option value="' . $safe_ability . '">' . $safe_ability . '</option>';
+                        }
+                    ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" name="new_userclass" value="Add" /></tr>
+            </tr>
+        </table>
     </form>
 
-    <h2>Edit User Classes</h2>
+    <h2>User Class List</h2>
     <table>
         <tr>
             <th>Name</th>
@@ -160,39 +186,49 @@ class AdministrationView extends View
 
     <h2>Special User Classes</h2>
     <form action="admin.php" method="POST">
-        Default (New Users):
-        <select name="default_class">
-            <?php
-                $all_ucs = UserClass::GetAllUserClasses();
-                foreach ($all_ucs as $uc) {
-                    $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
-                    $safe_uc_id = (int)$uc->getID();
-                    if ($uc->getID() == (int)Settings::GetSetting("class.default")) {
-                        echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
-                    } else {
-                        echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
-                    }
-                }
-            ?>
-        </select>
-        <br />
-        Anonymous (Not Logged In):
-        <select name="anonymous_class">
-            <?php
-                $all_ucs = UserClass::GetAllUserClasses();
-                foreach ($all_ucs as $uc) {
-                    $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
-                    $safe_uc_id = (int)$uc->getID();
-                    if ($uc->getID() == (int)Settings::GetSetting("class.anonymous")) {
-                        echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
-                    } else {
-                        echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
-                    }
-                }
-            ?>
-        </select>
-        <br />
-        <input type="submit" name="special_userclasses" value="Save" />
+        <table class="formalign">
+            <tr>
+                <td>Default (New Users):</td>
+                <td>
+                    <select name="default_class">
+                        <?php
+                            $all_ucs = UserClass::GetAllUserClasses();
+                            foreach ($all_ucs as $uc) {
+                                $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                                $safe_uc_id = (int)$uc->getID();
+                                if ($uc->getID() == (int)Settings::GetSetting("class.default")) {
+                                    echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
+                                } else {
+                                    echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
+                                }
+                            }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Anonymous (Not Logged In):&nbsp;&nbsp;&nbsp;</td>
+                <td>
+                    <select name="anonymous_class">
+                        <?php
+                            $all_ucs = UserClass::GetAllUserClasses();
+                            foreach ($all_ucs as $uc) {
+                                $safe_uc_name = htmlentities($uc->getName(), ENT_QUOTES);
+                                $safe_uc_id = (int)$uc->getID();
+                                if ($uc->getID() == (int)Settings::GetSetting("class.anonymous")) {
+                                    echo "<option value=\"$safe_uc_id\" selected=\"selected\">$safe_uc_name</option>";
+                                } else {
+                                    echo "<option value=\"$safe_uc_id\">$safe_uc_name</option>";
+                                }
+                            }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" name="special_userclasses" value="Save" /></td>
+            </tr>
+        </table>
     </form>
 
     <h1>Permissions</h1>
@@ -240,33 +276,47 @@ class AdministrationView extends View
 
     <h1>CAPTCHA</h1>
     <form action="admin.php" method="POST">
-        <?php
-            if (Settings::GetSetting("recaptcha.onregister") == "1") {
-                echo '<input type="checkbox" name="recaptcha_register_enable" checked="checked">';
-            } else {
-                echo '<input type="checkbox" name="recaptcha_register_enable">';
-            }
-        ?>
-        Require CAPTCHA to register.
-        <br />
-        Recaptcha Public Key:
-        <input name="recaptcha_public" value="<?php
-            $recaptcha_public = Settings::GetSetting("recaptcha.public_key");
-            if ($recaptcha_public !== FALSE) {
-                echo htmlentities($recaptcha_public, ENT_QUOTES);
-            }
-        ?>" />
-        <br />
-        Recaptcha Private Key:
-        <input name="recaptcha_private" value="<?php
-            $recaptcha_private = Settings::GetSetting("recaptcha.private_key");
-            if ($recaptcha_private !== FALSE) {
-                echo htmlentities($recaptcha_private, ENT_QUOTES);
-            }
-        ?>" />
-        <br />
-        <input type="submit" name="recaptcha_save" value="Save" />
+        <table class="formalign">
+        <tr>
+            <td>Require CAPTCHA to register.&nbsp;&nbsp;&nbsp;</td>
+            <td>
+                <?php
+                    if (Settings::GetSetting("recaptcha.onregister") == "1") {
+                        echo '<input type="checkbox" name="recaptcha_register_enable" checked="checked">';
+                    } else {
+                        echo '<input type="checkbox" name="recaptcha_register_enable">';
+                    }
+                ?>
+            </td> 
+        </tr>
+        <tr>
+            <td>Recaptcha Public Key:</td>
+            <td>
+                <input name="recaptcha_public" value="<?php
+                    $recaptcha_public = Settings::GetSetting("recaptcha.public_key");
+                    if ($recaptcha_public !== FALSE) {
+                        echo htmlentities($recaptcha_public, ENT_QUOTES);
+                    }
+                ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td>Recaptcha Private Key:</td>
+            <td>
+            <input name="recaptcha_private" value="<?php
+                $recaptcha_private = Settings::GetSetting("recaptcha.private_key");
+                if ($recaptcha_private !== FALSE) {
+                    echo htmlentities($recaptcha_private, ENT_QUOTES);
+                }
+            ?>" />
+            </td>
+        </tr>
+        <tr>
+            <td><input type="submit" name="recaptcha_save" value="Save" /></td>
+        </tr>
+        </table>
     </form>
+    </div>
 <?
     }
 }
