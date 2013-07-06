@@ -17,10 +17,29 @@ $( document ).ready(function () {
 
     /* Clicking posts in the list */
     $( '.post' ).click(function () {
+        /* get the id of the post that was just clicked */
         var id = $(this).children('.postid').attr('value');
+        /* un-highlight all the other posts */
         $('.post').css('background-color', 'inherit');
-        $(this).css('background-color', 'cyan');
-        $(this).find('.unread').removeClass('unread').addClass('read');
+        /* highlight the one that was just clicked */
+        $(this).css('background-color', '#00FFFF');
+
+        /* if this is a top-level post, and there are unread sub-posts... */
+        if ($(this).next('.hiddenposts').find('.unread').length > 0) {
+            $(this).find('.unread').removeClass('unread').addClass('subunread');
+        } else {
+            $(this).find('.unread').removeClass('unread').addClass('read');
+        }
+
+        var reply_container = $(this).parents('.hiddenposts');
+        /* if this is a reply post */
+        if (reply_container.length > 0) {
+            root_post = reply_container.prev('.post');
+            /* if all other replies to the 'root' post are read */
+            if (reply_container.find('.unread').length === 0) {
+                root_post.find('.subunread').removeClass('subunread').addClass('read');
+            }
+        }
         showPost(id);
     });
 
