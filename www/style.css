@@ -189,8 +189,18 @@ body {
     padding: 10px;
 }
 
+.postedit {
+    padding: 10px;
+}
+
+.posteditsubject {
+    border: solid black 1px;
+}
+
 .posteditbox {
     font-family: monospace;
+    border: solid black 1px;
+    resize: vertical;
 }
 
 #pager {

@@ -39,15 +39,16 @@ class PostEditView extends View
             $action = "replypost.php";
         }
 ?>
+        <div class="postedit">
         <form action="<?php echo htmlentities($action, ENT_QUOTES); ?>" method="POST">
             <?php if ($this->in_reply_to) { ?>
                 <input type="hidden" name="replyto" value="<?php echo (int)$this->in_reply_to->getID(); ?>" />
             <? } ?>
             Subject: 
             <input type="text" name="title" 
+                class="posteditsubject"
                 value="<?php echo htmlentities($this->title, ENT_QUOTES); ?>" />
             <br />
-            Post body: <br />
             <textarea name="contents" rows="30" cols="80" class="posteditbox"><?php 
                 echo $this->body_html;
             ?></textarea> <br />
@@ -58,6 +59,7 @@ class PostEditView extends View
             ?>
             <input type="submit" name="submit" value="Submit" />
         </form>
+        </div>
 <?
     }
 }
