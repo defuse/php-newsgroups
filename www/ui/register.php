@@ -7,17 +7,34 @@ class RegisterView extends View
     public function show()
     {
 ?>
+<div class="contentpadding">
 <form action="register.php" method="POST">
-    Username: <input type="text" name="username" value="" /> <br />
-    Password: <input type="password" name="password" value="" /> <br />
-    Confirm Password: <input type="password" name="password_confirm" value="" /> <br />
+    <table class="formalign">
+        <tr>
+            <td>Username:</td>
+            <td><input type="text" name="username" value="" /></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" name="password" value="" /></td>
+        </tr>
+        <tr>
+            <td>Confirm Password:&nbsp;&nbsp;&nbsp;</td>
+            <td><input type="password" name="password_confirm" value="" /></td>
+        </tr>
     <?php
         if (Settings::GetSetting('recaptcha.onregister') == "1") {
+            echo '<tr><td></td><td>';
             Captcha::ShowCaptcha();
+            echo '</td></tr>';
         }
     ?>
-    <input type="submit" name="submit" value="Create Account" />
+        <tr>
+            <td><input type="submit" name="submit" value="Create Account" /></td>
+        </tr>
+    </table>
 </form>
+</div>
 <?
     }
 }
