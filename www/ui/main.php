@@ -130,6 +130,28 @@ class MainView
 <?
     }
 
+    private function subpost_unread($post)
+    {
+        $children = $post->getChildren();
+
+        /* breadth first search */
+
+        /* check the children directly underneath */
+        foreach ($children as $child) {
+            if (!$this->user->hasReadPost($child)) {
+                return TRUE;
+            }
+        }
+
+        /* check their children recursively */
+        foreach ($children as $child) {
+            if ($this->subpost_unread($child)) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
 
     private function display_post_tree($post, $indent = 0)
     {
@@ -147,6 +169,8 @@ class MainView
         $safe_read = "read";
         if ($this->user && !$this->user->hasReadPost($post)) {
             $safe_read = "unread";
+        } elseif ($this->user && $indent == 0 && $this->subpost_unread($post)) {
+            $safe_read = "subunread";
         }
     ?>
         <div class="post" >

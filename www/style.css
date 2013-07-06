@@ -92,6 +92,10 @@ body {
     font-weight: bold;
 }
 
+.subunread {
+    text-decoration: underline;
+}
+
 .hiddenposts {
     display: none;
     background-color: #F0F0F0;
