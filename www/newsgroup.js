@@ -81,7 +81,7 @@ $( document ).ready(function () {
             } else {
                 f(null);
             }
-        });
+        }, "xml");
     }
 
     function showPost(id) {
