@@ -10,7 +10,7 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
     try {
         $post = new Post($_POST['id']);
         if ($user_class->canReadGroup($post->getGroup())) {
-            if ($user) {
+            if ($user && $_POST['mark_read'] == "1") {
                 $user->setRead($post, true);
             }
             send_ajax_post($post);
@@ -20,6 +20,12 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
     } catch (PostDoesNotExistException $e) {
         send_ajax_post(null);
     }
+}
+
+if (isset($_POST['get_posts_after']) && !empty($_POST['get_posts_after'])) {
+    $group = new Newsgroup($_POST['newsgroup']);
+    $time = (int)$_POST['get_posts_after'];
+    // TODO catch and stuff
 }
 
 function send_ajax_post($post)

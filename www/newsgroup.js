@@ -64,10 +64,10 @@ $( document ).ready(function () {
         return $('#groupname').attr('value');
     }
 
-    function getPost(id, f) {
-        var data = {
-            id: id
-        };
+    function getPost(id, f, mark_read) {
+        var data = { }
+        data.id = id;
+        data.mark_read = mark_read ? "1" : "0";
         $.post("ajax.php", data, function (data) {
             var stat = $(data).find('status').text();
             if (stat === 'success') {
@@ -99,7 +99,7 @@ $( document ).ready(function () {
             } else {
                 alert('That post has been deleted.');
             }
-        });
+        }, true);
     }
 
 });
