@@ -3,7 +3,9 @@ require_once('inc/account.php');
 require_once('ui/layout.php');
 require_once('ui/login.php');
 
-$failed = FALSE;
+$view = new LoginView();
+$layout = new Layout($view);
+
 if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -12,15 +14,12 @@ if (isset($_POST['submit'])) {
         header('Location: index.php');
         die();
     } else { 
-        $failed = TRUE;
+        $layout->flash = "Incorrect username or password.";
     }
 }
 
-$view = new LoginView();
-$view->setFailed($failed);
 if (isset($_POST['username'])) {
-    $view->setUsername($_POST['username']);
+    $view->username = $_POST['username'];
 }
-$layout = new Layout($view);
 $layout->show();
 ?>
