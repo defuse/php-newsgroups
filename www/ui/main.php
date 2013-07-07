@@ -49,8 +49,9 @@ class MainView
         <?php
             if ($this->current_group !== null) {
         ?>
-            <input type="hidden" id="groupname" value="<?php echo
-            htmlentities($this->current_group->getName(), ENT_QUOTES); ?>" />
+            <input type="hidden" id="groupname" value="<?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>" />
+            <input type="hidden" id="grouppagenumber" value="<?php echo htmlentities($this->page + 1, ENT_QUOTES); ?>" />
+            <input type="hidden" id="currenttime" value="<?php echo time(); ?>" />
             <input type="button" class="newpostbutton" value="New Post" />
             <div id="groupcontentsheader">
                 <?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>
@@ -172,6 +173,7 @@ class MainView
     ?>
         <div class="post" >
             <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
+            <input type="hidden" class="postindent" value="<?php echo $safe_indent; ?>" />
             <table class="posttable" cellspacing="0">
                 <tr>
                     <?php if ($indent == 0 && !empty($children)) { ?>
@@ -192,10 +194,10 @@ class MainView
                         <table class="metadatatable" cellspacing="0" cellpadding="0">
                         <tr>
                             <td></td>
-                            <td style="text-align: left; width:200px;">
+                            <td class="metadatauser">
                                 <?php echo $safe_user; ?>
                             </td>
-                            <td style="text-align: left; width: 200px;">
+                            <td class="metadatatime">
                                 <?php echo htmlentities($post->getFormattedTime(), ENT_QUOTES); ?>
                             </td>
                         </tr>
@@ -208,13 +210,13 @@ class MainView
         /* recursively display the children */
         if ($indent == 0) {
             echo '<div class="hiddenposts">';
+        } else {
+            echo '<div class="childposts">';
         }
         foreach ($children as $child) {
             $this->display_post_tree($child, $indent + 1);
         }
-        if ($indent == 0) {
-            echo '</div>';
-        }
+        echo '</div>';
     }
 }
 ?>

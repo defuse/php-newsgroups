@@ -161,6 +161,21 @@ class Post
         return $children;
     }
 
+    function getParent()
+    {
+        global $DB;
+        $q = $DB->prepare("SELECT parent_id FROM replies WHERE child_id = :child_id");
+        $q->bindValue(':child_id', $this->id);
+        $q->execute();
+        $row = $q->fetch();
+        return new Post($row['parent_id']);
+    }
+
+    function isRootLevel()
+    {
+        return $this->id == $this->getGroup()->getRootLevelPostID();
+    }
+
 }
 
 class Newsgroup
@@ -230,6 +245,25 @@ class Newsgroup
         $q->execute();
     }
 
+    public function getNewPostsSince($time)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT id FROM posts 
+             WHERE post_date > :post_date AND group_id = :group_id"
+        );
+        $q->bindValue(':post_date', $time);
+        $q->bindValue(':group_id', $this->group_id);
+        $q->execute();
+
+        $new_posts = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $new_posts[] = new Post($row['id']);
+        }
+        return $new_posts;
+    }
+
     public function getTopLevelPosts($page = null)
     {
         $root = new Post($this->root_post_id);
@@ -249,6 +283,11 @@ class Newsgroup
         $q = $DB->prepare("DELETE FROM groups WHERE id = :id");
         $q->bindValue(':id', $this->group_id);
         $q->execute();
+    }
+
+    public function getRootLevelPostID()
+    {
+        return $this->root_post_id;
     }
 
     private function deletePostAndReplies($id)

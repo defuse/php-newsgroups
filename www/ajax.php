@@ -15,50 +15,95 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
             }
             send_ajax_post($post);
         } else {
-            send_ajax_post(null);
+            send_ajax_failure();
         }
     } catch (PostDoesNotExistException $e) {
-        send_ajax_post(null);
+        sendsend_ajax_failure();
     }
 }
 
 if (isset($_POST['get_posts_after']) && !empty($_POST['get_posts_after'])) {
-    $group = new Newsgroup($_POST['newsgroup']);
-    $time = (int)$_POST['get_posts_after'];
-    // TODO catch and stuff
+    try {
+        $group = new Newsgroup($_POST['newsgroup']);
+        $last_update = (int)$_POST['get_posts_after'];
+        $posts = $group->getNewPostsSince($last_update);
+        send_ajax_post_list($posts);
+    } catch (GroupDoesNotExistException $e) {
+        send_ajax_failure();
+    }
 }
 
 function send_ajax_post($post)
 {
-    if ($post === null) {
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
-        $xml .= "<response>";
-        $xml .= "<status>fail</status>";
-        $xml .= "</response>";
-        send_xml_response($xml);
-    } else {
-        $safe_id = htmlentities($post->getID(), ENT_QUOTES);
-        $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
-        $safe_time = htmlentities($post->getFormattedTime(), ENT_QUOTES);
-        $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
-        $safe_contents = htmlentities($post->getContentsHtml(), ENT_QUOTES);
-        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
-        $xml .= "<response>";
-        $xml .= "<status>success</status>";
-        $xml .= "<id>$safe_id</id>";
-        $xml .= "<user>$safe_user</user>";
-        $xml .= "<time>$safe_time</time>";
-        $xml .= "<title>$safe_title</title>";
-        $xml .= "<contents>$safe_contents</contents>";
-        $xml .= "</response>";
-        send_xml_response($xml);
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+    $xml .= "<response>";
+    $xml .= "<status>success</status>";
+    $xml .= get_post_xml($post, true);
+    $xml .= "</response>";
+    send_xml_response($xml);
+}
+
+function send_ajax_post_list($posts)
+{
+    $safe_time = time();
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+    $xml .= "<response>";
+    $xml .= "<status>success</status>";
+    $xml .= "<currenttime>$safe_time</currenttime>";
+    foreach ($posts as $post) {
+        $xml .= get_post_xml($post, false);
     }
+    $xml .= "</response>";
+    send_xml_response($xml);
+}
+
+function get_post_xml($post, $include_contents)
+{
+    $safe_id = htmlentities($post->getID(), ENT_QUOTES);
+    $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
+    $safe_time = htmlentities($post->getFormattedTime(), ENT_QUOTES);
+    $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
+    $safe_formatted_time = htmlentities($post->getFormattedTime(), ENT_QUOTES);
+    $parent = $post->getParent();
+    if ($parent->isRootLevel()) {
+        $safe_parent_id = "";
+    } else {
+        $safe_parent_id = htmlentities($parent->getID(), ENT_QUOTES);
+    }
+    if ($include_contents) {
+        $safe_contents = htmlentities($post->getContentsHtml(), ENT_QUOTES);
+    } else {
+        $safe_contents = "";
+    }
+    // TODO: the previous post id
+    $xml = <<<EOT
+    <post>
+        <id>$safe_id</id>
+        <parent>$safe_parent_id</parent>
+        <user>$safe_user</user>
+        <time>$safe_time</time>
+        <formattedtime>$safe_formatted_time</formattedtime>
+        <title>$safe_title</title>
+        <contents>$safe_contents</contents>
+    </post>
+EOT;
+    return $xml;
+}
+
+function send_ajax_failure()
+{
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+    $xml .= "<response>";
+    $xml .= "<status>fail</status>";
+    $xml .= "</response>";
+    send_xml_response($xml);
 }
 
 function send_xml_response($xml)
 {
-    // header('Content-Type: text/xml');
+    header('Content-Type: text/xml');
     echo $xml;
     die();
 }
+
 ?>

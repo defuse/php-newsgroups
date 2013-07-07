@@ -83,10 +83,6 @@ body {
     cursor: pointer;
 }
 
-.post:hover {
-    background-color: #CCCCCC;
-}
-
 .posttitle {
     white-space: nowrap;
 }
@@ -108,6 +104,16 @@ body {
 
 .metadatatable {
     width: 100%;
+}
+
+.metadatauser {
+    text-align: left;
+    width: 200px;
+}
+
+.metadatatime {
+    text-align: left;
+    width: 200px;
 }
 
 .clear {

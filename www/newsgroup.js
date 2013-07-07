@@ -2,8 +2,13 @@ $( document ).ready(function () {
 
     var viewing_id = -1;
 
+    /* FIXME: this stuff shouldn't run if no newsgroup is displayed */
+
     /* Expanding and collapsing posts in the list */
-    $( '.expander' ).click(function (e) {
+    $( '.expander' ).click(expanderClick);
+    $( '.expander' ).dblclick(expanderClick);
+
+    function expanderClick(e) {
         if ($.trim($(this).text()) === '+') {
             $(this).parents('.post').next().show();
             $(this).html('&ndash;');
@@ -13,10 +18,12 @@ $( document ).ready(function () {
         }
         /* don't trigger the post view click event */
         e.stopPropagation();
-    });
+    }
 
     /* Clicking posts in the list */
-    $( '.post' ).click(function () {
+    $( '.post' ).click(postItemClick);
+
+    function postItemClick() {
         /* get the id of the post that was just clicked */
         var id = $(this).children('.postid').attr('value');
         /* un-highlight all the other posts */
@@ -41,10 +48,12 @@ $( document ).ready(function () {
             }
         }
         showPost(id);
-    });
+    }
 
     /* Double clicking posts in the list */
-    $( '.post' ).dblclick(function(e) {
+    $( '.post' ).dblclick(postItemDoubleClick);
+
+    function postItemDoubleClick() {
         alert("Normally this would open the post in a new window, but isn't implemented.");
         return;
         var id = $(this).children('.postid').attr('value');
@@ -55,7 +64,7 @@ $( document ).ready(function () {
         if (window.focus) {
             w.focus();
         }
-    });
+    }
 
     /* Clicking 'Reply' */
     $( '.replybutton' ).click(function () {
@@ -79,28 +88,170 @@ $( document ).ready(function () {
         }
     });
 
+    /* Auto updates */
+    var last_update_time = $('#currenttime').attr('value');
+    setInterval(function () {
+        getNewPosts(function (posts) {
+            if (posts.length === 0) {
+                return;
+            }
+            /* Here we keep iterating over the list, trying to add posts into
+             * the DOM. We finish when no change is made. We have to do this
+             * because the 'posts' array might contain posts that are replies to
+             * each other, and we can't add the reply without first adding the
+             * post it is in reply to. */
+            var changed = false;
+            var unadded_posts;
+            var post;
+            do {
+                changed = false;
+                unadded_posts = [];
+                for (var i = 0; i < posts.length; i++) {
+                    post = posts[i];
+                    if (post.parent_id === "") {
+                        if (pageNumber() === 1) {
+                            changed = true;
+                            $('.post').first().parent().prepend('<div class="hiddenposts"></div>');
+                            $('.post').first().parent().prepend(createUnreadPost(post, 0));
+                        } else {
+                            /* We don't add it to unadded_posts when page != 1,
+                            * since it's not in reply to anything, so we won't be
+                            * able to add it later. */
+                        }
+                    } else {
+                        /* find the post it's in reply to */
+                        var p = $('.postid').filter("[value='" + post.parent_id + "']");
+                        if (p.length > 0) {
+                            changed = true;
+                            p = p.parents('.post');
+                            var indent = parseInt(p.find('.postindent').val());
+                            var post_obj = createUnreadPost(post, indent + 1);
+                            var toplevel;
+                            if (indent === 0) {
+                                p.next('.hiddenposts').append(post_obj);
+                                p.next('.hiddenposts').append('<div class="childposts"></div>');
+                                toplevel = p;
+                            } else {
+                                p.next('.childposts').append(post_obj);
+                                p.next('.childposts').append('<div class="childposts"></div>');
+                                toplevel = p.parents('.hiddenposts').prev('.post');
+                            }
+                            toplevel.find('.expander-dummy')
+                                    .removeClass('expander-dummy')
+                                    .addClass('expander')
+                                    .text('+')
+                                    .click(expanderClick)
+                                    .dblclick(expanderClick);
+                            toplevel.find('.read')
+                                    .removeClass('read')
+                                    .addClass('subunread');
+                        } else {
+                            /* might not have added the parent yet, try again */
+                            unadded_posts.push(post);
+                        }
+                    }
+                }
+                posts = unadded_posts;
+            } while (changed);
+        });
+    }, 30000);
+
+    function pageNumber() {
+        return parseInt($('#grouppagenumber').attr('value'));
+    }
+
+    function createUnreadPost(post, indent) {
+        var html = '<div class="post">' +
+            '<input type="hidden" class="postid" value="XXX"/>' +   // id
+            '<input type="hidden" class="postindent" value="XXX"/>' + // indent
+            '<table class="posttable" cellspacing="0">' +
+                '<tr>' +
+                    '<td class="expander-dummy">' +
+                        '&nbsp;' +
+                    '</td>' +
+                    '<td class="titlecell unread">' +               // indent
+                        '<span class="posttitle">' +
+                            'XXX' +                                 // title
+                        '</span>' +
+                    '</td>' +
+                    '<td class="metadatacell unread">' +
+                        '<table class="metadatatable" cellspacing="0" cellpadding="0">' +
+                            '<tr>' +
+                                '<td></td>' +
+                                '<td class="metadatauser">' +
+                                    'XXX' +                         // user
+                                '</td>' +
+                                '<td class="metadatatime">' +
+                                    'XXX' +                         // time
+                                '</td>' + 
+                            '</tr>' +
+                        '</table>' +
+                    '</td>' +
+                '</tr>' + 
+            '</table>' +
+        '</div>';
+        var obj = $('<div></div>').html(html).children();
+        /* data */
+        obj.find('.postid').val(post.id);
+        obj.find('.postindent').val(indent);
+        obj.find('.titlecell').css('paddingLeft', 10 + 30*indent);
+        obj.find('.posttitle').text(post.title);
+        obj.find('.metadatauser').text(post.user);
+        obj.find('.metadatatime').text(post.formatted_time);
+        /* events */
+        obj.click(postItemClick);
+        obj.dblclick(postItemDoubleClick);
+        return obj;
+    }
+
     function groupName() {
         return $('#groupname').attr('value');
     }
 
     function getPost(id, f, mark_read) {
-        var data = { }
+        var data = { };
         data.id = id;
         data.mark_read = mark_read ? "1" : "0";
         $.post("ajax.php", data, function (data) {
             var stat = $(data).find('status').text();
             if (stat === 'success') {
-                var post = {};
-                post.id = $(data).find('id').text();
-                post.user = $(data).find('user').text();
-                post.time = $(data).find('time').text();
-                post.title = $(data).find('title').text();
-                post.contents = $(data).find('contents').text();
-                f(post);
+                f(getPostFromXML(data));
             } else {
                 f(null);
             }
         }, "xml");
+    }
+
+    function getNewPosts(f) {
+        var data = { };
+        data.get_posts_after = last_update_time;
+        data.newsgroup = groupName();
+        $.post("ajax.php", data, function (data) {
+            var stat = $(data).find('status').text();
+            if (stat === 'success') {
+                last_update_time = $(data).find('currenttime').text();
+                var posts_xml = $(data).find('post')
+                var posts = [];
+                for (var i = 0; i < posts_xml.length; i++) {
+                    posts.push(getPostFromXML(posts_xml[i]));
+                }
+                f(posts);
+            } else {
+                f(null);
+            }
+        }, "xml"); 
+    }
+
+    function getPostFromXML(xml) {
+        var post = {};
+        post.id = $(xml).find('id').text();
+        post.parent_id = $(xml).find('parent').text();
+        post.user = $(xml).find('user').text();
+        post.time = $(xml).find('time').text();
+        post.formatted_time = $(xml).find('formattedtime').text();
+        post.title = $(xml).find('title').text();
+        post.contents = $(xml).find('contents').text();
+        return post;
     }
 
     function showPost(id) {
