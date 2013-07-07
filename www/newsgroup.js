@@ -119,8 +119,8 @@ $( document ).ready(function () {
                     if (post.parent_id === "") {
                         if (pageNumber() === 1) {
                             changed = true;
-                            $('.post').first().parent().prepend('<div class="hiddenposts"></div>');
-                            $('.post').first().parent().prepend(createUnreadPost(post, 0));
+                            $('#postlisting').prepend('<div class="hiddenposts"></div>');
+                            $('#postlisting').prepend(createUnreadPost(post, 0));
                         } else {
                             /* We don't add it to unadded_posts when page != 1,
                             * since it's not in reply to anything, so we won't be
