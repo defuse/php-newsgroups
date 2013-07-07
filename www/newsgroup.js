@@ -72,6 +72,9 @@ $( document ).ready(function () {
             'replypost.php?replyto=' + viewing_id,
             '_blank'
         );
+        $(w).unload(function () {
+            checkForNewPosts();
+        });
         if (window.focus) {
             w.focus();
         }
@@ -83,6 +86,9 @@ $( document ).ready(function () {
             'newpost.php?group=' + groupName(),
             '_blank'
         );
+        $(w).unload(function () {
+            checkForNewPosts();
+        });
         if (window.focus) {
             w.focus();
         }
@@ -90,16 +96,18 @@ $( document ).ready(function () {
 
     /* Auto updates */
     var last_update_time = $('#currenttime').attr('value');
-    setInterval(function () {
+    setInterval(checkForNewPosts, 30000);
+
+    function checkForNewPosts() {
         getNewPosts(function (posts) {
             if (posts.length === 0) {
                 return;
             }
             /* Here we keep iterating over the list, trying to add posts into
-             * the DOM. We finish when no change is made. We have to do this
-             * because the 'posts' array might contain posts that are replies to
-             * each other, and we can't add the reply without first adding the
-             * post it is in reply to. */
+            * the DOM. We finish when no change is made. We have to do this
+            * because the 'posts' array might contain posts that are replies to
+            * each other, and we can't add the reply without first adding the
+            * post it is in reply to. */
             var changed = false;
             var unadded_posts;
             var post;
@@ -154,7 +162,7 @@ $( document ).ready(function () {
                 posts = unadded_posts;
             } while (changed);
         });
-    }, 30000);
+    }
 
     function pageNumber() {
         return parseInt($('#grouppagenumber').attr('value'));
