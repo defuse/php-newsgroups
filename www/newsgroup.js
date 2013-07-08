@@ -73,7 +73,9 @@ $( document ).ready(function () {
             '_blank'
         );
         $(w).unload(function () {
-            checkForNewPosts();
+            setTimeout( function () {
+                checkForNewPosts();
+            }, 1000);
         });
         if (window.focus) {
             w.focus();
@@ -87,7 +89,9 @@ $( document ).ready(function () {
             '_blank'
         );
         $(w).unload(function () {
-            checkForNewPosts();
+            setTimeout( function () {
+                checkForNewPosts();
+            }, 1000);
         });
         if (window.focus) {
             w.focus();
