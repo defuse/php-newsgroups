@@ -42,10 +42,6 @@ body {
     padding: 5px;
 }
 
-.grouplistitem:hover {
-    background-color: #CCCCCC;
-}
-
 .grouplist_selected {
     font-weight: bold;
     background-color: #00FFFF;
