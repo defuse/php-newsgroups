@@ -72,11 +72,12 @@ $( document ).ready(function () {
             'replypost.php?replyto=' + viewing_id,
             '_blank'
         );
-        $(w).unload(function () {
-            setTimeout( function () {
+        var pollTimer = setInterval(function () {
+            if (w.closed !== false) {
+                window.clearInterval(pollTimer);
                 checkForNewPosts();
-            }, 1000);
-        });
+            }
+        }, 1000);
         if (window.focus) {
             w.focus();
         }
@@ -88,11 +89,12 @@ $( document ).ready(function () {
             'newpost.php?group=' + groupName(),
             '_blank'
         );
-        $(w).unload(function () {
-            setTimeout( function () {
+        var pollTimer = setInterval(function () {
+            if (w.closed !== false) {
+                window.clearInterval(pollTimer);
                 checkForNewPosts();
-            }, 1000);
-        });
+            }
+        }, 1000);
         if (window.focus) {
             w.focus();
         }
