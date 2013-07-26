@@ -8,7 +8,7 @@ class Captcha
     public static function ShowCaptcha()
     {
         $public_key = Settings::GetSetting('recaptcha.public_key');
-        echo recaptcha_get_html($public_key);
+        echo recaptcha_get_html($public_key, null, true);
     }
 
     public static function CheckCaptcha()
