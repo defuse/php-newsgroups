@@ -14,6 +14,7 @@ function get_db()
             $creds[C_PASS],
             array(PDO::ATTR_PERSISTENT => true)
         );
+        $DB->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     } catch(Exception $e) {
         die('Failed to connect to database.');
     }
