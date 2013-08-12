@@ -32,10 +32,12 @@ $( document ).ready(function () {
         $(this).css('background-color', '#00FFFF');
 
         /* if this is a top-level post, and there are unread sub-posts... */
-        if ($(this).next('.hiddenposts').find('.unread').length > 0) {
+        if ($(this).next('.hiddenposts').find('.unread, .newunread').length > 0) {
             $(this).find('.unread').removeClass('unread').addClass('subunread');
+            $(this).find('.newunread').removeClass('newunread').addClass('subunread');
         } else {
             $(this).find('.unread').removeClass('unread').addClass('read');
+            $(this).find('.newunread').removeClass('newunread').addClass('read');
         }
 
         var reply_container = $(this).parents('.hiddenposts');
@@ -43,7 +45,7 @@ $( document ).ready(function () {
         if (reply_container.length > 0) {
             root_post = reply_container.prev('.post');
             /* if all other replies to the 'root' post are read */
-            if (reply_container.find('.unread').length === 0) {
+            if (reply_container.find('.unread, .newunread').length === 0) {
                 root_post.find('.subunread').removeClass('subunread').addClass('read');
             }
         }
@@ -189,15 +191,15 @@ $( document ).ready(function () {
                     '<td class="expander-dummy">' +
                         '&nbsp;' +
                     '</td>' +
-                    '<td class="titlecell unread">' +               // indent
+                    '<td class="titlecell newunread">' +               // indent
                         '<span class="posttitle">' +
                             'XXX' +                                 // title
                         '</span>' +
                     '</td>' +
-                    '<td class="metadatauser unread">' +
+                    '<td class="metadatauser newunread">' +
                         'XXX' +                                     // user
                     '</td>' + 
-                    '<td class="metadatatime unread">' +
+                    '<td class="metadatatime newunread">' +
                         'XXX' +                                     // time
                     '</td>' +
                 '</tr>' + 

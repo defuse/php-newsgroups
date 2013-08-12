@@ -116,6 +116,11 @@ body {
     font-weight: bold;
 }
 
+.newunread {
+    background-color: #D0FFD0;
+    font-weight: bold;
+}
+
 .subunread {
     text-decoration: underline;
 }
