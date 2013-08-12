@@ -175,6 +175,13 @@ class MainView
             <input type="hidden" class="postid" value="<?php echo $safe_id; ?>" />
             <input type="hidden" class="postindent" value="<?php echo $safe_indent; ?>" />
             <table class="posttable" cellspacing="0">
+                <colgroup>
+                    <!-- remember to these in newsgroup.js, too. -->
+                    <col style="width: 20px;">
+                    <col style="width: auto;">
+                    <col style="width: 150px;">
+                    <col style="width: 190px;">
+                </colgroup>
                 <tr>
                     <?php if ($indent == 0 && !empty($children)) { ?>
                         <td class="expander">
@@ -185,23 +192,16 @@ class MainView
                             &nbsp;
                         </td>
                     <? } ?>
-                    <td class="titlecell <?php echo $safe_read; ?>" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
-                        <span class="posttitle">
+                    <td class="titlecell <?php echo $safe_read; ?>" >
+                        <span class="posttitle" style="padding-left: <?php echo 10 + 30*$safe_indent; ?>px;">
                             <?php echo $safe_title; ?>
                         </span>
                     </td>
-                    <td class="metadatacell <?php echo $safe_read; ?>">
-                        <table class="metadatatable" cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td></td>
-                            <td class="metadatauser">
-                                <?php echo $safe_user; ?>
-                            </td>
-                            <td class="metadatatime">
-                                <?php echo htmlentities($post->getFormattedTime(), ENT_QUOTES); ?>
-                            </td>
-                        </tr>
-                        </table>
+                    <td class="metadatauser <?php echo $safe_read; ?>">
+                        <?php echo $safe_user; ?>
+                    </td>
+                    <td class="metadatatime <?php echo $safe_read; ?>">
+                        <?php echo htmlentities($post->getFormattedTime(), ENT_QUOTES); ?>
                     </td>
                 </tr>
             </table>

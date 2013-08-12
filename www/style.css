@@ -85,6 +85,7 @@ body {
 
 .posttable {
     width: 100%;
+    table-layout: fixed;
 }
 
 .titlecell {
@@ -94,22 +95,12 @@ body {
     -webkit-box-sizing: border-box; */
 }
 
-.metadatacell {
-    white-space: nowrap;
-}
-
-.metadatatable {
-    width: 100%;
-}
-
 .metadatauser {
     text-align: left;
-    width: 200px;
 }
 
 .metadatatime {
     text-align: left;
-    width: 200px;
 }
 
 .clear {
@@ -135,7 +126,6 @@ body {
 
 .expander {
     font-family: monospace;
-    width: 20px;
     text-align: center;
     cursor: crosshair;
     background: #CCCCCC;
@@ -143,7 +133,6 @@ body {
 
 .expander-dummy {
     font-family: monospace;
-    width: 20px;
     text-align: center;
     background: #CCCCCC;
 }

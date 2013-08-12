@@ -179,6 +179,12 @@ $( document ).ready(function () {
             '<input type="hidden" class="postid" value="XXX"/>' +   // id
             '<input type="hidden" class="postindent" value="XXX"/>' + // indent
             '<table class="posttable" cellspacing="0">' +
+                '<colgroup>' + 
+                    '<col style="width: 20px;">' + 
+                    '<col style="width: auto;">' + 
+                    '<col style="width: 150px;">' + 
+                    '<col style="width: 190px;">' + 
+                '</colgroup>' + 
                 '<tr>' +
                     '<td class="expander-dummy">' +
                         '&nbsp;' +
@@ -188,18 +194,11 @@ $( document ).ready(function () {
                             'XXX' +                                 // title
                         '</span>' +
                     '</td>' +
-                    '<td class="metadatacell unread">' +
-                        '<table class="metadatatable" cellspacing="0" cellpadding="0">' +
-                            '<tr>' +
-                                '<td></td>' +
-                                '<td class="metadatauser">' +
-                                    'XXX' +                         // user
-                                '</td>' +
-                                '<td class="metadatatime">' +
-                                    'XXX' +                         // time
-                                '</td>' + 
-                            '</tr>' +
-                        '</table>' +
+                    '<td class="metadatauser unread">' +
+                        'XXX' +                                     // user
+                    '</td>' + 
+                    '<td class="metadatatime unread">' +
+                        'XXX' +                                     // time
                     '</td>' +
                 '</tr>' + 
             '</table>' +
@@ -208,7 +207,7 @@ $( document ).ready(function () {
         /* data */
         obj.find('.postid').val(post.id);
         obj.find('.postindent').val(indent);
-        obj.find('.titlecell').css('paddingLeft', 10 + 30*indent);
+        obj.find('.posttitle').css('paddingLeft', 10 + 30*indent);
         obj.find('.posttitle').text(post.title);
         obj.find('.metadatauser').text(post.user);
         obj.find('.metadatatime').text(post.formatted_time);
