@@ -5,9 +5,9 @@ require_once('inc/Newsgroup.php');
 function post_date_asc($p1, $p2)
 {
     if ($p1->getTime() > $p2->getTime()) {
-        return -1;
-    } elseif ($p1->getTime() < $p2->getTime()) {
         return 1;
+    } elseif ($p1->getTime() < $p2->getTime()) {
+        return -1;
     } else {
         return 0;
     }
