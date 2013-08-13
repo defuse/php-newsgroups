@@ -1,8 +1,9 @@
 $( document ).ready(function () {
 
+    if ($('#groupname').length == 0) {
+        return;
+    }
     var viewing_id = -1;
-
-    /* FIXME: this stuff shouldn't run if no newsgroup is displayed */
 
     /* Expanding and collapsing posts in the list */
     $( '.expander' ).click(expanderClick);
