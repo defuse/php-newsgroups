@@ -51,7 +51,7 @@ class MainView
         ?>
             <input type="hidden" id="groupname" value="<?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>" />
             <input type="hidden" id="grouppagenumber" value="<?php echo htmlentities($this->page + 1, ENT_QUOTES); ?>" />
-            <input type="hidden" id="currenttime" value="<?php echo time(); ?>" />
+            <input type="hidden" id="currenttime" value="<?php echo htmlentities(time(), ENT_QUOTES); ?>" />
             <input type="button" class="newpostbutton" value="New Post" />
             <div id="groupcontentsheader">
                 <?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>
