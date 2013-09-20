@@ -78,7 +78,7 @@ $( document ).ready(function () {
         var pollTimer = setInterval(function () {
             if (w.closed !== false) {
                 window.clearInterval(pollTimer);
-                checkForNewPosts();
+                checkForNewPosts(true);
             }
         }, 1000);
         if (window.focus) {
@@ -95,7 +95,7 @@ $( document ).ready(function () {
         var pollTimer = setInterval(function () {
             if (w.closed !== false) {
                 window.clearInterval(pollTimer);
-                checkForNewPosts();
+                checkForNewPosts(true);
             }
         }, 1000);
         if (window.focus) {
@@ -103,13 +103,20 @@ $( document ).ready(function () {
         }
     });
 
+    $( '.refreshbutton' ).click( function() {
+        checkForNewPosts(false);
+    });
+
     /* Auto updates */
     var last_update_time = $('#currenttime').attr('value');
-    setInterval(checkForNewPosts, 30000);
+    setInterval("checkForNewPosts(true)", 30000);
 
-    function checkForNewPosts() {
+    function checkForNewPosts(silent) {
         getNewPosts(function (posts) {
             if (posts.length === 0) {
+                if (!silent) {
+                    alert('No new posts.');
+                }
                 return;
             }
             /* Here we keep iterating over the list, trying to add posts into

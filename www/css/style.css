@@ -58,6 +58,11 @@ body {
     padding: 10px;
 }
 
+#beside_groupcontentsheader {
+    float: right;
+    margin: 10px;
+}
+
 #othercontentsheader {
     font-size: 16pt;
     font-weight: bold;
@@ -171,11 +176,6 @@ body {
 #viewtitle {
     font-size: 12pt;
     font-weight: bold;
-}
-
-.newpostbutton {
-    margin: 10px;
-    float: right;
 }
 
 #header {
