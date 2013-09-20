@@ -21,7 +21,7 @@ class Layout
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title><?php echo htmlentities($this->contents_view->title(), ENT_QUOTES); ?></title>
-    <link rel="stylesheet" media="all" type="text/css" href="style.css" />
+    <link rel="stylesheet" media="all" type="text/css" href="css/style.css" />
     <?php $this->header_view->head(); ?>
     <?php $this->contents_view->head(); ?>
 </head>
