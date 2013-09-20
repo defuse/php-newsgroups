@@ -1,7 +1,0 @@
-Ideas:
-    - Make a centralized one that lets people make their own group for like $1
-      or something.
-    - Either anonymous posting with captcha, or captcha to create account then
-      no captcha.
-    - Add encryption. Use # at the end of the URL to provide a key (i.e. like
-      cryptocat but for newsgroups).
