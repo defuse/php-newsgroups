@@ -99,12 +99,17 @@ if (isset($_POST['set_userclass'])) {
 
 if (isset($_POST['delete_user'])) {
     try {
-        $user = new Account($_POST['username']);
-        $user->delete();
+        $username = $_POST['username'];
+        $layout->flash = "The user has been deleted.";
+        if ($username !== Login::GetLoggedInUser()->getUsername()) {
+            $user = new Account($username);
+            $user->delete();
+        } else {
+            $layout->flash = "You cannot delete yourself.";
+        }
     } catch (UserDoesNotExistException $e) {
         /* ignore it, it's gone */
     }
-    $layout->flash = "The user has been deleted.";
 }
 
 if (isset($_POST['save_permissions'])) {
