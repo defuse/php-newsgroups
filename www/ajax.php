@@ -61,7 +61,7 @@ function get_post_xml($post, $include_contents)
 {
     $safe_id = htmlentities($post->getID(), ENT_QUOTES);
     $safe_user = htmlentities($post->getUser(), ENT_QUOTES);
-    $safe_time = htmlentities($post->getFormattedTime(), ENT_QUOTES);
+    $safe_time = htmlentities($post->getTime(), ENT_QUOTES);
     $safe_title = htmlentities($post->getTitle(), ENT_QUOTES);
     $safe_formatted_time = htmlentities($post->getFormattedTime(), ENT_QUOTES);
     $parent = $post->getParent();

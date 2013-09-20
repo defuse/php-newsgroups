@@ -130,9 +130,15 @@ $( document ).ready(function () {
             do {
                 changed = false;
                 unadded_posts = [];
+                /* Sort them by ascending post time, so newer ones get added
+                 * first, and the older ones get added below. */
+                posts.sort(function (a,b) {
+                    return a.time - b.time;
+                });
                 for (var i = 0; i < posts.length; i++) {
                     post = posts[i];
                     if (post.parent_id === "") {
+                        /* It's a top-level post. */
                         if (pageNumber() === 1) {
                             changed = true;
                             $('#postlisting').prepend('<div class="hiddenposts"></div>');
@@ -143,7 +149,7 @@ $( document ).ready(function () {
                             * able to add it later. */
                         }
                     } else {
-                        /* find the post it's in reply to */
+                        /* It's a reply. Find the post it's in reply to */
                         var p = $('.postid').filter("[value='" + post.parent_id + "']");
                         if (p.length > 0) {
                             changed = true;
@@ -270,7 +276,7 @@ $( document ).ready(function () {
         post.id = $(xml).find('id').text();
         post.parent_id = $(xml).find('parent').text();
         post.user = $(xml).find('user').text();
-        post.time = $(xml).find('time').text();
+        post.time = parseInt($(xml).find('time').text(), 10);
         post.formatted_time = $(xml).find('formattedtime').text();
         post.title = $(xml).find('title').text();
         post.contents = $(xml).find('contents').text();
@@ -287,7 +293,7 @@ $( document ).ready(function () {
                     $(".vp_user").text(post.user);
                 }
                 $(".vp_subject").text(post.title);
-                $(".vp_date").text(post.time);
+                $(".vp_date").text(post.formatted_time);
                 $("#postcontents").html(post.contents);
                 $("#postview").show();
             } else {
