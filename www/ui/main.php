@@ -33,8 +33,8 @@ class MainView
     public function head()
     {
 ?>
-    <script src="jquery-1.10.1.min.js"></script>
-    <script src="newsgroup.js"></script>
+    <script src="js/jquery-1.10.1.min.js"></script>
+    <script src="js/newsgroup.js"></script>
 <?
     }
 
