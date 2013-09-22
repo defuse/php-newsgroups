@@ -3,118 +3,86 @@ require_once('inc/mysql.php');
 require_once('inc/settings.php');
 require_once('inc/Newsgroup.php');
 
-class UserClassExistsException extends Exception { /* empty */ }
-class UserClassDoesNotExistException extends Exception { /* empty */ }
-class UserClassIsSpecialException extends Exception { /* empty */ }
-class InvalidAbilityException extends Exception { /* empty */ }
+class UserGroupExistsException extends Exception { /* empty */ }
+class UserGroupDoesNotExistException extends Exception { /* empty */ }
+class CannotDeleteDefaultGroupException extends Exception { /* empty */ }
 
-class UserClass
+class UserGroup
 {
-    public static function GetDefaultUserClass()
-    {
-        $default_class_id = Settings::GetSetting('class.default');
-        if ($default_class_id === null) {
-            throw new Exception('Default user class is not configured.');
-        }
-        return new UserClass((int)$default_class_id);
-    }
-
-    public static function GetAllUserClasses()
+    public static function GetAllUserGroups()
     {
         global $DB;
 
-        $q = $DB->prepare("SELECT id FROM user_classes");
+        $q = $DB->prepare("SELECT id FROM user_groups");
         $q->execute();
 
-        $user_clases = array();
-        while (($row = $q->fetch()) !== false) {
-            $user_classes[] = new UserClass($row['id']);
+        $all_groups = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $all_groups[] = new UserGroup($row['id']);
         }
-        return $user_classes;
+        return $all_groups;
     }
 
-    public static function Anonymous()
+    public static function GetAllUserGroupsForNewsgroup($newsgroup)
     {
-        $anonymous_id = Settings::GetSetting("class.anonymous");
-        return new UserClass($anonymous_id);
+        $all_groups = self::GetAllUserGroups();
+        $all_groups_for_ng = array();
+        foreach ($all_groups as $user_group) {
+            if ($user_group->hasExplicitAccessToNewsgroup($newsgroup)) {
+                $all_groups_for_ng[] = $user_group;
+            }
+        }
+        return $all_groups_for_ng;
     }
 
-    public static function GetAllAbilities()
-    {
-        return array('NOACCESS', 'READONLY', 'READWRITECAPTCHA', 'READWRITE');
-    }
-
-    public static function Read($ability)
-    {
-        return $ability == 'READONLY' || $ability == 'READWRITECAPTCHA' || $ability == 'READWRITE';
-    }
-
-    public static function Write($ability)
-    {
-        return $ability == 'READWRITECAPTCHA' || $ability == 'READWRITE';
-    }
-
-    public static function Captcha($ability)
-    {
-        return $ability == 'READWRITECAPTCHA';
-    }
-
-    public static function UserClassExists($name)
+    public static function CreateUserGroup($name)
     {
         global $DB;
-        $q = $DB->prepare("SELECT id FROM user_classes WHERE name = :name");
+
+        $q = $DB->prepare("SELECT id FROM user_groups WHERE name = :name");
         $q->bindValue(':name', $name);
         $q->execute();
-        $row = $q->fetch();
-        return $row !== FALSE;
-    }
 
-    public static function UserClassIdExists($id)
-    {
-        global $DB;
-        $q = $DB->prepare("SELECT id FROM user_classes WHERE id = :id");
-        $q->bindValue(':id', $id);
-        $q->execute();
-        $row = $q->fetch();
-        return $row !== FALSE;
-    }
-
-    public static function CreateUserClass($name, $default_ability)
-    {
-        global $DB;
-
-        if (self::UserClassExists($name)) {
-            throw new UserClassExistsException("User class '$name' exists.");
-        }
-
-        /* Create the user class */
-        $q = $DB->prepare("INSERT INTO user_classes (name) VALUES (:name)");
-        $q->bindValue(':name', $name);
-        $q->execute();
-        $uc_id = $DB->lastInsertId();
-
-        /* Create permissions for all groups */
-        $groups = Newsgroup::GetAllGroups();
-        foreach ($groups as $group) {
-            $q = $DB->prepare(
-                "INSERT INTO permissions (class_id, group_id, ability)
-                 VALUES (:class_id, :group_id, :ability)"
-             );
-            $q->bindValue(':class_id', $uc_id);
-            $q->bindValue(':group_id', $group->getID());
-            $q->bindValue(':ability', $default_ability);
+        if ($q->fetch() === FALSE) {
+            $q = $DB->prepare("INSERT INTO user_groups (name) VALUES (:name)");
+            $q->bindValue(':name', $name);
             $q->execute();
+            return TRUE;
+        } else {
+            throw new UserGroupExistsException("User group $name already exists.");
         }
+    }
+
+    public static function GetDefaultGroup()
+    {
+        return new UserGroup((int)Settings::GetSetting("user_group.default"));
     }
 
     private $id;
 
     function __construct($id)
     {
-        if (!self::UserClassIdExists($id)) {
-            throw new UserClassDoesNotExistException("User class with id $id does not exist.");
-        }
+        global $DB;
+
         $this->id = $id;
+
+        /* Make sure a group with this ID actually exists. */
+        $q = $DB->prepare("SELECT id FROM user_groups WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+        if ($q->fetch() === FALSE) {
+            throw new UserGroupDoesNotExistException("User group does not exist.");
+        }
+    }
+
+    public function getName()
+    {
+        global $DB;
+        $q = $DB->prepare("SELECT name FROM user_groups WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+        $row = $q->fetch();
+        return $row['name'];
     }
 
     public function getID()
@@ -122,126 +90,358 @@ class UserClass
         return $this->id;
     }
 
-    public function getName()
+    public function getAllMembers()
     {
         global $DB;
-        $q = $DB->prepare("SELECT name FROM user_classes WHERE id = :id");
-        $q->bindValue(':id', $this->id);
+
+        $q = $DB->prepare(
+            "SELECT account_id FROM user_group_membership
+             WHERE user_group_id = :user_group_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
         $q->execute();
+
+        $users_in_group = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $users_in_group[] = Account::GetUserFromId($row['account_id']);
+        }
+        return $users_in_group;
+    }
+
+    public function getNumberOfMembers()
+    {
+        return count($this->getAllMembers());
+    }
+
+    public function isMember($user)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT account_id FROM user_group_membership
+             WHERE account_id = :account_id AND user_group_id = :user_group_id"
+        );
+        $q->bindValue(':account_id', $user->getID());
+        $q->bindValue(':user_group_id', $this->id);
+        $q->execute();
+
+        return $q->fetch() !== FALSE;
+    }
+
+    public function removeUser($user)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "DELETE FROM user_group_membership
+             WHERE account_id = :account_id AND user_group_id = :user_group_id"
+        );
+        $q->bindValue(':account_id', $user->getID());
+        $q->bindValue(':user_group_id', $this->id);
+        $q->execute();
+    }
+
+    public function addUser($user)
+    {
+        global $DB;
+
+        if (!$this->isMember($user)) {
+            $q = $DB->prepare(
+                "INSERT INTO user_group_membership (account_id, user_group_id)
+                 VALUES (:account_id, :user_group_id)"
+            );
+            $q->bindValue(':account_id', $user->getID());
+            $q->bindValue(':user_group_id', $this->id);
+            $q->execute();
+        }
+    }
+
+    public function getAccessToNewsgroup($newsgroup)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT access FROM group_permissions
+             WHERE user_group_id = :user_group_id
+             AND newsgroup_id = :newsgroup_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
+        $q->bindValue(':newsgroup_id', $newsgroup->getID());
+        $q->execute();
+
         $row = $q->fetch();
-        return $row['name'];
+
+        if ($row === FALSE) {
+            return 'NOACCESS';
+        } else {
+            return $row['access'];
+        }
+    }
+
+    public function hasExplicitAccessToNewsgroup($newsgroup)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT access FROM group_permissions
+             WHERE user_group_id = :user_group_id
+             AND newsgroup_id = :newsgroup_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
+        $q->bindValue(':newsgroup_id', $newsgroup->getID());
+        $q->execute();
+
+        $row = $q->fetch();
+
+        return $row !== FALSE;
+    }
+
+    public function setAccessToNewsgroup($newsgroup, $access)
+    {
+        global $DB;
+
+        if ($this->hasExplicitAccessToNewsgroup($newsgroup)) {
+            /* If we have an explicit access setting already, modify the
+             * existing row. */
+            $q = $DB->prepare(
+                "UPDATE group_permissions SET access = :access
+                 WHERE user_group_id = :user_group_id
+                 AND newsgroup_id = :newsgroup_id"
+             );
+            $q->bindValue(':access', $access);
+            $q->bindValue(':user_group_id', $this->id);
+            $q->bindValue(':newsgroup_id', $newsgroup->getID());
+            $q->execute();
+        } else {
+            /* Otherwise, we have to add the row to contain the setting. */
+            $q = $DB->prepare(
+                "INSERT INTO group_permissions
+                 (user_group_id, newsgroup_id, :access)
+                 VALUES (:user_group_id, :newsgroup_id, :access)"
+            );
+            $q->bindValue(':user_group_id', $this->id);
+            $q->bindValue(':newsgroup_id', $newsgroup->getID());
+            $q->bindValue(':access', $access);
+            $q->execute();
+        }
+    }
+
+    public function removeExplicitAccessToNewsgroup($newsgroup)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "DELETE FROM group_permissions
+             WHERE user_group_id = :user_group_id
+             AND newsgroup_id = :newsgroup_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
+        $q->bindValue(':newsgroup_id', $newsgroup->getID());
+        $q->execute();
+    }
+
+    public function makeDefault()
+    {
+        Settings::SetSetting("user_group.default", $this->id);
+    }
+
+    public function isDefaultUserGroup()
+    {
+        return (int)Settings::GetSetting("user_group.default") == $this->id;
     }
 
     public function fullDelete()
     {
         global $DB;
 
-        /* Make sure it isn't a 'special' class that can't be deleted. */
-        $default_id = Settings::GetSetting("class.default");
-        $anonymous_id = Settings::GetSetting("class.anonymous");
-        if ($this->id == $default_id || $this->id == $anonymous_id) {
-            throw new UserClassIsSpecialException('Cannot delete anonymous or default class.');
+        if ($this->isDefaultUserGroup()) {
+            throw new CannotDeleteDefaultGroupException();
         }
 
-        /* Move all users in this class to the default class. */
-        $q = $DB->prepare("UPDATE accounts SET user_class = :new WHERE user_class = :old");
-        $q->bindValue(':new', $default_id);
-        $q->bindValue(':old', $this->id);
-        $q->execute();
-
-        /* Delete all permissions regarding this class */
-        $q = $DB->prepare("DELETE FROM permissions WHERE class_id = :class_id");
-        $q->bindValue(':class_id', $this->id);
-        $q->execute();
-
-        /* Delete the actual user class */
-        $q = $DB->prepare("DELETE FROM user_classes WHERE id = :id");
+        $q = $DB->prepare("DELETE FROM user_groups WHERE id = :id");
         $q->bindValue(':id', $this->id);
         $q->execute();
-    }
 
-    public function getAbilityForGroup($group)
-    {
-        global $DB;
-
-        $q = $DB->prepare("SELECT ability FROM permissions WHERE class_id = :class_id AND group_id = :group_id");
-        $q->bindValue(':class_id', $this->id);
-        $q->bindValue(':group_id', $group->getID());
+        $q = $DB->prepare(
+            "DELETE FROM user_group_membership
+             WHERE user_group_id = :user_group_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
         $q->execute();
-        $row = $q->fetch();
-        if ($row === FALSE) {
-            // If the row doesn't exist, we assume NOACCESS (fail safe).
-            return 'NOACCESS'; 
-        }
-        return $row['ability'];
-    }
 
-    public function setAbilityForGroup($group, $ability)
-    {
-        global $DB;
-
-        $all_abilities = self::GetAllAbilities();
-        if (!in_array($ability, $all_abilities)) {
-            throw new InvalidAbilityException("$ability is not a valid ability.");
-        }
-
-        if ($this->abilityForGroupExplicit($group)) {
-            $q = $DB->prepare("UPDATE permissions SET ability = :ability WHERE class_id = :class_id AND group_id = :group_id");
-            $q->bindValue(':class_id', $this->id);
-            $q->bindValue(':group_id', $group->getID());
-            $q->bindValue(':ability', $ability);
-            $q->execute();
-        } else {
-            $q = $DB->prepare("INSERT INTO permissions (class_id, group_id, ability)
-                               VALUES (:class_id, :group_id, :ability)");
-            $q->bindValue(':class_id', $this->id);
-            $q->bindValue(':group_id', $group->getID());
-            $q->bindValue(':ability', $ability);
-            $q->execute();
-        }
-    }
-
-    public function getVisibleGroups()
-    {
-        $groups = Newsgroup::GetAllGroups();
-        $visible_groups = array();
-        foreach ($groups as $group) {
-            if ($this->canReadGroup($group)) {
-                $visible_groups[] = $group;
-            }
-        }
-        return $visible_groups;
-    }
-
-    public function canReadGroup($group)
-    {
-        return self::Read($this->getAbilityForGroup($group));
-    }
-
-    public function canWriteGroup($group)
-    {
-        return self::Write($this->getAbilityForGroup($group));
-    }
-
-    public function captchaForGroup($group)
-    {
-        return self::Captcha($this->getAbilityForGroup($group));
-    }
-
-    private function abilityForGroupExplicit($group)
-    {
-        global $DB;
-
-        $q = $DB->prepare("SELECT ability FROM permissions WHERE class_id = :class_id AND group_id = :group_id");
-        $q->bindValue(':class_id', $this->id);
-        $q->bindValue(':group_id', $group->getID());
+        $q = $DB->prepare(
+            "DELETE FROM group_permissions
+             WHERE user_group_id = :user_group_id"
+        );
+        $q->bindValue(':user_group_id', $this->id);
         $q->execute();
-        $row = $q->fetch();
-        return $row !== false;
     }
 
-
-
-    /* TODO: permission checking functions in here */
 }
+
+interface IAccessControl
+{
+    public function canReadGroup($newsgroup);
+    public function canWriteGroup($newsgroup);
+    public function captchaRequiredForGroup($newsgroup);
+}
+
+class UserAccessControl
+{
+    private $account;
+
+    function __construct ($account)
+    {
+        $this->account = $account;
+    }
+
+    public function canReadGroup($newsgroup)
+    {
+        $access = $this->getAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READONLY":
+            case "READWRITECAPTCHA":
+            case "READWRITE":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
+    public function canWriteGroup($newsgroup)
+    {
+        $access = $this->getAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READWRITECAPTCHA":
+            case "READWRITE":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+
+    }
+
+    public function captchaRequiredForGroup($newsgroup)
+    {
+        $access = $this->getAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READWRITECAPTCHA":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
+    private function getAccessToGroup($newsgroup)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT access FROM group_permissions
+             INNER JOIN user_group_membership
+             ON user_group_membership.user_group_id = group_permissions.user_group_id
+             WHERE user_group_membership.account_id = :account_id
+             AND group_permissions.newsgroup_id = :newsgroup_id"
+         );
+        $q->bindValue(':account_id', $account->getID());
+        $q->bindValue(':newsgroup_id', $newsgroup->getID());
+        $res = $q->execute();
+
+        /* Use the most permissive access out of all the groups they are in. */
+        $access = 'NOACCESS';
+        while (($row = $q->fetch()) !== FALSE) {
+            $access = $this->mostPermissiveAccessOf($access, $row['access']);
+        }
+
+        /* Logged-in users always have as much access as anonymous users. */
+        $anonymous_access = AnonymousAccessControl::getAnonymousAccessToGroup($newsgroup);
+        $access = $this->mostPermissiveAccessOf($access, $anonymous_access);
+
+        return $access;
+    }
+
+    private function mostPermissiveAccessOf($access1, $access2)
+    {
+        $permissive_order = array(
+            /* Least permissive. */
+            'NOACCESS',
+            'READONLY',
+            'READWRITECAPTCHA',
+            'READWRITE'
+            /* Most permissive. */
+        );
+
+        $idx1 = array_search($access1, $permissive_order, true);
+        $idx2 = array_search($access2, $permissive_order, true);
+
+        if ($idx1 === FALSE || $idx2 == FALSE) {
+            trigger_error("Invalid access level.", E_USER_ERROR);
+            return NULL;
+        }
+
+        if ($idx1 < $idx2) {
+            return $access1;
+        }
+        else if ($idx1 > $idx2) {
+            return $access2;
+        } else {
+            return $access1;
+        }
+    }
+}
+
+class AnonymousAccessControl
+{
+    public function __construct ()
+    {
+
+    }
+
+    public function canReadGroup($newsgroup)
+    {
+        $access = self::GetAnonymousAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READONLY":
+            case "READWRITECAPTCHA":
+            case "READWRITE":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
+    public function canWriteGroup($newsgroup)
+    {
+        $access = self::GetAnonymousAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READWRITECAPTCHA":
+            case "READWRITE":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
+    public function captchaRequiredForGroup($newsgroup)
+    {
+        $access = self::GetAnonymousAccessToGroup($newsgroup);
+        switch ($access) {
+            case "READWRITECAPTCHA":
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
+    public static function GetAnonymousAccessToGroup($newsgroup)
+    {
+        global $DB;
+        $q = $DB->prepare("SELECT anonymous_access FROM groups WHERE id = :id");
+        $q->bindValue(':id', $newsgroup->getID());
+        $q->execute();
+        $row = $q->fetch();
+        return $row['anonymous_access'];
+    }
+}
+
 ?>
