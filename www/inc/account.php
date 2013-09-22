@@ -163,7 +163,7 @@ class Account
 
     function getID()
     {
-        return $id;
+        return $this->id;
     }
 
     function getUsername()
