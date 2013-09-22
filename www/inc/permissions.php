@@ -54,6 +54,23 @@ class UserGroup
         }
     }
 
+    public static function GetUserGroupByName($name)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT id FROM user_groups WHERE name = :name");
+        $q->bindValue(':name', $name);
+        $q->execute();
+
+        $row = $q->fetch();
+
+        if ($row === FALSE) {
+            throw new UserGroupDoesNotExistException();
+        } else {
+            return new UserGroup($row['id']);
+        }
+    }
+
     public static function GetDefaultGroup()
     {
         return new UserGroup((int)Settings::GetSetting("user_group.default"));
