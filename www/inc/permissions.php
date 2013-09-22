@@ -317,6 +317,7 @@ interface IAccessControl
     public function canReadGroup($newsgroup);
     public function canWriteGroup($newsgroup);
     public function captchaRequiredForGroup($newsgroup);
+    public function getVisibleNewsgroups();
 }
 
 class UserAccessControl
@@ -363,6 +364,20 @@ class UserAccessControl
             default:
                 return FALSE;
         }
+    }
+
+    public function getVisibleNewsgroups()
+    {
+        $all_newsgroups = Newsgroup::GetAllGroups();
+
+        $visible = array();
+        foreach ($all_newsgroups as $newsgroup) {
+            if ($this->canReadGroup($newsgroup)) {
+                $visible[] = $newsgroup;
+            }
+        }
+
+        return $visible;
     }
 
     private function getAccessToGroup($newsgroup)
@@ -463,6 +478,20 @@ class AnonymousAccessControl
             default:
                 return FALSE;
         }
+    }
+
+    public function getVisibleNewsgroups()
+    {
+        $all_newsgroups = Newsgroup::GetAllGroups();
+
+        $visible = array();
+        foreach ($all_newsgroups as $newsgroup) {
+            if ($this->canReadGroup($newsgroup)) {
+                $visible[] = $newsgroup;
+            }
+        }
+
+        return $visible;
     }
 
     public static function GetAnonymousAccessToGroup($newsgroup)

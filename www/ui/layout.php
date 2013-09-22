@@ -45,7 +45,8 @@ class Layout
                 <div id="grouplistlist">
                 <?php
                     $user = Login::GetLoggedInUser();
-                    $sidebar_groups = Newsgroup::GetAllGroups(); 
+                    $access = Login::GetEffectiveAccessControl();
+                    $sidebar_groups = $access->getVisibleNewsgroups(); 
                     foreach ($sidebar_groups as $group) {
                         $name = $group->getName();
                         $safe_name = htmlentities($name, ENT_QUOTES);

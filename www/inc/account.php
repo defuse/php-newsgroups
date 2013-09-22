@@ -32,6 +32,16 @@ class Login
         }
     }
 
+    public static function GetEffectiveAccessControl()
+    {
+        $user = self::GetLoggedInUser();
+        if ($user) {
+            return new UserAccessControl($user);
+        } else {
+            return new AnonymousAccessControl();
+        }
+    }
+
     public static function RequireLogin($location)
     {
         $current_user = Login::GetLoggedInUser();
