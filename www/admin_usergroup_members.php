@@ -19,7 +19,7 @@ if (isset($_GET['usergroup'])) {
 
 if ($view->usergroup && isset($_POST['modify_member'])) {
     $user = Account::GetUserFromId($_POST['user_id']);
-    if ($_POST['is_member'] == "yes") {
+    if (isset($_POST['is_member']) && $_POST['is_member'] == "yes") {
         $view->usergroup->addUser($user);
     } else {
         $view->usergroup->removeUser($user);
