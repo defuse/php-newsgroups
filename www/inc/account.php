@@ -108,6 +108,21 @@ class Account
         return !empty($records);
     }
 
+    /* TODO: make the constructor take the ID */
+    public static function GetUserFromId($id)
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT username FROM accounts WHERE id = :id");
+        $q->bindValue(':id', $id);
+        $q->execute();
+        $row = $q->fetch();
+        if ($row === FALSE) {
+            throw new UserDoesNotExistException();
+        }
+        return new Account($row['username']);
+    }
+
     public static function CheckPassword($username, $password)
     {
         global $DB;
