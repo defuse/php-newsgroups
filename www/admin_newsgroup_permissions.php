@@ -15,5 +15,15 @@ if (isset($_GET['newsgroup'])) {
     }
 }
 
+if ($view->newsgroup && isset($_POST['set_anonymous_access'])) {
+    try {
+        $access = $_POST['anonymous_access'];
+        AnonymousAccessControl::SetAnonymousAccessToGroup($view->newsgroup, $access);
+        $layout->flash = "Anonymous access saved.";
+    } catch (InvalidAccessLevelException $e) {
+        $layout->flash = "Invalid access level selection.";
+    }
+}
+
 $layout->show();
 ?>

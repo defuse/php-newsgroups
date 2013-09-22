@@ -453,6 +453,24 @@ class AnonymousAccessControl
         $row = $q->fetch();
         return $row['anonymous_access'];
     }
+
+    public static function SetAnonymousAccessToGroup($newsgroup, $anonymous_access)
+    {
+        global $DB;
+
+        if (!UserGroup::IsValidAccessLevel($anonymous_access)) {
+            throw new InvalidAccessLevelException();
+        }
+
+        $q = $DB->prepare(
+            "UPDATE groups
+             SET anonymous_access = :anonymous_access
+             WHERE id = :id"
+         );
+        $q->bindValue(':anonymous_access', $anonymous_access);
+        $q->bindValue(':id', $newsgroup->getID());
+        $q->execute();
+    }
 }
 
 ?>
