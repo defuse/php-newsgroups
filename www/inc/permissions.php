@@ -407,15 +407,15 @@ class UserAccessControl
         $idx1 = array_search($access1, $permissive_order, true);
         $idx2 = array_search($access2, $permissive_order, true);
 
-        if ($idx1 === FALSE || $idx2 == FALSE) {
+        if ($idx1 === FALSE || $idx2 === FALSE) {
             throw new InvalidAccessLevelException();
         }
 
         if ($idx1 < $idx2) {
-            return $access1;
+            return $access2;
         }
         else if ($idx1 > $idx2) {
-            return $access2;
+            return $access1;
         } else {
             return $access1;
         }
