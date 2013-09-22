@@ -15,7 +15,7 @@ class HeaderView extends View
             ?>
                 <a href="settings.php">Settings</a>
                 <?php if ($current_user->isAdmin()) { ?>
-                    | <a href="admin.php">Administration</a>
+                    | <a href="admin_index.php">Administration</a>
                 <? } ?>
                 <div style="float: right;">
                 You are logged in as <b><?php echo $current_user->getUsername(); ?></b>.
