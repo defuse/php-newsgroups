@@ -376,7 +376,7 @@ class UserAccessControl
              WHERE user_group_membership.account_id = :account_id
              AND group_permissions.newsgroup_id = :newsgroup_id"
          );
-        $q->bindValue(':account_id', $account->getID());
+        $q->bindValue(':account_id', $this->account->getID());
         $q->bindValue(':newsgroup_id', $newsgroup->getID());
         $res = $q->execute();
 
