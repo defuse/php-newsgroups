@@ -212,6 +212,10 @@ class UserGroup
     {
         global $DB;
 
+        if (!self::IsValidAccessLevel($access)) {
+            throw new InvalidAccessLevelException();
+        }
+
         if ($this->hasExplicitAccessToNewsgroup($newsgroup)) {
             /* If we have an explicit access setting already, modify the
              * existing row. */
@@ -228,7 +232,7 @@ class UserGroup
             /* Otherwise, we have to add the row to contain the setting. */
             $q = $DB->prepare(
                 "INSERT INTO group_permissions
-                 (user_group_id, newsgroup_id, :access)
+                 (user_group_id, newsgroup_id, access)
                  VALUES (:user_group_id, :newsgroup_id, :access)"
             );
             $q->bindValue(':user_group_id', $this->id);
