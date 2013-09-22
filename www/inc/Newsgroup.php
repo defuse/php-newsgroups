@@ -276,10 +276,15 @@ class Newsgroup
 
         $this->deletePostAndReplies($this->root_post_id);
 
-        $q = $DB->prepare("DELETE FROM permissions WHERE group_id = :group_id");
-        $q->bindValue(':group_id', $this->group_id);
+        /* Remove user group access settings. */
+        $q = $DB->prepare(
+            "DELETE FROM group_permissions
+             WHERE newsgroup_id = :newsgroup_id"
+        );
+        $q->bindValue(':newsgroup_id', $this->group_id);
         $q->execute();
 
+        /* Delete the actual newsgroup. */
         $q = $DB->prepare("DELETE FROM groups WHERE id = :id");
         $q->bindValue(':id', $this->group_id);
         $q->execute();
