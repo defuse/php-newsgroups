@@ -4,19 +4,14 @@ require_once('inc/account.php');
 require_once('inc/permissions.php');
 
 $user = Login::GetLoggedInUser();
-$user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
 
 if (isset($_POST['id']) && !empty($_POST['id'])) {
     try {
         $post = new Post($_POST['id']);
-        if ($user_class->canReadGroup($post->getGroup())) {
-            if ($user && $_POST['mark_read'] == "1") {
-                $user->setRead($post, true);
-            }
-            send_ajax_post($post);
-        } else {
-            send_ajax_failure();
+        if ($user && $_POST['mark_read'] == "1") {
+            $user->setRead($post, true);
         }
+        send_ajax_post($post);
     } catch (PostDoesNotExistException $e) {
         sendsend_ajax_failure();
     }

@@ -85,13 +85,12 @@ class Account
         if (!self::UserExists($username)) {
             $q = $DB->prepare(
                 "INSERT INTO accounts 
-                (username, password_hash, is_admin, user_class) 
-                VALUES (:username, :password_hash, :is_admin, :user_class)"
+                (username, password_hash, is_admin) 
+                VALUES (:username, :password_hash, :is_admin)"
             );
             $q->bindValue(':username', $username);
             $q->bindValue(':password_hash', create_hash($password));
             $q->bindValue(':is_admin', 0);
-            $q->bindValue(':user_class', UserClass::GetDefaultUserClass()->getID());
             $q->execute();
 
         } else {
@@ -170,27 +169,6 @@ class Account
     function getUsername()
     {
         return $this->username;
-    }
-
-    function getUserClass()
-    {
-        global $DB;
-
-        $q = $DB->prepare("SELECT user_class FROM accounts WHERE id = :id");
-        $q->bindValue(':id', $this->id);
-        $q->execute();
-        $row = $q->fetch();
-        return new UserClass($row['user_class']);
-    }
-
-    function setUserClass($uc)
-    {
-        global $DB;
-
-        $q = $DB->prepare("UPDATE accounts SET user_class = :user_class WHERE id = :id");
-        $q->bindValue(':id', $this->id);
-        $q->bindValue(':user_class', $uc->getID());
-        $q->execute();
     }
 
     function isAdmin()

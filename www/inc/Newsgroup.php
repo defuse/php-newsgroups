@@ -311,7 +311,7 @@ class Newsgroup
         $q->execute();
     }
 
-    public static function CreateGroup($group_name, $default_ability)
+    public static function CreateGroup($group_name)
     {
         global $DB;
 
@@ -351,19 +351,6 @@ class Newsgroup
         $q->bindValue(':group_id', $group_name_id);
         $q->bindValue(':id', $root_post_id);
         $q->execute();
-
-        /* Create the permissions for all user classes */
-        $user_classes = UserClass::GetAllUserClasses();
-        foreach ($user_classes as $uc) {
-            $q = $DB->prepare(
-                "INSERT INTO permissions (class_id, group_id, ability)
-                 VALUES (:class_id, :group_id, :ability)"
-             );
-            $q->bindValue(':class_id', $uc->getID());
-            $q->bindValue(':group_id', $group_name_id);
-            $q->bindValue(':ability', $default_ability);
-            $q->execute();
-        }
     }
 
     public static function GroupExists($group_name)

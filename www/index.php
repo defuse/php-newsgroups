@@ -5,7 +5,6 @@ require_once('ui/layout.php');
 require_once('ui/main.php');
 
 $user = Login::GetLoggedInUser();
-$user_class = $user ? $user->getUserClass() : UserClass::Anonymous();
 
 $main = new MainView();
 $layout = new Layout($main);
@@ -14,13 +13,8 @@ $main->user = $user;
 if (isset($_GET['group'])) {
     try {
         $group = new Newsgroup($_GET['group']);
-        if ($user_class->canReadGroup($group)) {
-            $main->current_group = $group;
-            $layout->current_group = $group;
-        } else {
-            $main->current_group = null;
-            $layout->current_group = null;
-        }
+        $main->current_group = $group;
+        $layout->current_group = $group;
         if (isset($_GET['page']) && (int)$_GET['page'] > 0) {
             $main->page = (int)$_GET['page'] - 1;
         } else {
