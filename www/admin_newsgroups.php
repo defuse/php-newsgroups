@@ -13,10 +13,12 @@ $layout = new Layout($view);
 if (isset($_POST['newgroup'])) {
     $groupname = $_POST['groupname'];
     try {
-        NewsGroup::CreateGroup($groupname);
+        NewsGroup::CreateGroup($groupname, $_POST['anonymous_access']);
         $layout->flash = "Group added.";
     } catch (GroupExistsException $e) {
         $layout->flash = "A group with that name already exists.";
+    } catch (InvalidAccessLevelException $e) {
+        $layout->flash = "Invalid access level selection.";
     }
 }
 

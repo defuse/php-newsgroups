@@ -311,12 +311,16 @@ class Newsgroup
         $q->execute();
     }
 
-    public static function CreateGroup($group_name)
+    public static function CreateGroup($group_name, $anonymous_access)
     {
         global $DB;
 
         if (self::GroupExists($group_name)) {
             throw new GroupExistsException("Group $group_name already exists.");
+        }
+
+        if (!UserGroup::IsValidAccessLevel($anonymous_access)) {
+            throw new InvalidAccessLevelException();
         }
 
         /* Create the root post */
@@ -334,11 +338,12 @@ class Newsgroup
 
         /* Create the group */
         $q = $DB->prepare(
-            "INSERT INTO groups (name, root_post_id)
-            VALUES (:name, :root_post_id)
+            "INSERT INTO groups (name, root_post_id, anonymous_access)
+            VALUES (:name, :root_post_id, :anonymous_access)
         ");
         $q->bindValue(':name', $group_name);
         $q->bindValue(':root_post_id', $root_post_id);
+        $q->bindValue(':anonymous_access', $anonymous_access);
         $q->execute();
 
         /* Get the id of the just-created group */

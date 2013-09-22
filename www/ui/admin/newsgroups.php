@@ -20,6 +20,17 @@ class AdminNewsgroupView extends View
                 <td><input type="text" name="groupname" value="" /></td>
             </tr>
             <tr>
+                <td>Anonymous Access:</td>
+                <td>
+                    <select name="anonymous_access">
+                        <option value="NOACCESS" selected="selected">No access</option>
+                        <option value="READONLY">Read only</option>
+                        <option value="READWRITECAPTCHA">Read/Write with CAPTCHA</option>
+                        <option value="READWRITE">Read/Write</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td><input type="submit" name="newgroup" value="Add" /></td>
             </tr>
         </table>

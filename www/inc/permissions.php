@@ -5,6 +5,7 @@ require_once('inc/Newsgroup.php');
 
 class UserGroupExistsException extends Exception { /* empty */ }
 class UserGroupDoesNotExistException extends Exception { /* empty */ }
+class InvalidAccessLevelException extends Exception { /* empty */ }
 class CannotDeleteDefaultGroupException extends Exception { /* empty */ }
 
 class UserGroup
@@ -56,6 +57,17 @@ class UserGroup
     public static function GetDefaultGroup()
     {
         return new UserGroup((int)Settings::GetSetting("user_group.default"));
+    }
+
+    public static function IsValidAccessLevel($level)
+    {
+        $access_levels = array(
+            'NOACCESS',
+            'READONLY',
+            'READWRITECAPTCHA',
+            'READWRITE'
+        );
+        return in_array($level, $access_levels, TRUE);
     }
 
     private $id;
@@ -375,8 +387,7 @@ class UserAccessControl
         $idx2 = array_search($access2, $permissive_order, true);
 
         if ($idx1 === FALSE || $idx2 == FALSE) {
-            trigger_error("Invalid access level.", E_USER_ERROR);
-            return NULL;
+            throw new InvalidAccessLevelException();
         }
 
         if ($idx1 < $idx2) {
