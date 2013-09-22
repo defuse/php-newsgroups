@@ -93,6 +93,11 @@ class Account
             $q->bindValue(':is_admin', 0);
             $q->execute();
 
+            /* Add the new account to the default user group. */
+            $user = new Account($username);
+            $default_user_group = UserGroup::GetDefaultGroup();
+            $default_user_group->addUser($user);
+
         } else {
             throw new Exception('User already exists');
         }
