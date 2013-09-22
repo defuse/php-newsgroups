@@ -12,6 +12,7 @@ class AdministrationView extends View
     <ul>
         <li><a href="admin_users.php">Manage users</a></li>
         <li><a href="admin_newsgroups.php">Manage newsgroups</a></li>
+        <li><a href="admin_usergroups.php">Manage user groups</a></li>
         <li><a href="admin_captcha.php">Manage CAPTCHA</a></li>
     </ul>
 
