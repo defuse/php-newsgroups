@@ -40,6 +40,7 @@ class AdminNewsgroupView extends View
     <table>
         <tr>
             <th>Group Name</th>
+            <th>Access Control</th>
             <th>Delete</th>
         </tr>
     <?php
@@ -49,6 +50,11 @@ class AdminNewsgroupView extends View
             echo '<tr>';
             echo "<td>$safe_name</td>";
 ?>
+            <td>
+                <a href="admin_newsgroup_permissions.php?newsgroup=<?php echo $safe_name; ?>">
+                    Access Control
+                </a>
+            </td>
             <td>
                 <form action="admin_newsgroups.php" method="POST">
                 <input type="hidden" name="groupname" value="<?php echo $safe_name; ?>" />
