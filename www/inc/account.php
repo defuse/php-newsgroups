@@ -239,6 +239,15 @@ class Account
     {
         global $DB;
 
+        /* Remove the user's user group memberships */
+        $q = $DB->prepare(
+            "DELETE FROM user_group_membership
+             WHERE account_id = :account_id"
+        );
+        $q->bindValue(':account_id', $this->id);
+        $q->execute();
+
+        /* Delete the actual account */
         $q = $DB->prepare("DELETE FROM accounts WHERE id = :id");
         $q->bindValue(':id', $this->id);
         $q->execute();
