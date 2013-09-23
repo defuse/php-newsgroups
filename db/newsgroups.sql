@@ -1,108 +1,101 @@
--- MySQL dump 10.13  Distrib 5.1.66, for debian-linux-gnu (x86_64)
+-- phpMyAdmin SQL Dump
+-- version 3.3.7deb7
+-- http://www.phpmyadmin.net
 --
--- Host: localhost    Database: newsgroups
--- ------------------------------------------------------
--- Server version	5.1.66-0+squeeze1
+-- Host: localhost
+-- Generation Time: Sep 22, 2013 at 09:40 PM
+-- Server version: 5.1.66
+-- PHP Version: 5.3.3-7+squeeze17
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Database: `newsgroups`
+--
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `accounts`
 --
 
-DROP TABLE IF EXISTS `accounts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `accounts` (
+CREATE TABLE IF NOT EXISTS `accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password_hash` varchar(1000) NOT NULL,
   `is_admin` tinyint(1) NOT NULL,
-  `user_class` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `accounts`
 --
 
-LOCK TABLES `accounts` WRITE;
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,'root','sha256:1000:MI2aqLKszq5sckOnKS6y5nz1X6bXO98g:HLq8KJTbYqFk5puksSyXk+DvijFIV3DE',0,0),(2,'root2','sha256:10000:+p6b+cUi5SRUyJkQ4lcHIcq4Y/X/Q3j8:dH2SSACBkkEzIdDUmECobBlC6U5wlTxp',1,0),(6,'assssss','sha256:1000:l3t2MA5hyaFgNjXgQk+mmm0nWXIldtQt:dnXFOv3G4EDcfYJWlAzWdevW0vt6vAfu',0,0);
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `accounts` (`id`, `username`, `password_hash`, `is_admin`) VALUES
+(1, 'root', 'sha256:1000:MI2aqLKszq5sckOnKS6y5nz1X6bXO98g:HLq8KJTbYqFk5puksSyXk+DvijFIV3DE', 1),
+(6, 'assssss', 'sha256:1000:l3t2MA5hyaFgNjXgQk+mmm0nWXIldtQt:dnXFOv3G4EDcfYJWlAzWdevW0vt6vAfu', 1),
+(7, 'xxx', 'sha256:10000:CxQSQY4exvgROXqxrewLeb3Tegb5+hnU:zlLXthq3XyrCiXioNT61h4S8O/aMeOQN', 0),
+(8, 'zzz', 'sha256:10000:zPk+zvvc/SDMo5IMaPxWUXDwIkCVriuK:RHNr426vJdHwHoxCZCFhF5TFGnDt1KEg', 0);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `groups`
 --
 
-DROP TABLE IF EXISTS `groups`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `groups` (
+CREATE TABLE IF NOT EXISTS `groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `root_post_id` int(11) NOT NULL,
+  `anonymous_access` enum('NOACCESS','READONLY','READWRITECAPTCHA','READWRITE') NOT NULL DEFAULT 'NOACCESS',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
 
 --
 -- Dumping data for table `groups`
 --
 
-LOCK TABLES `groups` WRITE;
-/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
-INSERT INTO `groups` VALUES (3,'defuse.ring0',9),(11,'defuse.test',151);
-/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `groups` (`id`, `name`, `root_post_id`, `anonymous_access`) VALUES
+(3, 'defuse.ring0', 9, 'NOACCESS'),
+(11, 'defuse.test', 151, 'READWRITECAPTCHA'),
+(12, 'asdfasdf', 295, 'NOACCESS'),
+(13, 'asdfasdfasdf', 296, 'NOACCESS');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `permissions`
+-- Table structure for table `group_permissions`
 --
 
-DROP TABLE IF EXISTS `permissions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `permissions` (
-  `class_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
-  `ability` enum('NOACCESS','READONLY','READWRITECAPTCHA','READWRITE') NOT NULL DEFAULT 'NOACCESS',
-  KEY `class_id` (`class_id`),
-  KEY `group_id` (`group_id`)
+CREATE TABLE IF NOT EXISTS `group_permissions` (
+  `user_group_id` int(11) NOT NULL,
+  `newsgroup_id` int(11) NOT NULL,
+  `access` enum('NOACCESS','READONLY','READWRITECAPTCHA','READWRITE') NOT NULL DEFAULT 'NOACCESS'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `permissions`
+-- Dumping data for table `group_permissions`
 --
 
-LOCK TABLES `permissions` WRITE;
-/*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,11,'READWRITECAPTCHA'),(0,11,'READWRITE'),(1,3,'NOACCESS'),(0,3,'READWRITE');
-/*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `group_permissions` (`user_group_id`, `newsgroup_id`, `access`) VALUES
+(7, 3, 'READWRITE'),
+(1, 11, 'READWRITE');
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `posts`
 --
 
-DROP TABLE IF EXISTS `posts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `posts` (
+CREATE TABLE IF NOT EXISTS `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_id` int(11) NOT NULL,
   `user` varchar(255) NOT NULL,
@@ -111,124 +104,896 @@ CREATE TABLE `posts` (
   `contents` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `group` (`group_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=153 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=311 ;
 
 --
 -- Dumping data for table `posts`
 --
 
-LOCK TABLES `posts` WRITE;
-/*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-INSERT INTO `posts` VALUES (9,3,'SYSTEM',1372561601,'This is the root-level post for defuse.ring0.',''),(14,3,'root',1372561847,'Test post! :)','This is a TEST POST!!!!!!'),(13,3,'root',1372561834,'Test post! :)','This is a TEST POST!!!!!!'),(15,3,'root',1372561847,'Test post! :)','This is a TEST POST!!!!!!'),(16,3,'root',1372561848,'Test post! :)','This is a TEST POST!!!!!!'),(17,3,'root',1372561848,'Test post! :)','This is a TEST POST!!!!!!'),(18,3,'root',1372561848,'Test post! :)','This is a TEST POST!!!!!!'),(19,3,'root',1372562273,'Test post! :)','This is a TEST POST!!!!!!'),(20,3,'root',1372562289,'Test post! :)','This is a TEST POST!!!!!!'),(21,3,'root',1372563049,'Test post! :)','This is a TEST POST!!!!!!'),(22,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(23,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(24,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(25,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(26,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(27,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(28,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(29,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(30,3,'FOO',1372564470,'REPLY WUN!!','A REPLYZZ'),(31,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(32,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(33,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(34,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(35,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(36,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(37,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(38,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(39,3,'FOO',1372564489,'REPLY WUN!!','A REPLYZZ'),(40,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(41,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(42,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(43,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(44,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(45,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(46,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(47,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(48,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(49,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(50,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(51,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(52,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(53,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(54,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(55,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(56,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(57,3,'FOO',1372564490,'REPLY WUN!!','A REPLYZZ'),(58,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(59,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(60,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(61,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(62,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(63,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(64,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(65,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(66,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(67,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(68,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(69,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(70,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(71,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(72,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(73,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(74,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(75,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(76,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(77,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(78,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(79,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(80,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(81,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(82,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(83,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(84,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(85,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(86,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(87,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(88,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(89,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(90,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(91,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(92,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(93,3,'FOO',1372564493,'REPLY WUN!!','A REPLYZZ'),(123,3,'root2',1372712823,'test from new thing','the new thing\r\n\r\n\r\n\r\n\r\na\r\na'),(95,3,'',1372631374,'Your Subject...','Type here...'),(96,3,'Anonymous5',1372632374,'Re: Your Subject...','This should be a reply'),(97,3,'',1372632421,'Re: Your Subject...','Type here...'),(98,3,'',1372632428,'Re: Your Subject...','Type here...'),(99,3,'',1372632439,'Re: Your Subject...','Type here...'),(100,3,'',1372632585,'Re: REPLY TWO!!','this is the second reply HAHAHAHAHAHAHA'),(124,3,'',1372712840,'test from anon','test from anon'),(125,3,'root2',1372713532,'Re: test from anon','Anonymous said:\r\n> test from anon'),(102,3,'',1372632852,'A post without a reply','asfasdfasdf'),(103,3,'',1372633279,'Your Subject...','Type here...'),(104,3,'',1372633289,'Re: Test post! :)','Type here...'),(105,3,'',1372644888,'Re: A post without a reply','> Type here...\r\n\r\nNo!\r\n\r\n> 1\r\n> > 2\r\n> >> 3\r\n> >> 3\r\n> > 2\r\n> > > > > 5\r\n> blah!'),(106,3,'',1372645283,'Re: A post without a reply','> Type here...\r\n\r\nasdfasdfasdfasdfasdf\r\n\r\n> 1'),(107,3,'',1372645406,'Re: A post without a reply','level 0 bug?'),(108,3,'',1372645718,'Re: A post without a reply','>I wonder whether the monkeys will eventually follow the same economic path\r\n>as our own financial masters and bring about a complete collapse of the\r\n>fruit economy.\r\n'),(110,3,'',1372646202,'Re: A post without a reply','Anonymous said:\r\n> >I wonder whether the monkeys will eventually follow the same economic path\r\n> >as our own financial masters and bring about a complete collapse of the\r\n> >fruit economy.\r\n'),(111,3,'',1372646357,'Re: A post without a reply','Anonymous said:\r\n> >I wonder whether the monkeys will eventually follow the same economic path\r\n> >as our own financial masters and bring about a complete collapse of the\r\n> >fruit economy.\r\n'),(112,3,'',1372646365,'Re: A post without a reply','Anonymous said:\r\n> Anonymous said:\r\n> > >I wonder whether the monkeys will eventually follow the same economic path\r\n> > >as our own financial masters and bring about a complete collapse of the\r\n> > >fruit economy.\r\n'),(113,3,'',1372651006,'lipsum','\r\n\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta nisi sit amet mattis aliquam. Curabitur sed laoreet sem, eget pharetra metus. Fusce placerat justo eget lobortis porttitor. Quisque mollis nisl sed arcu suscipit, at aliquam libero lobortis. Donec nec mauris ligula. Quisque pulvinar eleifend sapien, et imperdiet eros. Pellentesque tristique magna non vestibulum faucibus. Nam feugiat mauris quis porttitor egestas. Aliquam erat volutpat. Integer id mauris eu nulla vulputate hendrerit sed nec ipsum. Donec a tortor quis nibh mollis scelerisque. Mauris tortor elit, malesuada vitae placerat vitae, pharetra ut ligula. Nam facilisis eu eros id feugiat. Sed in tellus at erat posuere interdum et non lorem. Nunc blandit, nibh vitae condimentum volutpat, elit quam vehicula quam, id vulputate felis metus nec lorem.\r\n\r\nSed ac risus purus. Curabitur ultrices laoreet tellus, id mollis enim porttitor vel. Integer tristique metus molestie, dapibus tortor vel, mattis erat. Integer scelerisque sapien sit amet accumsan pellentesque. Phasellus tincidunt dui id mattis eleifend. Nam tortor erat, elementum nec imperdiet ut, sollicitudin ut nisl. Vivamus ultrices quis elit ac convallis. Vivamus purus nulla, consectetur sed ornare at, malesuada nec mauris. In vulputate pulvinar elit ut eleifend. Ut facilisis mauris sit amet mauris hendrerit vulputate. Vivamus aliquam blandit sapien sagittis ultricies. Sed adipiscing augue eget eros tristique, fermentum auctor turpis cursus. Sed dapibus dictum erat ut congue. Morbi ac diam vel nisl interdum cursus.\r\n\r\nCras vel nulla vel ligula pretium adipiscing a ac mauris. Donec placerat, arcu nec porta molestie, massa magna rutrum elit, eu accumsan justo est nec ipsum. Sed at urna eros. Donec vulputate diam ut urna viverra ullamcorper. Nunc tempus lacus vel quam facilisis ornare. Integer interdum in ante in rhoncus. Aenean pretium, tortor in sollicitudin luctus, massa enim posuere mi, eget imperdiet enim lacus quis nulla. Donec iaculis facilisis adipiscing. Suspendisse condimentum ante sit amet arcu scelerisque accumsan. Nullam nec dolor molestie, hendrerit ligula a, euismod sapien. Phasellus elementum orci massa, vel sodales metus vulputate feugiat. Proin at velit sem. Sed velit libero, sagittis a elementum quis, imperdiet vitae sapien. Nullam ultricies tellus a interdum rutrum.\r\n\r\nAenean urna sem, semper non aliquet at, elementum eu turpis. Vestibulum ac dui congue, iaculis felis non, porta dolor. Etiam tempus, lacus eu tristique rhoncus, quam lorem convallis lorem, sed blandit odio dui at velit. Suspendisse a ipsum accumsan, luctus diam sit amet, ullamcorper lacus. Sed dictum ligula id commodo consectetur. Maecenas laoreet interdum ultrices. Sed congue et dui in euismod. Suspendisse potenti. Integer eu nisi et tellus porta venenatis a sit amet tellus.\r\n\r\nAliquam vitae felis tincidunt, mattis ipsum id, adipiscing risus. Donec accumsan odio in ultricies dapibus. Fusce venenatis consequat neque, sed varius lectus hendrerit vel. Integer fringilla dui et libero sollicitudin mattis. Aliquam eget gravida arcu. Sed ac quam vel risus commodo tristique vel et est. Fusce at mi consectetur, consequat purus quis, feugiat eros. '),(114,3,'',1372651027,'Re: lipsum','Anonymous said:\r\n> \r\n> \r\n> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta nisi sit amet mattis aliquam. Curabitur sed laoreet sem, eget pharetra metus. Fusce placerat justo eget lobortis porttitor. Quisque mollis nisl sed arcu suscipit, at aliquam libero lobortis. Donec nec mauris ligula. Quisque pulvinar eleifend sapien, et imperdiet eros. Pellentesque tristique magna non vestibulum faucibus. Nam feugiat mauris quis porttitor egestas. Aliquam erat volutpat. Integer id mauris eu nulla vulputate hendrerit sed nec ipsum. Donec a tortor quis nibh mollis scelerisque. Mauris tortor elit, malesuada vitae placerat vitae, pharetra ut ligula. Nam facilisis eu eros id feugiat. Sed in tellus at erat posuere interdum et non lorem. Nunc blandit, nibh vitae condimentum volutpat, elit quam vehicula quam, id vulputate felis metus nec lorem.\r\n\r\nyes this is brilliant\r\n\r\n> Sed ac risus purus. Curabitur ultrices laoreet tellus, id mollis enim porttitor vel. Integer tristique metus molestie, dapibus tortor vel, mattis erat. Integer scelerisque sapien sit amet accumsan pellentesque. Phasellus tincidunt dui id mattis eleifend. Nam tortor erat, elementum nec imperdiet ut, sollicitudin ut nisl. Vivamus ultrices quis elit ac convallis. Vivamus purus nulla, consectetur sed ornare at, malesuada nec mauris. In vulputate pulvinar elit ut eleifend. Ut facilisis mauris sit amet mauris hendrerit vulputate. Vivamus aliquam blandit sapien sagittis ultricies. Sed adipiscing augue eget eros tristique, fermentum auctor turpis cursus. Sed dapibus dictum erat ut congue. Morbi ac diam vel nisl interdum cursus.\r\n\r\nomg wonderful\r\n\r\n> \r\n> Cras vel nulla vel ligula pretium adipiscing a ac mauris. Donec placerat, arcu nec porta molestie, massa magna rutrum elit, eu accumsan justo est nec ipsum. Sed at urna eros. Donec vulputate diam ut urna viverra ullamcorper. Nunc tempus lacus vel quam facilisis ornare. Integer interdum in ante in rhoncus. Aenean pretium, tortor in sollicitudin luctus, massa enim posuere mi, eget imperdiet enim lacus quis nulla. Donec iaculis facilisis adipiscing. Suspendisse condimentum ante sit amet arcu scelerisque accumsan. Nullam nec dolor molestie, hendrerit ligula a, euismod sapien. Phasellus elementum orci massa, vel sodales metus vulputate feugiat. Proin at velit sem. Sed velit libero, sagittis a elementum quis, imperdiet vitae sapien. Nullam ultricies tellus a interdum rutrum.\r\n> \r\n> Aenean urna sem, semper non aliquet at, elementum eu turpis. Vestibulum ac dui congue, iaculis felis non, porta dolor. Etiam tempus, lacus eu tristique rhoncus, quam lorem convallis lorem, sed blandit odio dui at velit. Suspendisse a ipsum accumsan, luctus diam sit amet, ullamcorper lacus. Sed dictum ligula id commodo consectetur. Maecenas laoreet interdum ultrices. Sed congue et dui in euismod. Suspendisse potenti. Integer eu nisi et tellus porta venenatis a sit amet tellus.\r\n> \r\n> Aliquam vitae felis tincidunt, mattis ipsum id, adipiscing risus. Donec accumsan odio in ultricies dapibus. Fusce venenatis consequat neque, sed varius lectus hendrerit vel. Integer fringilla dui et libero sollicitudin mattis. Aliquam eget gravida arcu. Sed ac quam vel risus commodo tristique vel et est. Fusce at mi consectetur, consequat purus quis, feugiat eros. '),(115,3,'',1372704675,'Your Subject...','Type here...'),(118,6,'',1372709648,'THIS SHOULD BE DELETED','asdfasdfasdfasdf'),(126,3,'root2',1372713535,'Re: test from anon','Anonymous said:\r\n> test from anon'),(119,6,'',1372709667,'SO SHOULD THIS','Anonymous said:\r\n> asdfasdfasdfasdf'),(127,3,'root2',1372713589,'Re: test from anon','root2 said:\r\n> Anonymous said:\r\n> > test from anon\r\n\r\nnice test!'),(129,129,'SYSTEM',1372742038,'This is the root-level post for .',''),(151,11,'SYSTEM',1372965521,'This is the root-level post for defuse.test.',''),(131,3,'root2',1372862793,'Re: Test post! :) AAAAAAAAAAA','root said:\r\n> This is a TEST POST!!!!!!\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),(152,11,'root2',1372966018,'Hallo!','This is a newsgroup!'),(138,3,'root2',1372950983,'Re: test from anon','On July 1, 2013, 21:18 UTC, root2 said:\r\n> Anonymous said:\r\n> > test from anon\r\n\r\nha!'),(137,3,'root2',1372910325,'Re: Test post! :) AAAAAAAAAAA','root2 said:\r\n> root said:\r\n> > This is a TEST POST!!!!!!\r\n> AAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\n\r\n// This program is free software: you can redistribute it and/or modify\r\n// it under the terms of the GNU General Public License as published by\r\n// the Free Software Foundation, either version 3 of the License, or\r\n// (at your option) any later version.\r\n//\r\n// This program is distributed in the hope that it will be useful,\r\n// but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n// GNU General Public License for more details.\r\n//\r\n// You should have received a copy of the GNU General Public License\r\n// along with this program.  If not, see <http://www.gnu.org/licenses/>.\r\n\r\n#include <stdio.h>\r\n#include <inttypes.h>\r\n\r\n\r\n#define INDEX_HASH_WIDTH 8\r\n#define INDEX_POSITION_WIDTH 6\r\n#define INDEX_ENTRY_WIDTH (INDEX_HASH_WIDTH + INDEX_POSITION_WIDTH)\r\n\r\nstruct IndexEntry {\r\n    unsigned char hash[INDEX_HASH_WIDTH]; // First 64 bits of the hash\r\n    unsigned char position[INDEX_POSITION_WIDTH]; // Position of word in dictionary (48-bit little endian integer)\r\n};\r\n\r\n\r\nvoid freadIndexEntryAt(FILE* file, int64_t index, struct IndexEntry* out)\r\n{\r\n    fseek(file, index * INDEX_ENTRY_WIDTH, SEEK_SET);\r\n    fread(out->hash, sizeof(unsigned char), INDEX_HASH_WIDTH, file);\r\n    fread(out->position, sizeof(unsigned char), INDEX_POSITION_WIDTH, file);\r\n}\r\n\r\n/*\r\n * Compares two INDEX_HASH_WIDTH-char arrays.\r\n * Returns 1 if the first argument is greater than the second.\r\n * Returns -1 if the first argument is less than the second.\r\n * Returns 0 if both are equal.\r\n */\r\nint hashcmp(const unsigned char hashA[INDEX_HASH_WIDTH], const unsigned char hashB[INDEX_HASH_WIDTH])\r\n{\r\n    int i = 0;\r\n    for(i = 0; i < INDEX_HASH_WIDTH; i++)\r\n    {\r\n        if(hashA[i] > hashB[i])\r\n            return 1;\r\n        else if(hashA[i] < hashB[i])\r\n            return -1;\r\n    }\r\n\r\n    return 0;\r\n}\r\n\r\n\r\nint main(int argc, char **argv)\r\n{\r\n    struct IndexEntry current, max;\r\n    FILE* file = fopen(argv[1], \"r+b\");\r\n\r\n    if(file == NULL)\r\n    {\r\n        printf(\"File does not exist.\\n\");\r\n        return 3;\r\n    }\r\n\r\n    fseek(file, 0L, SEEK_END);\r\n    int64_t size = ftell(file);\r\n    if(size % INDEX_ENTRY_WIDTH != 0)\r\n    {\r\n        printf(\"Invalid index file!\\n\");\r\n        return 1;\r\n    }\r\n    int64_t numEntries = size / INDEX_ENTRY_WIDTH;\r\n\r\n    int64_t i;\r\n\r\n    for(i = 0; i < numEntries; i++)\r\n    {\r\n        freadIndexEntryAt(file, i, &current);\r\n        if(hashcmp(current.hash, max.hash) < 0) // Current is less than max\r\n        {\r\n            printf(\"NOT SORTED!!!!\\n\");\r\n            return 2;\r\n        }\r\n        max = current;\r\n        if(i % 10000000 == 0)\r\n        {\r\n            printf(\"%d...\\n\", i);\r\n        }\r\n    }\r\n\r\n    printf(\"ALL SORTED!\\n\");\r\n}\r\n'),(139,3,'root2',1372951309,'zzzzz','..........\r\nHHHHHHHHHH\r\n\r\n|||||||||'),(140,3,'root2',1372959414,'',''),(141,3,'root2',1372959422,'',''),(142,3,'root2',1372959436,'',''),(143,3,'root2',1372959439,'',''),(144,3,'root2',1372959442,'',''),(145,3,'root2',1372959446,'',''),(146,3,'root2',1372959449,'',''),(147,3,'root2',1372959453,'',''),(148,3,'root2',1372962185,'',''),(149,3,'root2',1372962255,'Re: ','On Jul 04, 2013, 18:23 UTC, root2 wrote:\r\n> \r\n\r\nand a reply!!!'),(150,3,'root2',1372962272,'Re: ','On Jul 04, 2013, 18:24 UTC, root2 wrote:\r\n> On Jul 04, 2013, 18:23 UTC, root2 wrote:\r\n> > \r\n> \r\n> and a reply!!!\r\nasdfasdf');
-/*!40000 ALTER TABLE `posts` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `posts` (`id`, `group_id`, `user`, `post_date`, `title`, `contents`) VALUES
+(9, 3, 'SYSTEM', 1372561601, 'This is the root-level post for defuse.ring0.', ''),
+(14, 3, 'root', 1372561847, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(13, 3, 'root', 1372561834, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(15, 3, 'root', 1372561847, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(16, 3, 'root', 1372561848, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(17, 3, 'root', 1372561848, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(18, 3, 'root', 1372561848, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(19, 3, 'root', 1372562273, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(20, 3, 'root', 1372562289, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(21, 3, 'root', 1372563049, 'Test post! :)', 'This is a TEST POST!!!!!!'),
+(22, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(23, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(24, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(25, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(26, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(27, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(28, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(29, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(30, 3, 'FOO', 1372564470, 'REPLY WUN!!', 'A REPLYZZ'),
+(31, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(32, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(33, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(34, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(35, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(36, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(37, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(38, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(39, 3, 'FOO', 1372564489, 'REPLY WUN!!', 'A REPLYZZ'),
+(40, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(41, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(42, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(43, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(44, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(45, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(46, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(47, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(48, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(49, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(50, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(51, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(52, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(53, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(54, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(55, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(56, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(57, 3, 'FOO', 1372564490, 'REPLY WUN!!', 'A REPLYZZ'),
+(58, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(59, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(60, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(61, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(62, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(63, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(64, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(65, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(66, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(67, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(68, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(69, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(70, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(71, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(72, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(73, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(74, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(75, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(76, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(77, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(78, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(79, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(80, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(81, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(82, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(83, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(84, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(85, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(86, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(87, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(88, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(89, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(90, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(91, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(92, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(93, 3, 'FOO', 1372564493, 'REPLY WUN!!', 'A REPLYZZ'),
+(123, 3, 'root2', 1372712823, 'test from new thing', 'the new thing\r\n\r\n\r\n\r\n\r\na\r\na'),
+(95, 3, '', 1372631374, 'Your Subject...', 'Type here...'),
+(96, 3, 'Anonymous5', 1372632374, 'Re: Your Subject...', 'This should be a reply'),
+(97, 3, '', 1372632421, 'Re: Your Subject...', 'Type here...'),
+(98, 3, '', 1372632428, 'Re: Your Subject...', 'Type here...'),
+(99, 3, '', 1372632439, 'Re: Your Subject...', 'Type here...'),
+(100, 3, '', 1372632585, 'Re: REPLY TWO!!', 'this is the second reply HAHAHAHAHAHAHA'),
+(124, 3, '', 1372712840, 'test from anon', 'test from anon'),
+(125, 3, 'root2', 1372713532, 'Re: test from anon', 'Anonymous said:\r\n> test from anon'),
+(102, 3, '', 1372632852, 'A post without a reply', 'asfasdfasdf'),
+(103, 3, '', 1372633279, 'Your Subject...', 'Type here...'),
+(104, 3, '', 1372633289, 'Re: Test post! :)', 'Type here...'),
+(105, 3, '', 1372644888, 'Re: A post without a reply', '> Type here...\r\n\r\nNo!\r\n\r\n> 1\r\n> > 2\r\n> >> 3\r\n> >> 3\r\n> > 2\r\n> > > > > 5\r\n> blah!'),
+(106, 3, '', 1372645283, 'Re: A post without a reply', '> Type here...\r\n\r\nasdfasdfasdfasdfasdf\r\n\r\n> 1'),
+(107, 3, '', 1372645406, 'Re: A post without a reply', 'level 0 bug?'),
+(108, 3, '', 1372645718, 'Re: A post without a reply', '>I wonder whether the monkeys will eventually follow the same economic path\r\n>as our own financial masters and bring about a complete collapse of the\r\n>fruit economy.\r\n'),
+(110, 3, '', 1372646202, 'Re: A post without a reply', 'Anonymous said:\r\n> >I wonder whether the monkeys will eventually follow the same economic path\r\n> >as our own financial masters and bring about a complete collapse of the\r\n> >fruit economy.\r\n'),
+(111, 3, '', 1372646357, 'Re: A post without a reply', 'Anonymous said:\r\n> >I wonder whether the monkeys will eventually follow the same economic path\r\n> >as our own financial masters and bring about a complete collapse of the\r\n> >fruit economy.\r\n'),
+(112, 3, '', 1372646365, 'Re: A post without a reply', 'Anonymous said:\r\n> Anonymous said:\r\n> > >I wonder whether the monkeys will eventually follow the same economic path\r\n> > >as our own financial masters and bring about a complete collapse of the\r\n> > >fruit economy.\r\n'),
+(113, 3, '', 1372651006, 'lipsum', '\r\n\r\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta nisi sit amet mattis aliquam. Curabitur sed laoreet sem, eget pharetra metus. Fusce placerat justo eget lobortis porttitor. Quisque mollis nisl sed arcu suscipit, at aliquam libero lobortis. Donec nec mauris ligula. Quisque pulvinar eleifend sapien, et imperdiet eros. Pellentesque tristique magna non vestibulum faucibus. Nam feugiat mauris quis porttitor egestas. Aliquam erat volutpat. Integer id mauris eu nulla vulputate hendrerit sed nec ipsum. Donec a tortor quis nibh mollis scelerisque. Mauris tortor elit, malesuada vitae placerat vitae, pharetra ut ligula. Nam facilisis eu eros id feugiat. Sed in tellus at erat posuere interdum et non lorem. Nunc blandit, nibh vitae condimentum volutpat, elit quam vehicula quam, id vulputate felis metus nec lorem.\r\n\r\nSed ac risus purus. Curabitur ultrices laoreet tellus, id mollis enim porttitor vel. Integer tristique metus molestie, dapibus tortor vel, mattis erat. Integer scelerisque sapien sit amet accumsan pellentesque. Phasellus tincidunt dui id mattis eleifend. Nam tortor erat, elementum nec imperdiet ut, sollicitudin ut nisl. Vivamus ultrices quis elit ac convallis. Vivamus purus nulla, consectetur sed ornare at, malesuada nec mauris. In vulputate pulvinar elit ut eleifend. Ut facilisis mauris sit amet mauris hendrerit vulputate. Vivamus aliquam blandit sapien sagittis ultricies. Sed adipiscing augue eget eros tristique, fermentum auctor turpis cursus. Sed dapibus dictum erat ut congue. Morbi ac diam vel nisl interdum cursus.\r\n\r\nCras vel nulla vel ligula pretium adipiscing a ac mauris. Donec placerat, arcu nec porta molestie, massa magna rutrum elit, eu accumsan justo est nec ipsum. Sed at urna eros. Donec vulputate diam ut urna viverra ullamcorper. Nunc tempus lacus vel quam facilisis ornare. Integer interdum in ante in rhoncus. Aenean pretium, tortor in sollicitudin luctus, massa enim posuere mi, eget imperdiet enim lacus quis nulla. Donec iaculis facilisis adipiscing. Suspendisse condimentum ante sit amet arcu scelerisque accumsan. Nullam nec dolor molestie, hendrerit ligula a, euismod sapien. Phasellus elementum orci massa, vel sodales metus vulputate feugiat. Proin at velit sem. Sed velit libero, sagittis a elementum quis, imperdiet vitae sapien. Nullam ultricies tellus a interdum rutrum.\r\n\r\nAenean urna sem, semper non aliquet at, elementum eu turpis. Vestibulum ac dui congue, iaculis felis non, porta dolor. Etiam tempus, lacus eu tristique rhoncus, quam lorem convallis lorem, sed blandit odio dui at velit. Suspendisse a ipsum accumsan, luctus diam sit amet, ullamcorper lacus. Sed dictum ligula id commodo consectetur. Maecenas laoreet interdum ultrices. Sed congue et dui in euismod. Suspendisse potenti. Integer eu nisi et tellus porta venenatis a sit amet tellus.\r\n\r\nAliquam vitae felis tincidunt, mattis ipsum id, adipiscing risus. Donec accumsan odio in ultricies dapibus. Fusce venenatis consequat neque, sed varius lectus hendrerit vel. Integer fringilla dui et libero sollicitudin mattis. Aliquam eget gravida arcu. Sed ac quam vel risus commodo tristique vel et est. Fusce at mi consectetur, consequat purus quis, feugiat eros. '),
+(114, 3, '', 1372651027, 'Re: lipsum', 'Anonymous said:\r\n> \r\n> \r\n> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta nisi sit amet mattis aliquam. Curabitur sed laoreet sem, eget pharetra metus. Fusce placerat justo eget lobortis porttitor. Quisque mollis nisl sed arcu suscipit, at aliquam libero lobortis. Donec nec mauris ligula. Quisque pulvinar eleifend sapien, et imperdiet eros. Pellentesque tristique magna non vestibulum faucibus. Nam feugiat mauris quis porttitor egestas. Aliquam erat volutpat. Integer id mauris eu nulla vulputate hendrerit sed nec ipsum. Donec a tortor quis nibh mollis scelerisque. Mauris tortor elit, malesuada vitae placerat vitae, pharetra ut ligula. Nam facilisis eu eros id feugiat. Sed in tellus at erat posuere interdum et non lorem. Nunc blandit, nibh vitae condimentum volutpat, elit quam vehicula quam, id vulputate felis metus nec lorem.\r\n\r\nyes this is brilliant\r\n\r\n> Sed ac risus purus. Curabitur ultrices laoreet tellus, id mollis enim porttitor vel. Integer tristique metus molestie, dapibus tortor vel, mattis erat. Integer scelerisque sapien sit amet accumsan pellentesque. Phasellus tincidunt dui id mattis eleifend. Nam tortor erat, elementum nec imperdiet ut, sollicitudin ut nisl. Vivamus ultrices quis elit ac convallis. Vivamus purus nulla, consectetur sed ornare at, malesuada nec mauris. In vulputate pulvinar elit ut eleifend. Ut facilisis mauris sit amet mauris hendrerit vulputate. Vivamus aliquam blandit sapien sagittis ultricies. Sed adipiscing augue eget eros tristique, fermentum auctor turpis cursus. Sed dapibus dictum erat ut congue. Morbi ac diam vel nisl interdum cursus.\r\n\r\nomg wonderful\r\n\r\n> \r\n> Cras vel nulla vel ligula pretium adipiscing a ac mauris. Donec placerat, arcu nec porta molestie, massa magna rutrum elit, eu accumsan justo est nec ipsum. Sed at urna eros. Donec vulputate diam ut urna viverra ullamcorper. Nunc tempus lacus vel quam facilisis ornare. Integer interdum in ante in rhoncus. Aenean pretium, tortor in sollicitudin luctus, massa enim posuere mi, eget imperdiet enim lacus quis nulla. Donec iaculis facilisis adipiscing. Suspendisse condimentum ante sit amet arcu scelerisque accumsan. Nullam nec dolor molestie, hendrerit ligula a, euismod sapien. Phasellus elementum orci massa, vel sodales metus vulputate feugiat. Proin at velit sem. Sed velit libero, sagittis a elementum quis, imperdiet vitae sapien. Nullam ultricies tellus a interdum rutrum.\r\n> \r\n> Aenean urna sem, semper non aliquet at, elementum eu turpis. Vestibulum ac dui congue, iaculis felis non, porta dolor. Etiam tempus, lacus eu tristique rhoncus, quam lorem convallis lorem, sed blandit odio dui at velit. Suspendisse a ipsum accumsan, luctus diam sit amet, ullamcorper lacus. Sed dictum ligula id commodo consectetur. Maecenas laoreet interdum ultrices. Sed congue et dui in euismod. Suspendisse potenti. Integer eu nisi et tellus porta venenatis a sit amet tellus.\r\n> \r\n> Aliquam vitae felis tincidunt, mattis ipsum id, adipiscing risus. Donec accumsan odio in ultricies dapibus. Fusce venenatis consequat neque, sed varius lectus hendrerit vel. Integer fringilla dui et libero sollicitudin mattis. Aliquam eget gravida arcu. Sed ac quam vel risus commodo tristique vel et est. Fusce at mi consectetur, consequat purus quis, feugiat eros. '),
+(115, 3, '', 1372704675, 'Your Subject...', 'Type here...'),
+(118, 6, '', 1372709648, 'THIS SHOULD BE DELETED', 'asdfasdfasdfasdf'),
+(126, 3, 'root2', 1372713535, 'Re: test from anon', 'Anonymous said:\r\n> test from anon'),
+(119, 6, '', 1372709667, 'SO SHOULD THIS', 'Anonymous said:\r\n> asdfasdfasdfasdf'),
+(127, 3, 'root2', 1372713589, 'Re: test from anon', 'root2 said:\r\n> Anonymous said:\r\n> > test from anon\r\n\r\nnice test!'),
+(129, 129, 'SYSTEM', 1372742038, 'This is the root-level post for .', ''),
+(151, 11, 'SYSTEM', 1372965521, 'This is the root-level post for defuse.test.', ''),
+(131, 3, 'root2', 1372862793, 'Re: Test post! :) AAAAAAAAAAA', 'root said:\r\n> This is a TEST POST!!!!!!\r\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+(155, 11, '', 1373133427, 'Re: asdf', 'On Jul 06, 2013, 17:56 UTC, Anonymous wrote:\r\n> asdf\r\nasdlfasdfasdf'),
+(152, 11, 'root2', 1372966018, 'Hallo!', 'This is a newsgroup!'),
+(153, 3, 'root2', 1373133389, 'asdf', 'asdf'),
+(154, 11, '', 1373133409, 'asdf', 'asdf'),
+(138, 3, 'root2', 1372950983, 'Re: test from anon', 'On July 1, 2013, 21:18 UTC, root2 said:\r\n> Anonymous said:\r\n> > test from anon\r\n\r\nha!'),
+(137, 3, 'root2', 1372910325, 'Re: Test post! :) AAAAAAAAAAA', 'root2 said:\r\n> root said:\r\n> > This is a TEST POST!!!!!!\r\n> AAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\n\r\n// This program is free software: you can redistribute it and/or modify\r\n// it under the terms of the GNU General Public License as published by\r\n// the Free Software Foundation, either version 3 of the License, or\r\n// (at your option) any later version.\r\n//\r\n// This program is distributed in the hope that it will be useful,\r\n// but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n// GNU General Public License for more details.\r\n//\r\n// You should have received a copy of the GNU General Public License\r\n// along with this program.  If not, see <http://www.gnu.org/licenses/>.\r\n\r\n#include <stdio.h>\r\n#include <inttypes.h>\r\n\r\n\r\n#define INDEX_HASH_WIDTH 8\r\n#define INDEX_POSITION_WIDTH 6\r\n#define INDEX_ENTRY_WIDTH (INDEX_HASH_WIDTH + INDEX_POSITION_WIDTH)\r\n\r\nstruct IndexEntry {\r\n    unsigned char hash[INDEX_HASH_WIDTH]; // First 64 bits of the hash\r\n    unsigned char position[INDEX_POSITION_WIDTH]; // Position of word in dictionary (48-bit little endian integer)\r\n};\r\n\r\n\r\nvoid freadIndexEntryAt(FILE* file, int64_t index, struct IndexEntry* out)\r\n{\r\n    fseek(file, index * INDEX_ENTRY_WIDTH, SEEK_SET);\r\n    fread(out->hash, sizeof(unsigned char), INDEX_HASH_WIDTH, file);\r\n    fread(out->position, sizeof(unsigned char), INDEX_POSITION_WIDTH, file);\r\n}\r\n\r\n/*\r\n * Compares two INDEX_HASH_WIDTH-char arrays.\r\n * Returns 1 if the first argument is greater than the second.\r\n * Returns -1 if the first argument is less than the second.\r\n * Returns 0 if both are equal.\r\n */\r\nint hashcmp(const unsigned char hashA[INDEX_HASH_WIDTH], const unsigned char hashB[INDEX_HASH_WIDTH])\r\n{\r\n    int i = 0;\r\n    for(i = 0; i < INDEX_HASH_WIDTH; i++)\r\n    {\r\n        if(hashA[i] > hashB[i])\r\n            return 1;\r\n        else if(hashA[i] < hashB[i])\r\n            return -1;\r\n    }\r\n\r\n    return 0;\r\n}\r\n\r\n\r\nint main(int argc, char **argv)\r\n{\r\n    struct IndexEntry current, max;\r\n    FILE* file = fopen(argv[1], "r+b");\r\n\r\n    if(file == NULL)\r\n    {\r\n        printf("File does not exist.\\n");\r\n        return 3;\r\n    }\r\n\r\n    fseek(file, 0L, SEEK_END);\r\n    int64_t size = ftell(file);\r\n    if(size % INDEX_ENTRY_WIDTH != 0)\r\n    {\r\n        printf("Invalid index file!\\n");\r\n        return 1;\r\n    }\r\n    int64_t numEntries = size / INDEX_ENTRY_WIDTH;\r\n\r\n    int64_t i;\r\n\r\n    for(i = 0; i < numEntries; i++)\r\n    {\r\n        freadIndexEntryAt(file, i, &current);\r\n        if(hashcmp(current.hash, max.hash) < 0) // Current is less than max\r\n        {\r\n            printf("NOT SORTED!!!!\\n");\r\n            return 2;\r\n        }\r\n        max = current;\r\n        if(i % 10000000 == 0)\r\n        {\r\n            printf("%d...\\n", i);\r\n        }\r\n    }\r\n\r\n    printf("ALL SORTED!\\n");\r\n}\r\n'),
+(139, 3, 'root2', 1372951309, 'zzzzz', '..........\r\nHHHHHHHHHH\r\n\r\n|||||||||'),
+(140, 3, 'root2', 1372959414, '', ''),
+(141, 3, 'root2', 1372959422, '', ''),
+(142, 3, 'root2', 1372959436, '', ''),
+(143, 3, 'root2', 1372959439, '', ''),
+(144, 3, 'root2', 1372959442, '', ''),
+(145, 3, 'root2', 1372959446, '', ''),
+(146, 3, 'root2', 1372959449, '', ''),
+(147, 3, 'root2', 1372959453, '', ''),
+(148, 3, 'root2', 1372962185, '', ''),
+(149, 3, 'root2', 1372962255, 'Re: ', 'On Jul 04, 2013, 18:23 UTC, root2 wrote:\r\n> \r\n\r\nand a reply!!!'),
+(150, 3, 'root2', 1372962272, 'Re: ', 'On Jul 04, 2013, 18:24 UTC, root2 wrote:\r\n> On Jul 04, 2013, 18:23 UTC, root2 wrote:\r\n> > \r\n> \r\n> and a reply!!!\r\nasdfasdf'),
+(156, 3, 'root2', 1373168337, 'THE TITLEEE', 'asdfasdfasdfasdfasdfasdfasdf'),
+(157, 3, 'root2', 1373168784, 'AAAAAA', 'AAAAAAAAAAAAAAAAAAAAAAAA'),
+(158, 3, 'root2', 1373168787, 'BBBBBBBBBBB', 'BBBBBBBBBBB'),
+(159, 3, 'root2', 1373168848, 'XXXXXXX', 'XXXXXXX'),
+(160, 3, 'root2', 1373168850, 'YYYYYYYYYYYY', 'YYYYYYYYYYYYYYY'),
+(161, 3, 'root2', 1373168934, 'asdfasdfasdf', 'sdafasdf'),
+(162, 3, 'root2', 1373168956, 'qqqqq', 'qqqqq'),
+(163, 3, 'root2', 1373169034, '11111', '11111'),
+(164, 3, 'root2', 1373169039, '22222', '222231`'),
+(165, 3, 'root2', 1373187451, 'arse', 'arse'),
+(166, 3, 'root2', 1373187562, 'zyzz', 'zyzzzz'),
+(167, 3, 'root2', 1373187627, 'asdfasdf22', '222'),
+(168, 3, 'root2', 1373187716, 'omgwtfbbq', 'bbq'),
+(169, 3, 'root2', 1373220401, '!!!HDSGSDFG<<<', 'bazinga'),
+(170, 3, 'root2', 1373221614, 'waldo', 'where is he?'),
+(171, 3, 'root2', 1373221672, 'wolverene', 'bjaklsdjfklasdfasdfasdf'),
+(172, 3, 'root2', 1373221854, 'asdf', 'asdfasdfasdfsd'),
+(173, 3, 'root2', 1373227306, 'zzzzzzzzzzzzzzzzzzz', 'zzzzszzzzzzzzzzz'),
+(174, 3, 'root2', 1373227519, 'fffffff3232f23f23', 'f2322222f23f23f23f23f2f'),
+(175, 3, 'root2', 1373227638, 'a5fwa', 'sadf'),
+(176, 3, 'root2', 1373228246, '23423423', '4234234234'),
+(177, 3, 'root2', 1373232176, 'Re: 23423423', 'On Jul 07, 2013, 20:17 UTC, root2 wrote:\r\n> 4234234234\r\n'),
+(178, 3, 'root2', 1373232999, 'Re: a5fwa', 'On Jul 07, 2013, 20:07 UTC, root2 wrote:\r\n> sadf\r\n'),
+(179, 3, 'root2', 1373233055, 'Re: a5fwa', 'On Jul 07, 2013, 21:36 UTC, root2 wrote:\r\n> On Jul 07, 2013, 20:07 UTC, root2 wrote:\r\n> > sadf\r\n\r\n'),
+(180, 3, 'root2', 1373233464, 'Re: asdf', 'On Jul 07, 2013, 18:30 UTC, root2 wrote:\r\n> asdfasdfasdfsd\r\n'),
+(181, 3, 'root2', 1373233859, 'Re: wolverene', 'On Jul 07, 2013, 18:27 UTC, root2 wrote:\r\n> bjaklsdjfklasdfasdfasdf\r\nasdfasdf'),
+(182, 3, 'root2', 1373233953, 'Re: omgwtfbbq', 'On Jul 07, 2013, 09:01 UTC, root2 wrote:\r\n> bbq\r\nbbq'),
+(183, 3, 'root2', 1373234034, 'asdfasdf', 'asdfasdasdf'),
+(184, 3, 'root2', 1373234039, 'Re: asdfasdf', 'On Jul 07, 2013, 21:53 UTC, root2 wrote:\r\n> asdfasdasdf\r\n'),
+(185, 3, 'root2', 1373234118, 'zz', 'zzzz'),
+(186, 3, 'root2', 1373234122, 'Re: zz', 'On Jul 07, 2013, 21:55 UTC, root2 wrote:\r\n> zzzz\r\n'),
+(187, 3, 'root2', 1373234268, 'asdf', 'asdf'),
+(188, 3, 'root2', 1373234273, 'Re: asdf', 'On Jul 07, 2013, 21:57 UTC, root2 wrote:\r\n> asdf\r\n'),
+(189, 3, 'root2', 1373234330, 'Re: asdf', 'On Jul 07, 2013, 21:57 UTC, root2 wrote:\r\n> asdf\r\nasdfasdf'),
+(190, 3, 'root2', 1373234377, 'Re: asdf', 'On Jul 07, 2013, 21:57 UTC, root2 wrote:\r\n> asdf\r\nsadfasdfasf1'),
+(191, 3, 'root2', 1373234427, 'asd', 'fasdfasdfasdf'),
+(192, 3, 'root2', 1373234433, 'Re: asd', 'On Jul 07, 2013, 22:00 UTC, root2 wrote:\r\n> fasdfasdfasdf\r\nz'),
+(193, 3, 'root2', 1373234615, '234234', '234234'),
+(194, 3, 'root2', 1373234656, 'z', 'z'),
+(195, 3, 'root2', 1373234660, 'Re: z', 'On Jul 07, 2013, 22:04 UTC, root2 wrote:\r\n> z\r\nz'),
+(196, 3, 'root2', 1373235078, 'Re: zzzzzzzzzzzzzzzzzzz', 'On Jul 07, 2013, 20:01 UTC, root2 wrote:\r\n> zzzzszzzzzzzzzzz\r\nzzzzzzzz'),
+(197, 3, 'root2', 1373235174, 'x', 'x'),
+(198, 3, 'root2', 1373235179, 'Re: x', 'On Jul 07, 2013, 22:12 UTC, root2 wrote:\r\n> x\r\n'),
+(199, 3, 'root2', 1373235535, 'asdf', 'asdf'),
+(200, 3, 'root2', 1373235542, 'Re: asdf', 'On Jul 07, 2013, 22:18 UTC, root2 wrote:\r\n> asdf\r\nz'),
+(201, 3, 'root2', 1373235629, '888', '888'),
+(202, 3, 'root2', 1373235635, 'Re: 888', 'On Jul 07, 2013, 22:20 UTC, root2 wrote:\r\n> 888\r\n7777'),
+(203, 3, 'root2', 1373235716, 'z', 'z'),
+(204, 3, 'root2', 1373235722, 'Re: z', 'On Jul 07, 2013, 22:21 UTC, root2 wrote:\r\n> z\r\nz'),
+(205, 3, 'root2', 1373235728, 'Re: z', 'On Jul 07, 2013, 22:22 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:21 UTC, root2 wrote:\r\n> > z\r\n> z\r\nasdf'),
+(206, 3, 'root2', 1373235855, '1', '1'),
+(207, 3, 'root2', 1373235860, 'Re: 1', 'On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> 1\r\n1'),
+(208, 3, 'root2', 1373235865, 'Re: 1', 'On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > 1\r\n> 1\r\n1'),
+(209, 3, 'root2', 1373235938, 'Re: 1', 'On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > 1\r\n> 1\r\nasdf'),
+(210, 3, 'root2', 1373235943, 'Re: 1', 'On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > 1\r\n> > 1\r\n> 1\r\nasdf'),
+(211, 3, 'root2', 1373236033, 'Re: 1', 'On Jul 07, 2013, 22:25 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > 1\r\n> > 1\r\n> asdf\r\nasdf11111'),
+(212, 3, 'root2', 1373236052, 'Re: 1', 'On Jul 07, 2013, 22:25 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > > 1\r\n> > > 1\r\n> > 1\r\n> asdf\r\nasdf'),
+(213, 3, 'root2', 1373236261, 'Re: 1', 'On Jul 07, 2013, 22:27 UTC, root2 wrote:\r\n> On Jul 07, 2013, 22:25 UTC, root2 wrote:\r\n> > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > > On Jul 07, 2013, 22:24 UTC, root2 wrote:\r\n> > > > > 1\r\n> > > > 1\r\n> > > 1\r\n> > asdf\r\n> asdf\r\n'),
+(214, 3, 'root2', 1373236349, 'asdfasdfasdfasdfasdfasdfasdfasdf', 'asdfasdf\r\nTEST THE NEW OPAGES'),
+(215, 3, 'root2', 1373237794, 'z', 'asdfasdf'),
+(216, 3, 'root2', 1373237819, 'x', 'x'),
+(217, 3, 'root2', 1373237826, 'Re: asdfasdfasdfasdfasdfasdfasdfasdf', 'On Jul 07, 2013, 22:32 UTC, root2 wrote:\r\n> asdfasdf\r\n> TEST THE NEW OPAGES\r\nz'),
+(218, 3, 'root2', 1373237843, 'asdf', 'asdf'),
+(219, 3, 'root2', 1373238276, 'd', 'x'),
+(220, 3, 'root2', 1373240379, 'xx', 'xx'),
+(221, 3, 'root2', 1373240391, 'Re: xx', 'On Jul 07, 2013, 23:39 UTC, root2 wrote:\r\n> xx\r\nxx'),
+(222, 3, 'root2', 1373244406, 'Re: d', 'On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> x\r\nasdf'),
+(223, 3, 'root2', 1373244456, 'asdf', 'asdf'),
+(224, 3, 'root2', 1373244465, 'Re: asdf', 'On Jul 07, 2013, 22:57 UTC, root2 wrote:\r\n> asdf\r\nasdf'),
+(225, 3, 'root2', 1373244484, 'Re: x', 'On Jul 07, 2013, 22:56 UTC, root2 wrote:\r\n> x\r\nx'),
+(226, 3, 'root2', 1373244499, 'Re: z', 'On Jul 07, 2013, 22:56 UTC, root2 wrote:\r\n> asdfasdf\r\nasdf'),
+(227, 3, 'root2', 1373244506, 'Re: x', 'On Jul 07, 2013, 22:56 UTC, root2 wrote:\r\n> x\r\n'),
+(228, 3, 'root2', 1373244526, 'Re: xx', 'On Jul 07, 2013, 23:39 UTC, root2 wrote:\r\n> xx\r\n'),
+(229, 3, 'root2', 1373244537, 'Re: asdf', 'On Jul 08, 2013, 00:47 UTC, root2 wrote:\r\n> asdf\r\n'),
+(230, 3, 'root2', 1373244545, 'Re: xx', 'On Jul 07, 2013, 23:39 UTC, root2 wrote:\r\n> xx\r\nasdf'),
+(231, 3, 'root2', 1373244584, 'Re: asdf111111111111111', 'On Jul 08, 2013, 00:47 UTC, root2 wrote:\r\n> asdf\r\nasdfasdfasdfasdfsdsdafas'),
+(232, 3, 'root2', 1373244868, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\n'),
+(233, 3, 'root2', 1373244879, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\n'),
+(234, 3, 'root2', 1373244892, 'x', 'asdf'),
+(235, 3, 'root2', 1373244901, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\nsadfsdfsdfasdf'),
+(236, 3, 'root2', 1373244912, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\nasdf'),
+(237, 3, 'root2', 1373244933, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\nsdfsdf'),
+(238, 3, 'root2', 1373244942, 'Re: d', 'On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > x\r\n> asdf\r\nasdfasdfasdfsdfsdf'),
+(239, 3, 'root2', 1373244950, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > x\r\n> > asdf\r\n> asdfasdfasdfsdfsdf\r\n'),
+(240, 3, 'root2', 1373244955, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > x\r\n> > > asdf\r\n> > asdfasdfasdfsdfsdf\r\n\r\n'),
+(241, 3, 'root2', 1373244959, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > x\r\n> > > > asdf\r\n> > > asdfasdfasdfsdfsdf\r\n> \r\n\r\n'),
+(242, 3, 'root2', 1373244969, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > x\r\n> > > > asdf\r\n> > > asdfasdfasdfsdfsdf\r\n> \r\n\r\n'),
+(243, 3, 'root2', 1373244975, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > x\r\n> > > > asdf\r\n> > > asdfasdfasdfsdfsdf\r\n> \r\n\r\nx'),
+(244, 3, 'root2', 1373245255, 'Re: d', 'On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > x\r\n> > > > asdf\r\n> > > asdfasdfasdfsdfsdf\r\n> \r\n\r\n'),
+(245, 3, 'root2', 1373245261, 'Re: d', 'On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > x\r\n> > > > > asdf\r\n> > > > asdfasdfasdfsdfsdf\r\n> > \r\n> \r\n\r\n'),
+(246, 3, 'root2', 1373245264, 'Re: d', 'On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > x\r\n> > > > > asdf\r\n> > > > asdfasdfasdfsdfsdf\r\n> > \r\n> \r\n\r\n'),
+(247, 3, 'root2', 1373245400, 'Re: d', 'On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > x\r\n> > > > > > asdf\r\n> > > > > asdfasdfasdfsdfsdf\r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(248, 3, 'root2', 1373245415, 'Re: d', 'On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > x\r\n> > > > > > asdf\r\n> > > > > asdfasdfasdfsdfsdf\r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(249, 3, 'root2', 1373245423, 'Re: d', 'On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > x\r\n> > > > > > > asdf\r\n> > > > > > asdfasdfasdfsdfsdf\r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(250, 3, 'root2', 1373245430, 'Re: d', 'On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > x\r\n> > > > > > > > asdf\r\n> > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(251, 3, 'root2', 1373247103, 'Re: d', 'On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > x\r\n> > > > > > > > > asdf\r\n> > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(252, 3, 'root2', 1373247121, 'Re: d', 'On Jul 08, 2013, 01:31 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > > x\r\n> > > > > > > > > > asdf\r\n> > > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > > \r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(253, 3, 'root2', 1373247126, 'Re: d', 'On Jul 08, 2013, 01:31 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > > x\r\n> > > > > > > > > > asdf\r\n> > > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > > \r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(254, 3, 'root2', 1373247135, 'Re: d', 'On Jul 08, 2013, 01:31 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > > x\r\n> > > > > > > > > > asdf\r\n> > > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > > \r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(255, 3, 'root2', 1373247151, 'Re: d', 'On Jul 08, 2013, 01:32 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:31 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > > > x\r\n> > > > > > > > > > > asdf\r\n> > > > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > > > \r\n> > > > > > > \r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(256, 3, 'root2', 1373247200, 'Re: d', 'On Jul 08, 2013, 01:32 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:31 UTC, root2 wrote:\r\n> > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > On Jul 08, 2013, 01:03 UTC, root2 wrote:\r\n> > > > > On Jul 08, 2013, 01:01 UTC, root2 wrote:\r\n> > > > > > On Jul 08, 2013, 01:00 UTC, root2 wrote:\r\n> > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > On Jul 08, 2013, 00:55 UTC, root2 wrote:\r\n> > > > > > > > > > On Jul 08, 2013, 00:46 UTC, root2 wrote:\r\n> > > > > > > > > > > On Jul 07, 2013, 23:04 UTC, root2 wrote:\r\n> > > > > > > > > > > > x\r\n> > > > > > > > > > > asdf\r\n> > > > > > > > > > asdfasdfasdfsdfsdf\r\n> > > > > > > > \r\n> > > > > > > \r\n> > > > > > \r\n> > > > > \r\n> > > > \r\n> > > \r\n> > \r\n> \r\n\r\n'),
+(257, 3, 'root2', 1373247368, 'Re: x', 'On Jul 07, 2013, 22:56 UTC, root2 wrote:\r\n> x\r\n'),
+(258, 3, 'root2', 1373247412, 'Re: x', 'On Jul 08, 2013, 00:54 UTC, root2 wrote:\r\n> asdf\r\n'),
+(259, 3, 'root2', 1373247423, 'Re: x', 'On Jul 08, 2013, 01:36 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:54 UTC, root2 wrote:\r\n> > asdf\r\n\r\n'),
+(260, 3, 'root2', 1373247440, 'asdf', 'asdfasdfasdfsdf'),
+(261, 3, 'root2', 1373247456, 'Re: asdf', 'On Jul 08, 2013, 01:37 UTC, root2 wrote:\r\n> asdfasdfasdfsdf\r\n'),
+(262, 3, 'root2', 1373247620, 'Re: asdf', 'On Jul 08, 2013, 01:37 UTC, root2 wrote:\r\n> On Jul 08, 2013, 01:37 UTC, root2 wrote:\r\n> > asdfasdfasdfsdf\r\n\r\n'),
+(263, 3, 'root2', 1373247630, 'Re: zzzzz', 'On Jul 04, 2013, 15:21 UTC, root2 wrote:\r\n> ..........\r\n> HHHHHHHHHH\r\n> \r\n> |||||||||\r\n'),
+(264, 3, 'root2', 1373247783, 'Re: ', 'On Jul 04, 2013, 17:36 UTC, root2 wrote:\r\n> \r\n'),
+(265, 3, 'root', 1376343774, 'Re: asdf', 'On Jul 08, 2013, 00:47 UTC, root2 wrote:\r\n> asdf\r\nas'),
+(266, 3, 'root', 1376344027, 'Re: asdf SJDKLFJS', 'On Jul 08, 2013, 00:47 UTC, root2 wrote:\r\n> asdf\r\n122'),
+(267, 3, 'root', 1376344065, 'xxxx', 'xxxx'),
+(268, 3, 'root', 1376344070, 'Re: asdf', 'On Jul 08, 2013, 01:37 UTC, root2 wrote:\r\n> asdfasdfasdfsdf\r\nxxxxx'),
+(269, 3, 'root', 1376344142, 'Re: xxxx', 'On Aug 12, 2013, 21:47 UTC, root wrote:\r\n> xxxx\r\nx'),
+(270, 3, 'root', 1376345049, 'Re: REPLY WUN!!', 'On Jun 30, 2013, 03:54 UTC, FOO wrote:\r\n> A REPLYZZ\r\nc'),
+(271, 3, 'root', 1376345679, 'Re: ', 'On Jul 04, 2013, 17:37 UTC, root2 wrote:\r\n> \r\ngrrr'),
+(272, 3, 'root', 1376345704, 'Re: zzzzz', 'On Jul 04, 2013, 15:21 UTC, root2 wrote:\r\n> ..........\r\n> HHHHHHHHHH\r\n> \r\n> |||||||||\r\nc'),
+(273, 3, 'root', 1376345727, 'Re: xxxx', 'On Aug 12, 2013, 21:47 UTC, root wrote:\r\n> xxxx\r\nx'),
+(274, 3, 'root', 1376345803, 'Re: xxxx', 'On Aug 12, 2013, 22:15 UTC, root wrote:\r\n> On Aug 12, 2013, 21:47 UTC, root wrote:\r\n> > xxxx\r\n> x\r\nx'),
+(275, 3, 'root', 1376345865, 'Re: x', 'On Jul 08, 2013, 01:36 UTC, root2 wrote:\r\n> On Jul 08, 2013, 00:54 UTC, root2 wrote:\r\n> > asdf\r\n\r\nx'),
+(276, 3, 'root', 1376345953, 'Re: x', 'On Jul 08, 2013, 00:54 UTC, root2 wrote:\r\n> asdf\r\nc'),
+(277, 3, 'root', 1376345976, 'xxxx', 'safsdf'),
+(278, 3, 'root', 1376345985, '54h', 'h'),
+(279, 3, 'root', 1376346009, 'sdfsdfadf', 'xcv'),
+(280, 3, 'root', 1376346025, 'x', 'x'),
+(281, 3, 'root', 1376346029, 'Re: x', 'On Aug 12, 2013, 22:20 UTC, root wrote:\r\n> x\r\ns'),
+(282, 3, 'root', 1376346036, 'Re: x', 'On Aug 12, 2013, 22:20 UTC, root wrote:\r\n> x\r\nx'),
+(283, 3, 'root', 1376346102, 'Re: x', 'On Aug 12, 2013, 22:20 UTC, root wrote:\r\n> x\r\n322'),
+(284, 3, 'root', 1376346774, 'Re: x', 'On Aug 12, 2013, 22:20 UTC, root wrote:\r\n> On Aug 12, 2013, 22:20 UTC, root wrote:\r\n> > x\r\n> x\r\nteh replyz'),
+(285, 3, 'root', 1379696045, 'BOLD', '*bold*\r\n/italic/\r\n_underline_'),
+(286, 3, 'root', 1379716538, 'asdf', 'asdf'),
+(287, 3, 'root', 1379716547, 'asdf', 'asdf'),
+(288, 3, 'root', 1379716552, 'asdf', 'asdf'),
+(289, 3, 'root', 1379716581, 'asdf', 'asdfasdf'),
+(290, 3, 'root', 1379716617, 'zzz', 'zzzz'),
+(291, 3, 'root', 1379717963, 'Re: zzz1', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> zzzz\r\n'),
+(292, 3, 'root', 1379717998, 'Re: zzz2', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> zzzz\r\n'),
+(293, 3, 'root', 1379717999, 'Re: zzz3', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> zzzz\r\n'),
+(294, 3, 'root', 1379718031, 'Re: zzzh', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> zzzz\r\n'),
+(295, 12, 'SYSTEM', 1379815368, 'This is the root-level post for asdfasdf.', ''),
+(296, 13, 'SYSTEM', 1379815378, 'This is the root-level post for asdfasdfasdf.', ''),
+(297, 3, '', 1379863441, 'Re: zzz', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> zzzz\r\nx'),
+(298, 3, '', 1379863447, 'sadf', 'asdf'),
+(299, 3, 'root', 1379864351, 'Re: asdf', 'On Sep 20, 2013, 22:35 UTC, root wrote:\r\n> asdf\r\nasdfsdfasdf'),
+(304, 3, '', 1379891985, 'Re: asdf', 'On Sep 20, 2013, 22:36 UTC, root wrote:\r\n> asdfasdf\r\nasdfasdf'),
+(305, 3, 'root', 1379892456, 'Re: sadf', 'On Sep 22, 2013, 15:24 UTC, Anonymous wrote:\r\n> asdf\r\nasdfasdfasf'),
+(306, 3, 'root', 1379892461, 'z', 'z'),
+(307, 11, '', 1379892515, 'asdfasdf', 'asdfasdf'),
+(308, 11, '', 1379892524, 'Re: asdfasdf', 'On Sep 22, 2013, 23:28 UTC, Anonymous wrote:\r\n> asdfasdf\r\nasfasdf'),
+(309, 11, 'aaa', 1379892553, 'Re: asdfasdf', 'On Sep 22, 2013, 23:28 UTC, Anonymous wrote:\r\n> asdfasdf\r\nccc'),
+(310, 11, 'aaa', 1379892560, 'c', 'c');
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `read_status`
 --
 
-DROP TABLE IF EXISTS `read_status`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `read_status` (
+CREATE TABLE IF NOT EXISTS `read_status` (
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
   `has_read` tinyint(1) NOT NULL,
   KEY `user_id` (`user_id`,`post_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `read_status`
 --
 
-LOCK TABLES `read_status` WRITE;
-/*!40000 ALTER TABLE `read_status` DISABLE KEYS */;
-INSERT INTO `read_status` VALUES (2,139,1),(2,115,1),(2,145,1),(2,124,1),(2,21,1),(2,20,1),(2,113,1),(2,123,1),(2,103,1),(2,102,1),(2,112,1),(2,95,1),(2,96,1),(2,98,1),(2,97,1),(2,99,1),(2,19,1),(2,83,1),(2,37,1),(2,125,1),(2,52,1),(2,82,1),(2,18,1),(2,81,1),(2,51,1),(2,80,1),(2,36,1),(2,79,1),(2,50,1),(2,78,1),(2,16,1),(2,73,1),(2,72,1),(2,34,1),(2,17,1),(2,141,1),(2,140,1),(2,142,1),(2,144,1),(2,143,1),(2,146,1),(2,147,1),(2,148,1),(2,149,1),(2,150,1),(2,114,1),(2,131,1),(2,137,1),(2,105,1),(2,110,1),(2,107,1),(2,106,1),(2,111,1),(2,108,1),(2,138,1),(2,14,1),(2,65,1),(2,43,1),(2,152,1);
-/*!40000 ALTER TABLE `read_status` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `read_status` (`user_id`, `post_id`, `has_read`) VALUES
+(2, 154, 1),
+(2, 124, 1),
+(2, 113, 1),
+(2, 21, 1),
+(2, 19, 1),
+(2, 20, 1),
+(2, 86, 1),
+(2, 54, 1),
+(2, 87, 1),
+(2, 38, 1),
+(2, 88, 1),
+(2, 55, 1),
+(2, 89, 1),
+(2, 78, 1),
+(2, 50, 1),
+(2, 79, 1),
+(2, 36, 1),
+(2, 80, 1),
+(2, 51, 1),
+(2, 81, 1),
+(2, 18, 1),
+(2, 95, 1),
+(2, 99, 1),
+(2, 98, 1),
+(2, 96, 1),
+(2, 97, 1),
+(2, 153, 1),
+(2, 152, 1),
+(2, 110, 1),
+(2, 111, 1),
+(2, 108, 1),
+(2, 105, 1),
+(2, 102, 1),
+(2, 143, 1),
+(2, 15, 1),
+(2, 33, 1),
+(2, 13, 1),
+(2, 61, 1),
+(2, 14, 1),
+(2, 65, 1),
+(2, 43, 1),
+(2, 64, 1),
+(2, 141, 1),
+(2, 17, 1),
+(2, 16, 1),
+(2, 123, 1),
+(2, 131, 1),
+(2, 137, 1),
+(2, 103, 1),
+(2, 69, 1),
+(2, 115, 1),
+(2, 35, 1),
+(2, 75, 1),
+(2, 76, 1),
+(2, 49, 1),
+(2, 77, 1),
+(2, 48, 1),
+(2, 74, 1),
+(2, 32, 1),
+(2, 63, 1),
+(2, 42, 1),
+(2, 62, 1),
+(2, 112, 1),
+(2, 106, 1),
+(2, 144, 1),
+(2, 107, 1),
+(2, 140, 1),
+(2, 139, 1),
+(2, 155, 1),
+(2, 91, 1),
+(2, 39, 1),
+(2, 57, 1),
+(2, 147, 1),
+(2, 149, 1),
+(2, 93, 1),
+(2, 47, 1),
+(2, 114, 1),
+(2, 156, 1),
+(2, 158, 1),
+(2, 160, 1),
+(2, 159, 1),
+(2, 157, 1),
+(2, 161, 1),
+(2, 162, 1),
+(2, 148, 1),
+(2, 167, 1),
+(2, 168, 1),
+(2, 164, 1),
+(2, 165, 1),
+(2, 169, 1),
+(2, 171, 1),
+(2, 172, 1),
+(2, 176, 1),
+(2, 177, 1),
+(2, 175, 1),
+(2, 178, 1),
+(2, 180, 1),
+(2, 181, 1),
+(2, 182, 1),
+(2, 183, 1),
+(2, 184, 1),
+(2, 185, 1),
+(2, 187, 1),
+(2, 188, 1),
+(2, 190, 1),
+(2, 189, 1),
+(2, 191, 1),
+(2, 192, 1),
+(2, 193, 1),
+(2, 194, 1),
+(2, 173, 1),
+(2, 197, 1),
+(2, 199, 1),
+(2, 201, 1),
+(2, 202, 1),
+(2, 203, 1),
+(2, 204, 1),
+(2, 206, 1),
+(2, 207, 1),
+(2, 208, 1),
+(2, 209, 1),
+(2, 210, 1),
+(2, 211, 1),
+(2, 212, 1),
+(2, 213, 1),
+(2, 214, 1),
+(2, 217, 1),
+(2, 218, 1),
+(2, 219, 1),
+(2, 216, 1),
+(2, 215, 1),
+(2, 174, 1),
+(2, 179, 1),
+(2, 205, 1),
+(2, 220, 1),
+(2, 221, 1),
+(2, 228, 1),
+(2, 223, 1),
+(2, 229, 1),
+(2, 230, 1),
+(2, 231, 1),
+(2, 224, 1),
+(2, 226, 1),
+(2, 227, 1),
+(2, 225, 1),
+(2, 222, 1),
+(2, 237, 1),
+(2, 235, 1),
+(2, 236, 1),
+(2, 233, 1),
+(2, 232, 1),
+(2, 238, 1),
+(2, 239, 1),
+(2, 240, 1),
+(2, 244, 1),
+(2, 246, 1),
+(2, 245, 1),
+(2, 243, 1),
+(2, 242, 1),
+(2, 241, 1),
+(2, 248, 1),
+(2, 249, 1),
+(2, 250, 1),
+(2, 251, 1),
+(2, 252, 1),
+(2, 253, 1),
+(2, 254, 1),
+(2, 247, 1),
+(2, 234, 1),
+(2, 258, 1),
+(2, 259, 1),
+(2, 260, 1),
+(2, 261, 1),
+(2, 262, 1),
+(2, 263, 1),
+(2, 264, 1),
+(1, 217, 1),
+(1, 206, 1),
+(1, 214, 1),
+(1, 223, 1),
+(1, 260, 1),
+(1, 268, 1),
+(1, 267, 1),
+(1, 269, 1),
+(1, 219, 1),
+(1, 14, 1),
+(1, 65, 1),
+(1, 270, 1),
+(1, 204, 1),
+(1, 203, 1),
+(1, 205, 1),
+(1, 194, 1),
+(1, 195, 1),
+(1, 141, 1),
+(1, 271, 1),
+(1, 124, 1),
+(1, 139, 1),
+(1, 263, 1),
+(1, 272, 1),
+(1, 273, 1),
+(1, 274, 1),
+(1, 258, 1),
+(1, 234, 1),
+(1, 275, 1),
+(1, 259, 1),
+(1, 276, 1),
+(1, 277, 1),
+(1, 278, 1),
+(1, 280, 1),
+(1, 281, 1),
+(1, 282, 1),
+(1, 283, 1),
+(1, 284, 1),
+(1, 262, 1),
+(1, 285, 1),
+(1, 279, 1),
+(1, 215, 1),
+(1, 286, 1),
+(1, 287, 1),
+(1, 288, 1),
+(1, 289, 1),
+(1, 290, 1),
+(1, 230, 1),
+(1, 291, 1),
+(1, 294, 1),
+(1, 293, 1),
+(1, 292, 1),
+(1, 218, 1),
+(1, 220, 1),
+(1, 155, 1),
+(1, 299, 1),
+(1, 298, 1),
+(1, 306, 1),
+(9, 307, 1),
+(9, 309, 1),
+(9, 308, 1),
+(9, 310, 1);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `replies`
 --
 
-DROP TABLE IF EXISTS `replies`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `replies` (
+CREATE TABLE IF NOT EXISTS `replies` (
   `parent_id` int(11) NOT NULL,
   `child_id` int(11) NOT NULL,
   KEY `parent_id` (`parent_id`,`child_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `replies`
 --
 
-LOCK TABLES `replies` WRITE;
-/*!40000 ALTER TABLE `replies` DISABLE KEYS */;
-INSERT INTO `replies` VALUES (9,13),(9,14),(9,15),(9,16),(9,17),(9,18),(9,19),(9,20),(9,21),(9,95),(9,102),(9,103),(9,113),(9,115),(9,123),(9,124),(9,139),(9,140),(9,141),(9,142),(9,143),(9,144),(9,145),(9,146),(9,147),(9,148),(13,31),(13,41),(13,61),(13,104),(13,131),(14,32),(14,43),(14,65),(15,33),(15,45),(15,69),(16,34),(16,47),(16,73),(17,35),(17,49),(17,77),(18,36),(18,51),(18,81),(19,37),(19,53),(19,85),(20,38),(20,55),(20,89),(21,39),(21,57),(21,93),(31,40),(31,59),(31,100),(32,42),(32,63),(33,44),(33,67),(34,46),(34,71),(35,48),(35,75),(36,50),(36,79),(37,52),(37,83),(38,54),(38,87),(39,56),(39,91),(40,58),(41,60),(42,62),(43,64),(44,66),(45,68),(46,70),(47,72),(48,74),(49,76),(50,78),(51,80),(52,82),(53,84),(54,86),(55,88),(56,90),(57,92),(95,96),(95,99),(96,97),(96,98),(102,105),(105,106),(105,108),(106,107),(108,110),(108,111),(110,112),(113,114),(117,118),(118,119),(120,121),(121,122),(124,125),(124,126),(125,127),(126,138),(131,137),(148,149),(149,150),(151,152);
-/*!40000 ALTER TABLE `replies` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `replies` (`parent_id`, `child_id`) VALUES
+(9, 13),
+(9, 14),
+(9, 15),
+(9, 16),
+(9, 17),
+(9, 18),
+(9, 19),
+(9, 20),
+(9, 21),
+(9, 95),
+(9, 102),
+(9, 103),
+(9, 113),
+(9, 115),
+(9, 123),
+(9, 124),
+(9, 139),
+(9, 140),
+(9, 141),
+(9, 142),
+(9, 143),
+(9, 144),
+(9, 145),
+(9, 146),
+(9, 147),
+(9, 148),
+(9, 153),
+(9, 156),
+(9, 157),
+(9, 158),
+(9, 159),
+(9, 160),
+(9, 161),
+(9, 162),
+(9, 163),
+(9, 164),
+(9, 165),
+(9, 166),
+(9, 167),
+(9, 168),
+(9, 169),
+(9, 170),
+(9, 171),
+(9, 172),
+(9, 173),
+(9, 174),
+(9, 175),
+(9, 176),
+(9, 183),
+(9, 185),
+(9, 187),
+(9, 191),
+(9, 193),
+(9, 194),
+(9, 197),
+(9, 199),
+(9, 201),
+(9, 203),
+(9, 206),
+(9, 214),
+(9, 215),
+(9, 216),
+(9, 218),
+(9, 219),
+(9, 220),
+(9, 223),
+(9, 234),
+(9, 260),
+(9, 267),
+(9, 277),
+(9, 278),
+(9, 279),
+(9, 280),
+(9, 285),
+(9, 286),
+(9, 287),
+(9, 288),
+(9, 289),
+(9, 290),
+(9, 298),
+(9, 306),
+(13, 31),
+(13, 41),
+(13, 61),
+(13, 104),
+(13, 131),
+(14, 32),
+(14, 43),
+(14, 65),
+(15, 33),
+(15, 45),
+(15, 69),
+(16, 34),
+(16, 47),
+(16, 73),
+(17, 35),
+(17, 49),
+(17, 77),
+(18, 36),
+(18, 51),
+(18, 81),
+(19, 37),
+(19, 53),
+(19, 85),
+(20, 38),
+(20, 55),
+(20, 89),
+(21, 39),
+(21, 57),
+(21, 93),
+(31, 40),
+(31, 59),
+(31, 100),
+(32, 42),
+(32, 63),
+(33, 44),
+(33, 67),
+(34, 46),
+(34, 71),
+(35, 48),
+(35, 75),
+(36, 50),
+(36, 79),
+(37, 52),
+(37, 83),
+(38, 54),
+(38, 87),
+(39, 56),
+(39, 91),
+(40, 58),
+(41, 60),
+(42, 62),
+(43, 64),
+(44, 66),
+(45, 68),
+(46, 70),
+(47, 72),
+(48, 74),
+(49, 76),
+(50, 78),
+(51, 80),
+(52, 82),
+(53, 84),
+(54, 86),
+(55, 88),
+(56, 90),
+(57, 92),
+(65, 270),
+(95, 96),
+(95, 99),
+(96, 97),
+(96, 98),
+(102, 105),
+(105, 106),
+(105, 108),
+(106, 107),
+(108, 110),
+(108, 111),
+(110, 112),
+(113, 114),
+(117, 118),
+(118, 119),
+(120, 121),
+(121, 122),
+(124, 125),
+(124, 126),
+(125, 127),
+(126, 138),
+(131, 137),
+(139, 263),
+(139, 272),
+(140, 264),
+(141, 271),
+(148, 149),
+(149, 150),
+(151, 152),
+(151, 154),
+(151, 307),
+(151, 310),
+(154, 155),
+(168, 182),
+(171, 181),
+(172, 180),
+(173, 196),
+(175, 178),
+(176, 177),
+(178, 179),
+(183, 184),
+(185, 186),
+(187, 188),
+(187, 189),
+(187, 190),
+(191, 192),
+(194, 195),
+(197, 198),
+(199, 200),
+(201, 202),
+(203, 204),
+(204, 205),
+(206, 207),
+(207, 208),
+(207, 209),
+(208, 210),
+(209, 211),
+(210, 212),
+(212, 213),
+(214, 217),
+(215, 226),
+(216, 225),
+(216, 227),
+(216, 257),
+(218, 224),
+(219, 222),
+(220, 221),
+(220, 228),
+(220, 230),
+(222, 232),
+(222, 233),
+(222, 235),
+(222, 236),
+(222, 237),
+(222, 238),
+(223, 229),
+(223, 231),
+(223, 265),
+(223, 266),
+(234, 258),
+(234, 276),
+(238, 239),
+(239, 240),
+(240, 241),
+(240, 242),
+(240, 243),
+(240, 244),
+(244, 245),
+(244, 246),
+(246, 247),
+(246, 248),
+(248, 249),
+(249, 250),
+(250, 251),
+(251, 252),
+(251, 253),
+(251, 254),
+(253, 255),
+(253, 256),
+(258, 259),
+(258, 275),
+(260, 261),
+(260, 268),
+(261, 262),
+(267, 269),
+(267, 273),
+(273, 274),
+(280, 281),
+(280, 282),
+(280, 283),
+(282, 284),
+(287, 299),
+(289, 304),
+(290, 291),
+(290, 292),
+(290, 293),
+(290, 294),
+(290, 297),
+(298, 305),
+(307, 308),
+(307, 309);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `settings`
 --
 
-DROP TABLE IF EXISTS `settings`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `settings` (
+CREATE TABLE IF NOT EXISTS `settings` (
   `name` varchar(255) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `settings`
 --
 
-LOCK TABLES `settings` WRITE;
-/*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` VALUES ('class.anonymous','1'),('class.default','0'),('recaptcha.onregister','1'),('recaptcha.private_key','6LfNxuMSAAAAALg3l1-c6y9AMGk8gcaBWZYUO9x7'),('recaptcha.public_key','6LfNxuMSAAAAAMCg4_IBrD00ee1-OeW5kA9BazEo');
-/*!40000 ALTER TABLE `settings` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `settings` (`name`, `value`) VALUES
+('user_group.default', '1'),
+('recaptcha.onregister', '1'),
+('recaptcha.private_key', '6LfNxuMSAAAAALg3l1-c6y9AMGk8gcaBWZYUO9x7'),
+('recaptcha.public_key', '6LfNxuMSAAAAAMCg4_IBrD00ee1-OeW5kA9BazEo');
+
+-- --------------------------------------------------------
 
 --
--- Table structure for table `user_classes`
+-- Table structure for table `user_groups`
 --
 
-DROP TABLE IF EXISTS `user_classes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_classes` (
+CREATE TABLE IF NOT EXISTS `user_groups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
--- Dumping data for table `user_classes`
+-- Dumping data for table `user_groups`
 --
 
-LOCK TABLES `user_classes` WRITE;
-/*!40000 ALTER TABLE `user_classes` DISABLE KEYS */;
-INSERT INTO `user_classes` VALUES (1,'Anonymous'),(0,'Default');
-/*!40000 ALTER TABLE `user_classes` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+INSERT INTO `user_groups` (`id`, `name`) VALUES
+(1, 'Default'),
+(7, 'trusted');
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- --------------------------------------------------------
 
--- Dump completed on 2013-07-04 13:29:53
+--
+-- Table structure for table `user_group_membership`
+--
+
+CREATE TABLE IF NOT EXISTS `user_group_membership` (
+  `account_id` int(11) NOT NULL,
+  `user_group_id` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_group_membership`
+--
+
+INSERT INTO `user_group_membership` (`account_id`, `user_group_id`) VALUES
+(1, 1),
+(1, 7),
+(8, 1),
+(7, 1),
+(6, 1);
