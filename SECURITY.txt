@@ -1,0 +1,68 @@
+This software's number one priority is security. Security is more important than
+correctness, usability, and features. If it is not secure, it cannot be used,
+and all other effort is wasted.
+
+This document outlines the secure coding practices you must use while modifying
+the application's code. This is not an exhaustive list. These rules are in
+addition to the ones you will find on OWASP and elsewhere.
+
+1. Everything is malicious.
+
+There is no distinction between user input and computed or constant values.
+Everything is assumed to be malicious. A function, no matter where, must assume
+all of its arguments are maliciously chosen by an attacker. This means that the
+return value of even built-in functions like time() always have to be escaped
+when inserted into HTML or SQL queries.
+
+This may seem like more work, but it is worth it. It produces semantically-
+correct code. For example, the following code works fine, but is NOT
+semantically-correct:
+
+    $x = time();
+    echo "<p>The current time is $x</p>";
+
+Its semantic meaning is: Take the return value of time() and insert it at the
+end of a <p> element to be parsed as HTML code. This is wrong because time()
+does not return HTML code; it returns an integer. The right way to write it is:
+
+    $x = htmlentities(time(), ENT_QUOTES);
+    echo "<p>The current time is $x</p>";
+
+The semantic meaning is: Create HTML code that the browser will understand as
+the string representation of time()'s return value and insert the HTML code into
+the end of a <p> element. This is what we want. We are inserting HTML code into
+HTML code, not an integer into HTML code.
+
+2. All SQL statements are parameterized.
+
+All strings used in SQL queries must be string literals or string constants.
+Applying any string manipulation operation (concatenating, etc.) to them before
+passing them to PDO::prepare() is not allowed. Creating a copy of the entire
+string is the only operation that may be allowed.
+
+3. Validation is only a secondary defense.
+
+Values must only be checked for validity as a secondary defense. The code should
+be secure when all such checks are removed. For example, this is WRONG:
+
+    $x = $_GET['x'];
+    if ($x == "hello" || $x == "goodbye") {
+        echo "<p>You said: $x</p>";
+    } else {
+        die('Invalid value for x.');
+    }
+
+This is RIGHT:
+
+    $x = $_GET['x'];
+    if ($x == "hello" || $x == "goodbye") {
+        $safe_x = htmlentities($x, ENT_QUOTES);
+        echo "<p>You said: $safe_x</p>";
+    } else {
+        die('Invalid value for x.');
+    }
+
+Just because $x is validated to be a safe value does not mean it should be
+assumed to be safe. The validation is a secondary defense. The call to
+htmlentities() is the primary defense.
+
