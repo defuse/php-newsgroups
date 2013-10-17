@@ -115,6 +115,7 @@ class MainView
 
             <div id="postview">
                 <div style="float: right;">
+                    <input type="button" class="markunreadbutton" value="Mark Unread">
                     <input type="button" class="replybutton" value="Reply"/>
                 </div>
                 <table id="postattrs">
@@ -125,6 +126,7 @@ class MainView
                 <div id="postcontents">
                 </div>
                 <div style="float: right; margin-top: 10px;">
+                    <input type="button" class="markunreadbutton" value="Mark Unread">
                     <input type="button" class="replybutton" value="Reply"/>
                 </div>
                 <div style="clear: both;"></div>

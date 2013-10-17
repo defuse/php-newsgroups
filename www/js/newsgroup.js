@@ -27,7 +27,7 @@ $( document ).ready(function () {
     function postItemClick() {
         /* get the id of the post that was just clicked */
         var id = $(this).children('.postid').attr('value');
-        /* un-highlight all the other posts */
+        /* un-highlight (de-select) all the other posts */
         $('.post').css('background-color', 'inherit');
         /* highlight the one that was just clicked */
         $(this).css('background-color', '#00FFFF');
@@ -86,6 +86,11 @@ $( document ).ready(function () {
         }
     });
 
+    /* Clicking 'Mark Unread' */
+    $( '.markunreadbutton' ).click(function () {
+        markUnread(viewing_id);
+    });
+
     /* Clicking 'New Post' */
     $( '.newpostbutton' ).click(function () {
         var w = window.open(
@@ -110,6 +115,7 @@ $( document ).ready(function () {
     /* Auto updates */
     var last_update_time = $('#currenttime').attr('value');
     setInterval("checkForNewPosts(true)", 30000);
+
 
     function checkForNewPosts(silent) {
         getNewPosts(function (posts) {
@@ -269,6 +275,31 @@ $( document ).ready(function () {
                 f(null);
             }
         }, "xml"); 
+    }
+
+    function markUnread(post_id) {
+        var data = { };
+        data.mark_unread_id = post_id;
+        $.post("ajax.php", data, function (data) {
+            var stat = $(data).find('status').text();
+            if (stat === 'success') {
+                var p = $('.postid').filter("[value='" + post_id + "']");
+                if (p.length > 0) {
+                    var post_row = p.parents('.post');
+
+                    /* No matter what it is (parent or reply), set it to unread */
+                    $(post_row).find('.read').removeClass('read').addClass('unread');
+                    $(post_row).find('.subunread').removeClass('subunread').addClass('unread');
+
+                    /* Set the top-level post to subunread if it's read. */
+                    $(post_row).parents(".hiddenposts").prev().find('.read').removeClass('read').addClass('subunread');
+                } else {
+                    /* The selected post is not in the list, so nothing changes */
+                }
+            } else {
+                alert('Error marking post as unread.');
+            }
+        });
     }
 
     function getPostFromXML(xml) {

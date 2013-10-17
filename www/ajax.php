@@ -33,6 +33,16 @@ if (isset($_POST['get_posts_after']) && !empty($_POST['get_posts_after'])) {
     }
 }
 
+if (isset($_POST['mark_unread_id']) && !empty($_POST['mark_unread_id'])) {
+    try {
+        $post = new Post($_POST['mark_unread_id']);
+        $user->setRead($post, false);
+        send_ajax_success();
+    } catch (PostDoesNotExistException $e) {
+        send_ajax_failure();
+    }
+}
+
 function send_ajax_post($post)
 {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
@@ -95,6 +105,15 @@ function send_ajax_failure()
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $xml .= "<response>";
     $xml .= "<status>fail</status>";
+    $xml .= "</response>";
+    send_xml_response($xml);
+}
+
+function send_ajax_success()
+{
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+    $xml .= "<response>";
+    $xml .= "<status>success</status>";
     $xml .= "</response>";
     send_xml_response($xml);
 }
