@@ -14,7 +14,6 @@ class AdminUserView extends View
     <tr>
         <th>Username</th>
         <th>Administrator</th>
-        <th>User Class</th>
         <th>Delete</th>
     </tr>
     <?php
