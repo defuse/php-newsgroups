@@ -18,7 +18,7 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
             send_ajax_failure();
         }
     } catch (PostDoesNotExistException $e) {
-        sendsend_ajax_failure();
+        send_ajax_failure();
     }
 }
 
