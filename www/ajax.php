@@ -43,6 +43,22 @@ if ($user && isset($_POST['mark_unread_id']) && !empty($_POST['mark_unread_id'])
     }
 }
 
+if ($user && isset($_POST['delete_post_id']) && !empty($_POST['delete_post_id'])) {
+    try {
+        $post = new Post($_POST['delete_post_id']);
+        /* A user can only delete a post tree if they wrote all of the posts in
+            the tree or they are an administrator. */
+        if ($user->isAdmin() || $post->treeWrittenBy($user)) {
+            $post->recursiveDelete();
+            send_ajax_success();
+        } else {
+            send_ajax_failure();
+        }
+    } catch (PostDoesNotExistException $e) {
+        send_ajax_failure();
+    }
+}
+
 function send_ajax_post($post)
 {
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";

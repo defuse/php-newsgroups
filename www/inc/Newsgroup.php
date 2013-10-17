@@ -176,6 +176,50 @@ class Post
         return $this->id == $this->getGroup()->getRootLevelPostID();
     }
 
+    function treeWrittenBy($user)
+    {
+        // FIXME: Make this class use actual user objects, not just the
+        // username. See issue #3.
+        if ($user->getUsername() == $this->user) {
+            $children = $this->getChildren();
+            foreach ($children as $child) {
+                if (!$child->treeWrittenBy($user)) {
+                    return FALSE;
+                }
+            }
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    function recursiveDelete()
+    {
+        global $DB;
+
+        /* Delete all of this post's children. */
+        $children = $this->getChildren();
+        foreach ($children as $child) {
+            $child->recursiveDelete();
+        }
+
+        /* Delete the actual post. */
+        $q = $DB->prepare("DELETE FROM posts WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+
+        /* Delete all of the 'readings' of this post */
+        $q = $DB->prepare("DELETE FROM read_status WHERE post_id = :post_id");
+        $q->bindValue(':post_id', $this->id);
+        $q->execute();
+
+        /* Delete the relationship with this post's parent. The children and
+         * their relationship to this post is already gone. */
+        $q = $DB->prepare("DELETE FROM replies WHERE child_id = :child_id");
+        $q->bindValue(':child_id', $this->id);
+        $q->execute();
+    }
+
 }
 
 class Newsgroup

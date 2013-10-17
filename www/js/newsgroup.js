@@ -91,6 +91,13 @@ $( document ).ready(function () {
         markUnread(viewing_id);
     });
 
+    /* Clicking 'Delete' */
+    $( '.deletebutton' ).click(function () {
+        if (window.confirm("Are you sure you want to delete this post and all of its replies?")) {
+            deletePost(viewing_id);
+        }
+    });
+
     /* Clicking 'New Post' */
     $( '.newpostbutton' ).click(function () {
         var w = window.open(
@@ -298,6 +305,21 @@ $( document ).ready(function () {
                 }
             } else {
                 alert('Error marking post as unread.');
+            }
+        });
+    }
+
+    function deletePost(post_id) {
+        var data = {};
+        data.delete_post_id = post_id;
+        $.post("ajax.php", data, function (data) {
+            var stat = $(data).find('status').text();
+            if (stat === 'success') {
+                $("#postview").hide();
+                // TODO: delete the post and all replies from the UI.
+                // TODO: adjust the read status of the top-level (if any).
+            } else {
+                alert('The post could not be deleted. Either it is already gone or someone else replied to it and you are not an administrator');
             }
         });
     }
