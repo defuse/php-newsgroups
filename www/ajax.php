@@ -33,7 +33,7 @@ if (isset($_POST['get_posts_after']) && !empty($_POST['get_posts_after'])) {
     }
 }
 
-if (isset($_POST['mark_unread_id']) && !empty($_POST['mark_unread_id'])) {
+if ($user && isset($_POST['mark_unread_id']) && !empty($_POST['mark_unread_id'])) {
     try {
         $post = new Post($_POST['mark_unread_id']);
         $user->setRead($post, false);
