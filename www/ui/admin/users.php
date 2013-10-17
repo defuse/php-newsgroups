@@ -14,6 +14,7 @@ class AdminUserView extends View
     <tr>
         <th>Username</th>
         <th>Administrator</th>
+        <th>Disable</th>
         <th>Delete</th>
     </tr>
     <?php
@@ -39,6 +40,26 @@ class AdminUserView extends View
                         <input type="submit" name="admin_give" value="Make Administrator" />
                     </form>
                 </td>
+                <?
+            }
+
+            if ($user->isDisabled()) {
+                ?>
+                    <td>
+                        <form action="admin_users.php" method="POST">
+                            <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                            <input type="submit" name="enable" value="Enable" />
+                        </form>
+                    </td>
+                <?
+            } else {
+                ?>
+                    <td>
+                        <form action="admin_users.php" method="POST">
+                            <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                            <input type="submit" name="disable" value="Disable" />
+                        </form>
+                    </td>
                 <?
             }
 

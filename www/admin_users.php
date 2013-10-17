@@ -34,6 +34,26 @@ if (isset($_POST['admin_revoke'])) {
     }
 }
 
+if (isset($_POST['disable'])) {
+    $username = $_POST['username'];
+    try {
+        $user = new Account($username);
+        $user->setDisabled(true);
+    } catch (UserDoesNotExistException $e) {
+        $layout->flash = "User does not exist.";
+    }
+}
+
+if (isset($_POST['enable'])) {
+    $username = $_POST['username'];
+    try {
+        $user = new Account($username);
+        $user->setDisabled(false);
+    } catch (UserDoesNotExistException $e) {
+        $layout->flash = "User does not exist.";
+    }
+}
+
 if (isset($_POST['delete_user'])) {
     try {
         $username = $_POST['username'];
