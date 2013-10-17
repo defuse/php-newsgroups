@@ -12,7 +12,8 @@ There is no distinction between user input and computed or constant values.
 Everything is assumed to be malicious. A function, no matter where, must assume
 all of its arguments are maliciously chosen by an attacker. This means that the
 return value of even built-in functions like time() always have to be escaped
-when inserted into HTML or SQL queries.
+when inserted into HTML or SQL queries. The only exception to this rule is the
+"$DB" global variable, which is assigned to only once in inc/mysql.php.
 
 This may seem like more work, but it is worth it. It produces semantically-
 correct code. For example, the following code works fine, but is NOT
