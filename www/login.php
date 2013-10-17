@@ -11,8 +11,14 @@ if (isset($_POST['submit'])) {
     $password = $_POST['password'];
 
     if (Login::TryLogin($username, $password)) {
-        header('Location: index.php');
-        die();
+        $user = Login::GetLoggedInUser();
+        if (!$user->isDisabled()) {
+            header('Location: index.php');
+            die();
+        } else {
+            Login::LogOut();
+            $layout->flash = "Account is disabled.";
+        }
     } else { 
         $layout->flash = "Incorrect username or password.";
     }

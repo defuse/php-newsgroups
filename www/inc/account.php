@@ -62,6 +62,12 @@ class Login
 
     public static function LogOut()
     {
+        // Explicitly remove the account in the session in case the stuff
+        // below fails for whatever reason.
+        if (isset($_SESSION['account'])) {
+            $_SESSION['account'] = null;
+        }
+
         self::StartSession();
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -220,6 +226,29 @@ class Account
 
         $q = $DB->prepare("UPDATE accounts SET is_admin = :is_admin WHERE id = :id");
         $q->bindValue(':is_admin', $is_admin);
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+    }
+
+    function isDisabled()
+    {
+        global $DB;
+
+        $q = $DB->prepare("SELECT is_disabled FROM accounts WHERE id = :id");
+        $q->bindValue(':id', $this->id);
+        $q->execute();
+        $row = $q->fetch();
+
+        return $row['is_disabled'] == 1;
+    }
+
+    function setDisabled($is_disabled)
+    {
+        $is_disabled = ($is_disabled) ? 1 : 0;
+        global $DB;
+
+        $q = $DB->prepare("UPDATE accounts SET is_disabled = :is_disabled WHERE id = :id");
+        $q->bindValue(':is_disabled', $is_disabled);
         $q->bindValue(':id', $this->id);
         $q->execute();
     }
