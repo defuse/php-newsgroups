@@ -16,6 +16,7 @@ class AdminUserView extends View
         <th>Administrator</th>
         <th>Disable</th>
         <th>Delete</th>
+        <th>Password Reset</th>
     </tr>
     <?php
         $all_users = Account::GetAllUsers();
@@ -68,6 +69,14 @@ class AdminUserView extends View
                     <form action="admin_users.php" method="POST">
                         <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
                         <input type="submit" name="delete_user" value="Delete" onclick="return confirm('Are you sure?');"/>
+                    </form>
+                </td>
+
+                <td>
+                    <form action="admin_users.php" method="POST">
+                        <input type="hidden" name="username" value="<?php echo $safe_name; ?>" />
+                        <input type="password" name="new_password" value="" />
+                        <input type="submit" name="reset_password" value="Change Password" />
                     </form>
                 </td>
             <?

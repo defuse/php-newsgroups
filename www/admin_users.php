@@ -69,5 +69,21 @@ if (isset($_POST['delete_user'])) {
     }
 }
 
+if (isset($_POST['reset_password'])) {
+    $username = $_POST['username'];
+    $new_password = $_POST['new_password'];
+    try {
+        $user = new Account($username);
+        if (empty($new_password)) {
+            $layout->flash = "New password cannot be empty.";
+        } else {
+            $user->setPassword($new_password);
+            $layout->flash = "Password changed.";
+        }
+    } catch (UserDoesNotExistException $e) {
+        $layout->flash = "User does not exist.";
+    }
+}
+
 $layout->show();
 ?>
