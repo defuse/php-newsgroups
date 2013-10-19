@@ -10,47 +10,32 @@ $( document ).ready(function () {
     $( '.expander' ).dblclick(expanderClick);
 
     function expanderClick(e) {
-        if ($.trim($(this).text()) === '+') {
-            $(this).parents('.post').next().show();
-            $(this).html('&ndash;');
-        } else {
-            $(this).parents('.post').next().hide();
-            $(this).html('+');
+        var post_id = $(this).parents('.post').children('.postid').attr('value');
+        var post = getPostObjectFromId(post_id);
+        if (post.isExpandable()) {
+            if (post.isExpanded()) {
+                post.collapse();
+            } else {
+                post.expand();
+            }
+            /* don't trigger the post view click event */
+            e.stopPropagation();
         }
-        /* don't trigger the post view click event */
-        e.stopPropagation();
     }
 
     /* Clicking posts in the list */
     $( '.post' ).click(postItemClick);
 
     function postItemClick() {
-        /* get the id of the post that was just clicked */
-        var id = $(this).children('.postid').attr('value');
-        /* un-highlight (de-select) all the other posts */
-        $('.post').css('background-color', 'inherit');
-        /* highlight the one that was just clicked */
-        $(this).css('background-color', '#00FFFF');
+        var post_id = $(this).children('.postid').attr('value');
+        var post = getPostObjectFromId(post_id);
 
-        /* if this is a top-level post, and there are unread sub-posts... */
-        if ($(this).next('.hiddenposts').find('.unread, .newunread').length > 0) {
-            $(this).find('.unread').removeClass('unread').addClass('subunread');
-            $(this).find('.newunread').removeClass('newunread').addClass('subunread');
-        } else {
-            $(this).find('.unread').removeClass('unread').addClass('read');
-            $(this).find('.newunread').removeClass('newunread').addClass('read');
-        }
+        unhighlightAllPosts();
+        post.highlight();
 
-        var reply_container = $(this).parents('.hiddenposts');
-        /* if this is a reply post */
-        if (reply_container.length > 0) {
-            root_post = reply_container.prev('.post');
-            /* if all other replies to the 'root' post are read */
-            if (reply_container.find('.unread, .newunread').length === 0) {
-                root_post.find('.subunread').removeClass('subunread').addClass('read');
-            }
-        }
-        showPost(id);
+        post.setRead();
+
+        showPost(post_id);
     }
 
     /* Double clicking posts in the list */
@@ -162,6 +147,7 @@ $( document ).ready(function () {
                             * able to add it later. */
                         }
                     } else {
+                        // TODO: Make this use the new post reply thing.
                         /* It's a reply. Find the post it's in reply to */
                         var p = $('.postid').filter("[value='" + post.parent_id + "']");
                         if (p.length > 0) {
@@ -290,19 +276,8 @@ $( document ).ready(function () {
         $.post("ajax.php", data, function (data) {
             var stat = $(data).find('status').text();
             if (stat === 'success') {
-                var p = $('.postid').filter("[value='" + post_id + "']");
-                if (p.length > 0) {
-                    var post_row = p.parents('.post');
-
-                    /* No matter what it is (parent or reply), set it to unread */
-                    $(post_row).find('.read').removeClass('read').addClass('unread');
-                    $(post_row).find('.subunread').removeClass('subunread').addClass('unread');
-
-                    /* Set the top-level post to subunread if it's read. */
-                    $(post_row).parents(".hiddenposts").prev().find('.read').removeClass('read').addClass('subunread');
-                } else {
-                    /* The selected post is not in the list, so nothing changes */
-                }
+                var post = getPostObjectFromId(post_id);
+                post.setUnread();
             } else {
                 alert('Error marking post as unread.');
             }
@@ -316,8 +291,8 @@ $( document ).ready(function () {
             var stat = $(data).find('status').text();
             if (stat === 'success') {
                 $("#postview").hide();
-                // TODO: delete the post and all replies from the UI.
-                // TODO: adjust the read status of the top-level (if any).
+                var post = getPostObjectFromId(post_id);
+                post.remove();
             } else {
                 alert('The post could not be deleted. Either it is already gone or someone else replied to it and you are not an administrator');
             }
@@ -353,6 +328,142 @@ $( document ).ready(function () {
                 alert('That post has been deleted.');
             }
         }, true);
+    }
+
+    /* Given a post id, returns an object with methods that make it easier to
+     * update the UI after operations. If the current post list does not contain
+     * a post with the same id, this function returns false. */
+    function getPostObjectFromId(post_id) {
+        var post = {};
+
+        post.setRead = function() {
+            /* Set this post's read status. If it's a top-level parent with
+             * unread replies, we have to change it to 'subunread' instead of
+             * just 'read'. */
+            if (this.isTopLevelPost() && this.isChildPostUnread()) {
+                this.getPostDiv().find('.unread').removeClass('unread').addClass('subunread');
+                this.getPostDiv().find('.newunread').removeClass('newunread').addClass('subunread');
+            } else {
+                /* Otherwise, it's a reply or there are no unread replies, and
+                 * so we can set it to 'read'. */
+                this.getPostDiv().find('.unread').removeClass('unread').addClass('read');
+                this.getPostDiv().find('.newunread').removeClass('newunread').addClass('read');
+            }
+
+            /* If this post was the last unread reply to its top-level parent,
+             * we may have to set the top-level parent's status to 'read'. */
+            if (!this.isTopLevelPost()) {
+                this.getTopLevelParent().fixReadStatus();
+            }
+        };
+
+        post.setUnread = function () {
+            this.getPostDiv().find('.read').removeClass('read').addClass('unread');
+            this.getPostDiv().find('.subread').removeClass('read').addClass('unread');
+            if (!this.isTopLevelPost()) {
+                this.getTopLevelParent().fixReadStatus();
+            }
+        };
+
+        post.remove = function () {
+            /* Get the top-level parent BEFORE removing, since after removal, we
+             * won't be able to find the top-level parent. */
+            var is_top_level = this.isTopLevelPost();
+            var top_level_parent = this.getTopLevelParent();
+
+            /* Remove all replies to this post. */
+            this.getPostDiv().next().remove();
+            /* Remove this post. */
+            this.getPostDiv().remove();
+
+            /* -- After this point, we shouldn't expect any functions in this object to work. -- */
+
+            if (!is_top_level) {
+                top_level_parent.fixReadStatus();
+            }
+        };
+
+        /* Call this function on the top-level parent after the read-status of
+         * any of its children have changed to correct its read-status. */
+        post.fixReadStatus = function() {
+            if (this.isTopLevelPost()) {
+                if (this.isChildPostUnread()) {
+                    /* If there are unread children, but we're 'read', change to * 'subunread'. */
+                    this.getPostDiv().find('.read').removeClass('read').addClass('subunread');
+                } else {
+                    /* If we're 'subunread', but there are NO unread children, * change to 'read.' */
+                    this.getPostDiv().find('.subunread').removeClass('subunread').addClass('read');
+                }
+            } else {
+                alert('This function should not be called on a reply post.');
+            }
+        };
+
+        post.expand = function () {
+            var post_div = this.getPostDiv();
+            var expander = post_div.find('.expander');
+            post_div.next().show();
+            expander.html('&ndash;');
+        };
+
+        post.collapse = function () {
+            var post_div = this.getPostDiv();
+            var expander = post_div.find('.expander');
+            post_div.next().hide();
+            expander.html('+');
+        };
+
+        post.isExpanded = function () {
+            var expander = this.getPostDiv().find('.expander');
+            return  $.trim(expander.text()) !== '+';
+        };
+
+        post.isExpandable = function () {
+            var expander = this.getPostDiv().find('.expander');
+            return  $.trim(expander.text()) !== '';
+        };
+
+        post.highlight = function () {
+            this.getPostDiv().css('background-color', '#00FFFF');
+        };
+
+        post.isTopLevelPost = function () {
+            /* We're a top-level post if we're NOT in a .hiddenposts div. */
+            var reply_container = this.getPostDiv().parents('.hiddenposts');
+            return reply_container.length === 0;
+        };
+
+        post.getTopLevelParent = function () {
+            if (this.isTopLevelPost()) {
+                return this;
+            } else {
+                var reply_container = this.getPostDiv().parents('.hiddenposts');
+                return getPostObjectFromId(
+                    reply_container.prev('.post').children('.postid').attr('value')
+                );
+            }
+        };
+
+        post.isChildPostUnread = function () {
+            var reply_container = this.getPostDiv().next();
+            return reply_container.find('.unread, .newunread').length > 0;
+        };
+
+        post.getPostDiv = function () {
+            var p = $('.postid').filter("[value='" + post_id + "']");
+            return p.parents('.post');
+        };
+
+        if (post.getPostDiv().length == 0) {
+            return false;
+        }
+
+        return post;
+    }
+
+    function unhighlightAllPosts() {
+        /* un-highlight (de-select) all the other posts */
+        $('.post').css('background-color', 'inherit');
     }
 
 });
