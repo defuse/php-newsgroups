@@ -2,6 +2,8 @@
 var ajax;
 if (!ajax) var ajax = {};
 
+ajax.last_update_time = 0;
+
 ajax.getPost = function(id, f, mark_read) {
     var data = { };
     data.id = id;
@@ -16,14 +18,14 @@ ajax.getPost = function(id, f, mark_read) {
     }, "xml");
 };
 
-ajax.getNewPosts = function(f) {
+ajax.getNewPosts = function(group_name, f) {
     var data = { };
-    data.get_posts_after = last_update_time;
-    data.newsgroup = groupName();
+    data.get_posts_after = ajax.last_update_time;
+    data.newsgroup = group_name;
     $.post("ajax.php", data, function (data) {
         var stat = $(data).find('status').text();
         if (stat === 'success') {
-            last_update_time = $(data).find('currenttime').text();
+            ajax.last_update_time = $(data).find('currenttime').text();
             var posts_xml = $(data).find('post')
             var posts = [];
             for (var i = 0; i < posts_xml.length; i++) {

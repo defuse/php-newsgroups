@@ -124,12 +124,11 @@ $( document ).ready(function () {
     });
 
     /* Auto updates */
-    var last_update_time = $('#currenttime').attr('value');
-    setInterval("checkForNewPosts(true)", 30000);
-
+    ajax.last_update_time = $('#currenttime').attr('value');
+    setInterval("checkForNewPosts(true)", 1000);
 
     function checkForNewPosts(silent) {
-        ajax.getNewPosts(function (posts) {
+        ajax.getNewPosts(groupName(), function (posts) {
             if (posts.length === 0) {
                 if (!silent) {
                     alert('No new posts.');
