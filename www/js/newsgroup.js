@@ -73,13 +73,13 @@ $( document ).ready(function () {
 
     /* Clicking 'Mark Unread' */
     $( '.markunreadbutton' ).click(function () {
-        markUnread(viewing_id);
+        ajax.markUnread(viewing_id);
     });
 
     /* Clicking 'Delete' */
     $( '.deletebutton' ).click(function () {
         if (window.confirm("Are you sure you want to delete this post and all of its replies?")) {
-            deletePost(viewing_id);
+            ajax.deletePost(viewing_id);
         }
     });
 
@@ -110,7 +110,7 @@ $( document ).ready(function () {
 
 
     function checkForNewPosts(silent) {
-        getNewPosts(function (posts) {
+        ajax.getNewPosts(function (posts) {
             if (posts.length === 0) {
                 if (!silent) {
                     alert('No new posts.');
@@ -236,83 +236,9 @@ $( document ).ready(function () {
         return $('#groupname').attr('value');
     }
 
-    function getPost(id, f, mark_read) {
-        var data = { };
-        data.id = id;
-        data.mark_read = mark_read ? "1" : "0";
-        $.post("ajax.php", data, function (data) {
-            var stat = $(data).find('status').text();
-            if (stat === 'success') {
-                f(getPostFromXML(data));
-            } else {
-                f(null);
-            }
-        }, "xml");
-    }
-
-    function getNewPosts(f) {
-        var data = { };
-        data.get_posts_after = last_update_time;
-        data.newsgroup = groupName();
-        $.post("ajax.php", data, function (data) {
-            var stat = $(data).find('status').text();
-            if (stat === 'success') {
-                last_update_time = $(data).find('currenttime').text();
-                var posts_xml = $(data).find('post')
-                var posts = [];
-                for (var i = 0; i < posts_xml.length; i++) {
-                    posts.push(getPostFromXML(posts_xml[i]));
-                }
-                f(posts);
-            } else {
-                f(null);
-            }
-        }, "xml"); 
-    }
-
-    function markUnread(post_id) {
-        var data = { };
-        data.mark_unread_id = post_id;
-        $.post("ajax.php", data, function (data) {
-            var stat = $(data).find('status').text();
-            if (stat === 'success') {
-                var post = postui.getPostObjectFromId(post_id);
-                post.setUnread();
-            } else {
-                alert('Error marking post as unread.');
-            }
-        });
-    }
-
-    function deletePost(post_id) {
-        var data = {};
-        data.delete_post_id = post_id;
-        $.post("ajax.php", data, function (data) {
-            var stat = $(data).find('status').text();
-            if (stat === 'success') {
-                $("#postview").hide();
-                var post = postui.getPostObjectFromId(post_id);
-                post.remove();
-            } else {
-                alert('The post could not be deleted. Either it is already gone or someone else replied to it and you are not an administrator');
-            }
-        });
-    }
-
-    function getPostFromXML(xml) {
-        var post = {};
-        post.id = $(xml).find('id').text();
-        post.parent_id = $(xml).find('parent').text();
-        post.user = $(xml).find('user').text();
-        post.time = parseInt($(xml).find('time').text(), 10);
-        post.formatted_time = $(xml).find('formattedtime').text();
-        post.title = $(xml).find('title').text();
-        post.contents = $(xml).find('contents').text();
-        return post;
-    }
 
     function showPost(id) {
-        getPost(id, function (post) {
+        ajax.getPost(id, function (post) {
             if (post !== null) {
                 viewing_id = id;
                 if (post.user === "") {
@@ -329,6 +255,5 @@ $( document ).ready(function () {
             }
         }, true);
     }
-
 
 });

@@ -35,6 +35,7 @@ class MainView
 ?>
     <script src="js/jquery-1.10.1.min.js"></script>
     <script src="js/postui.js"></script>
+    <script src="js/ajax.js"></script>
     <script src="js/newsgroup.js"></script>
 <?
     }
