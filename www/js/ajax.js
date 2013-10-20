@@ -36,32 +36,21 @@ ajax.getNewPosts = function(f) {
     }, "xml"); 
 };
 
-ajax.markUnread = function (post_id) {
+ajax.markUnread = function (post_id, f) {
     var data = { };
     data.mark_unread_id = post_id;
     $.post("ajax.php", data, function (data) {
         var stat = $(data).find('status').text();
-        if (stat === 'success') {
-            var post = postui.getPostObjectFromId(post_id);
-            post.setUnread();
-        } else {
-            alert('Error marking post as unread.');
-        }
+        f(stat === 'success');
     });
 };
 
-ajax.deletePost = function(post_id) {
+ajax.deletePost = function(post_id, f) {
     var data = {};
     data.delete_post_id = post_id;
     $.post("ajax.php", data, function (data) {
         var stat = $(data).find('status').text();
-        if (stat === 'success') {
-            $("#postview").hide();
-            var post = postui.getPostObjectFromId(post_id);
-            post.remove();
-        } else {
-            alert('The post could not be deleted. Either it is already gone or someone else replied to it and you are not an administrator');
-        }
+        f(stat === 'success');
     });
 };
 

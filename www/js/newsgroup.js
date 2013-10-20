@@ -73,13 +73,32 @@ $( document ).ready(function () {
 
     /* Clicking 'Mark Unread' */
     $( '.markunreadbutton' ).click(function () {
-        ajax.markUnread(viewing_id);
+        ajax.markUnread(viewing_id, function (success) {
+            if (success) {
+                var post = postui.getPostObjectFromId(viewing_id);
+                post.setUnread();
+            } else { 
+                alert('Error marking post as unread.');
+            }
+        });
     });
 
     /* Clicking 'Delete' */
     $( '.deletebutton' ).click(function () {
         if (window.confirm("Are you sure you want to delete this post and all of its replies?")) {
-            ajax.deletePost(viewing_id);
+            ajax.deletePost(viewing_id, function (success) {
+                if (success) {
+                    $("#postview").hide();
+                    var post = postui.getPostObjectFromId(viewing_id);
+                    post.remove();
+                } else {
+                    alert(
+                        'The post could not be deleted. Either it is already ' +
+                        'gone or someone else replied to it and you are not ' +
+                        'an administrator'
+                    );
+                }
+            });
         }
     });
 
