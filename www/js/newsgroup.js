@@ -73,9 +73,10 @@ $( document ).ready(function () {
 
     /* Clicking 'Mark Unread' */
     $( '.markunreadbutton' ).click(function () {
-        ajax.markUnread(viewing_id, function (success) {
+        var id_to_unread = viewing_id;
+        ajax.markUnread(id_to_unread, function (success) {
             if (success) {
-                var post = postui.getPostObjectFromId(viewing_id);
+                var post = postui.getPostObjectFromId(id_to_unread);
                 post.setUnread();
             } else { 
                 alert('Error marking post as unread.');
@@ -85,11 +86,12 @@ $( document ).ready(function () {
 
     /* Clicking 'Delete' */
     $( '.deletebutton' ).click(function () {
+        var id_to_delete = viewing_id;
         if (window.confirm("Are you sure you want to delete this post and all of its replies?")) {
-            ajax.deletePost(viewing_id, function (success) {
+            ajax.deletePost(id_to_delete, function (success) {
                 if (success) {
                     $("#postview").hide();
-                    var post = postui.getPostObjectFromId(viewing_id);
+                    var post = postui.getPostObjectFromId(id_to_delete);
                     post.remove();
                 } else {
                     alert(
