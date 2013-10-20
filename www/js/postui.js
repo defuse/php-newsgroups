@@ -56,8 +56,8 @@ postui.createUnreadPost = function (post, indent) {
     obj.find('.metadatauser').text(post.user);
     obj.find('.metadatatime').text(post.formatted_time);
     /* events */
-    obj.click(postItemClick);
-    obj.dblclick(postItemDoubleClick);
+    obj.click(ng_ui.postItemClick);
+    obj.dblclick(ng_ui.postItemDoubleClick);
     return obj;
 };
 
@@ -138,8 +138,8 @@ postui.getPostObjectFromId = function(post_id) {
                         .removeClass('expander-dummy')
                         .addClass('expander')
                         .text('+')
-                        .click(expanderClick)
-                        .dblclick(expanderClick);
+                        .click(ng_ui.expanderClick)
+                        .dblclick(ng_ui.expanderClick);
             } else {
                 this.getPostDiv().find('.expander')
                         .removeClass('expander')

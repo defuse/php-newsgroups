@@ -16,14 +16,14 @@ $( document ).ready(function () {
     }
 
     /* Expanding and collapsing posts in the list. */
-    $( '.expander' ).click(expanderClick);
-    $( '.expander' ).dblclick(expanderClick);
+    $( '.expander' ).click(ng_ui.expanderClick);
+    $( '.expander' ).dblclick(ng_ui.expanderClick);
 
     /* Clicking posts in the list. */
-    $( '.post' ).click(postItemClick);
+    $( '.post' ).click(ng_ui.postItemClick);
 
     /* Double-clicking posts in the list. */
-    $( '.post' ).dblclick(postItemDoubleClick);
+    $( '.post' ).dblclick(ng_ui.postItemDoubleClick);
 
     /* Clicking 'Reply'. */
     $( '.replybutton' ).click(function () {
@@ -34,7 +34,7 @@ $( document ).ready(function () {
         var pollTimer = setInterval(function () {
             if (w.closed !== false) {
                 window.clearInterval(pollTimer);
-                checkForNewPosts(true);
+                ng_ui.checkForNewPosts(true);
             }
         }, 1000);
         if (window.focus) {
@@ -78,13 +78,13 @@ $( document ).ready(function () {
     /* Clicking 'New Post' */
     $( '.newpostbutton' ).click(function () {
         var w = window.open(
-            'newpost.php?group=' + groupName(),
+            'newpost.php?group=' + ng_ui.groupName(),
             '_blank'
         );
         var pollTimer = setInterval(function () {
             if (w.closed !== false) {
                 window.clearInterval(pollTimer);
-                checkForNewPosts(true);
+                ng_ui.checkForNewPosts(true);
             }
         }, 1000);
         if (window.focus) {
@@ -93,28 +93,26 @@ $( document ).ready(function () {
     });
 
     $( '.refreshbutton' ).click( function() {
-        checkForNewPosts(false);
+        ng_ui.checkForNewPosts(false);
     });
 
     /* Auto updates */
     ajax.last_update_time = $('#currenttime').attr('value');
     setInterval(function () {
-        checkForNewPosts(true);
+        ng_ui.checkForNewPosts(true);
     }, 30000);
 
 });
 
-// TODO: put these into a namespace
-
-function postItemClick() {
+ng_ui.postItemClick = function () {
     var post_id = $(this).children('.postid').attr('value');
     var post = postui.getPostObjectFromId(post_id);
     post.highlight();
     post.setRead();
-    showPost(post_id);
-}
+    ng_ui.showPost(post_id);
+};
 
-function postItemDoubleClick() {
+ng_ui.postItemDoubleClick = function () {
     alert("Normally this would open the post in a new window, but isn't implemented.");
     return;
     var id = $(this).children('.postid').attr('value');
@@ -125,9 +123,9 @@ function postItemDoubleClick() {
     if (window.focus) {
         w.focus();
     }
-}
+};
 
-function expanderClick(e) {
+ng_ui.expanderClick = function(e) {
     var post_id = $(this).parents('.post').children('.postid').attr('value');
     var post = postui.getPostObjectFromId(post_id);
     if (post.isExpandable()) {
@@ -139,9 +137,9 @@ function expanderClick(e) {
         /* Don't trigger the .post click event. Don't display the post. */
         e.stopPropagation();
     }
-}
+};
 
-function checkForNewPosts(silent) {
+ng_ui.checkForNewPosts = function(silent) {
     ajax.getNewPosts(groupName(), function (posts) {
         if (posts.length === 0) {
             if (!silent) {
@@ -169,7 +167,7 @@ function checkForNewPosts(silent) {
                 post = posts[i];
                 if (post.parent_id === "") {
                     /* It's a top-level post. */
-                    if (pageNumber() === 1) {
+                    if (ng_ui.pageNumber() === 1) {
                         changed = true;
                         $('#postlisting').prepend('<div class="hiddenposts"></div>');
                         $('#postlisting').prepend(postui.createUnreadPost(post, 0));
@@ -193,18 +191,17 @@ function checkForNewPosts(silent) {
             posts = unadded_posts;
         } while (changed);
     });
-}
+};
 
-function pageNumber() {
+ng_ui.pageNumber = function () { 
     return parseInt($('#grouppagenumber').attr('value'));
-}
+};
 
-function groupName() {
+ng_ui.groupName = function () {
     return $('#groupname').attr('value');
-}
+};
 
-
-function showPost(id) {
+ng_ui.showPost = function (id) {
     ajax.getPost(id, function (post) {
         if (post !== null) {
             ng_ui.viewing_id = id;
@@ -221,5 +218,5 @@ function showPost(id) {
             alert('That post has been deleted.');
         }
     }, true);
-}
+};
 
