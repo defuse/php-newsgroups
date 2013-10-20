@@ -19,14 +19,11 @@ $( document ).ready(function () {
     $( '.expander' ).click(expanderClick);
     $( '.expander' ).dblclick(expanderClick);
 
-
     /* Clicking posts in the list. */
     $( '.post' ).click(postItemClick);
 
-
     /* Double-clicking posts in the list. */
     $( '.post' ).dblclick(postItemDoubleClick);
-
 
     /* Clicking 'Reply'. */
     $( '.replybutton' ).click(function () {

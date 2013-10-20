@@ -1,3 +1,6 @@
+/*
+ * Functions for manipulating the post listing tree.
+ */
 
 var postui;
 if (!postui) var postui = {};
@@ -57,7 +60,6 @@ postui.createUnreadPost = function (post, indent) {
     obj.dblclick(postItemDoubleClick);
     return obj;
 };
-
 
 /* Given a post id, returns an object with methods that make it easier to update
  * the UI after operations. If the current post list does not contain a post
