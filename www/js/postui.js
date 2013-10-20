@@ -124,7 +124,7 @@ postui.getPostObjectFromId = function(post_id) {
             return this;
         } else {
             var reply_container = this.getPostDiv().parents('.hiddenposts');
-            return getPostObjectFromId(
+            return postui.getPostObjectFromId(
                 reply_container.prev('.post').children('.postid').attr('value')
             );
         }
