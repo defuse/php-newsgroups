@@ -125,7 +125,9 @@ $( document ).ready(function () {
 
     /* Auto updates */
     ajax.last_update_time = $('#currenttime').attr('value');
-    setInterval("checkForNewPosts(true)", 1000);
+    setInterval(function () {
+        checkForNewPosts(true);
+    }, 30000);
 
     function checkForNewPosts(silent) {
         ajax.getNewPosts(groupName(), function (posts) {
