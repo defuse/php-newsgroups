@@ -1,11 +1,18 @@
+/* 
+ * Implementation of the newsgroup listing interface.
+ */
+
 $( document ).ready(function () {
 
+    /* Check if we're viewing a newsgroup. If not, there's nothing to do. */
     if ($('#groupname').length == 0) {
         return;
     }
+
+    /* The id of the currently-displayed post. Initially none. */
     var viewing_id = -1;
 
-    /* Expanding and collapsing posts in the list */
+    /* Expanding and collapsing posts in the list. */
     $( '.expander' ).click(expanderClick);
     $( '.expander' ).dblclick(expanderClick);
 
@@ -18,27 +25,23 @@ $( document ).ready(function () {
             } else {
                 post.expand();
             }
-            /* don't trigger the post view click event */
+            /* Don't trigger the .post click event. Don't display the post. */
             e.stopPropagation();
         }
     }
 
-    /* Clicking posts in the list */
+    /* Clicking posts in the list. */
     $( '.post' ).click(postItemClick);
 
     function postItemClick() {
         var post_id = $(this).children('.postid').attr('value');
         var post = postui.getPostObjectFromId(post_id);
-
-        postui.unhighlightAllPosts();
         post.highlight();
-
         post.setRead();
-
         showPost(post_id);
     }
 
-    /* Double clicking posts in the list */
+    /* Double-clicking posts in the list. */
     $( '.post' ).dblclick(postItemDoubleClick);
 
     function postItemDoubleClick() {
@@ -54,7 +57,7 @@ $( document ).ready(function () {
         }
     }
 
-    /* Clicking 'Reply' */
+    /* Clicking 'Reply'. */
     $( '.replybutton' ).click(function () {
         var w = window.open(
             'replypost.php?replyto=' + viewing_id,
@@ -90,9 +93,9 @@ $( document ).ready(function () {
         if (window.confirm("Are you sure you want to delete this post and all of its replies?")) {
             ajax.deletePost(id_to_delete, function (success) {
                 if (success) {
-                    $("#postview").hide();
                     var post = postui.getPostObjectFromId(id_to_delete);
                     post.remove();
+                    postui.hidePostViewer();
                 } else {
                     alert(
                         'The post could not be deleted. Either it is already ' +
@@ -271,7 +274,7 @@ $( document ).ready(function () {
                 $(".vp_subject").text(post.title);
                 $(".vp_date").text(post.formatted_time);
                 $("#postcontents").html(post.contents);
-                $("#postview").show();
+                postui.showPostViewer();
             } else {
                 alert('That post has been deleted.');
             }

@@ -7,6 +7,14 @@ postui.unhighlightAllPosts = function() {
     $('.post').css('background-color', 'inherit');
 };
 
+postui.hidePostViewer = function () {
+    $("#postview").hide();
+};
+
+postui.showPostViewer = function () {
+    $("#postview").show();
+}
+
 /* Given a post id, returns an object with methods that make it easier to update
  * the UI after operations. If the current post list does not contain a post
  * with the same id, this function returns false. */
@@ -101,6 +109,7 @@ postui.getPostObjectFromId = function(post_id) {
     };
 
     post.highlight = function () {
+        postui.unhighlightAllPosts();
         this.getPostDiv().css('background-color', '#00FFFF');
     };
 

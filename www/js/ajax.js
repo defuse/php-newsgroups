@@ -1,3 +1,6 @@
+/*
+ * Functions for making AJAX calls to the server.
+ */
 
 var ajax;
 if (!ajax) var ajax = {};
