@@ -174,21 +174,21 @@ $( document ).ready(function () {
                     } else {
                         // TODO: Make this use the new post reply thing.
                         /* It's a reply. Find the post it's in reply to */
-                        var p = $('.postid').filter("[value='" + post.parent_id + "']");
-                        if (p.length > 0) {
+                        var p = postui.getPostObjectFromId(post.parent_id);
+                        if (p) {
+                            var post_div = p.getPostDiv();
                             changed = true;
-                            p = p.parents('.post');
-                            var indent = parseInt(p.find('.postindent').val());
+                            var indent = parseInt(post_div.find('.postindent').val());
                             var post_obj = createUnreadPost(post, indent + 1);
                             var toplevel;
                             if (indent === 0) {
-                                p.next('.hiddenposts').append(post_obj);
-                                p.next('.hiddenposts').append('<div class="childposts"></div>');
+                                post_div.next('.hiddenposts').append(post_obj);
+                                post_div.next('.hiddenposts').append('<div class="childposts"></div>');
                                 toplevel = p;
                             } else {
-                                p.next('.childposts').append(post_obj);
-                                p.next('.childposts').append('<div class="childposts"></div>');
-                                toplevel = p.parents('.hiddenposts').prev('.post');
+                                post_div.next('.childposts').append(post_obj);
+                                post_div.next('.childposts').append('<div class="childposts"></div>');
+                                toplevel = post_div.parents('.hiddenposts').prev('.post');
                             }
                             toplevel.find('.expander-dummy')
                                     .removeClass('expander-dummy')
