@@ -9,7 +9,7 @@ ajax.getPost = function(id, f, mark_read) {
     $.post("ajax.php", data, function (data) {
         var stat = $(data).find('status').text();
         if (stat === 'success') {
-            f(getPostFromXML(data));
+            f(ajax.getPostFromXML(data));
         } else {
             f(null);
         }
@@ -27,7 +27,7 @@ ajax.getNewPosts = function(f) {
             var posts_xml = $(data).find('post')
             var posts = [];
             for (var i = 0; i < posts_xml.length; i++) {
-                posts.push(getPostFromXML(posts_xml[i]));
+                posts.push(ajax.getPostFromXML(posts_xml[i]));
             }
             f(posts);
         } else {

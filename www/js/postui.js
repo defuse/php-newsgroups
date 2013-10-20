@@ -36,7 +36,7 @@ postui.getPostObjectFromId = function(post_id) {
 
     post.setUnread = function () {
         this.getPostDiv().find('.read').removeClass('read').addClass('unread');
-        this.getPostDiv().find('.subread').removeClass('read').addClass('unread');
+        this.getPostDiv().find('.subunread').removeClass('subunread').addClass('unread');
         if (!this.isTopLevelPost()) {
             this.getTopLevelParent().fixReadStatus();
         }
