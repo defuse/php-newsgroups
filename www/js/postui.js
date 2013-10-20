@@ -65,6 +65,7 @@ postui.getPostObjectFromId = function(post_id) {
 
         if (!is_top_level) {
             top_level_parent.fixReadStatus();
+            top_level_parent.fixExpanderStatus();
         }
     };
 
@@ -78,6 +79,28 @@ postui.getPostObjectFromId = function(post_id) {
             } else {
                 /* If we're 'subunread', but there are NO unread children, * change to 'read.' */
                 this.getPostDiv().find('.subunread').removeClass('subunread').addClass('read');
+            }
+        } else {
+            alert('This function should not be called on a reply post.');
+        }
+    };
+
+    post.fixExpanderStatus = function() {
+        if (this.isTopLevelPost()) {
+            if (this.hasChildren()) {
+                this.getPostDiv().find('.expander-dummy')
+                        .removeClass('expander-dummy')
+                        .addClass('expander')
+                        .text('+')
+                        .click(expanderClick)
+                        .dblclick(expanderClick);
+            } else {
+                this.getPostDiv().find('.expander')
+                        .removeClass('expander')
+                        .addClass('expander-dummy')
+                        .text('')
+                        .off('click')
+                        .off('dblclick');
             }
         } else {
             alert('This function should not be called on a reply post.');
@@ -128,6 +151,11 @@ postui.getPostObjectFromId = function(post_id) {
                 reply_container.prev('.post').children('.postid').attr('value')
             );
         }
+    };
+
+    post.hasChildren = function () {
+        var reply_container = this.getPostDiv().next();
+        return reply_container.children('.post').length > 0;
     };
 
     post.isChildPostUnread = function () {
