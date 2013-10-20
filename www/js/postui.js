@@ -15,6 +15,50 @@ postui.showPostViewer = function () {
     $("#postview").show();
 }
 
+postui.createUnreadPost = function (post, indent) {
+    var html = '<div class="post">' +
+        '<input type="hidden" class="postid" value="XXX"/>' +   // id
+        '<input type="hidden" class="postindent" value="XXX"/>' + // indent
+        '<table class="posttable" cellspacing="0">' +
+            '<colgroup>' + 
+                '<col style="width: 20px;">' + 
+                '<col style="width: auto;">' + 
+                '<col style="width: 150px;">' + 
+                '<col style="width: 190px;">' + 
+            '</colgroup>' + 
+            '<tr>' +
+                '<td class="expander-dummy">' +
+                    '&nbsp;' +
+                '</td>' +
+                '<td class="titlecell newunread">' +               // indent
+                    '<span class="posttitle">' +
+                        'XXX' +                                 // title
+                    '</span>' +
+                '</td>' +
+                '<td class="metadatauser newunread">' +
+                    'XXX' +                                     // user
+                '</td>' + 
+                '<td class="metadatatime newunread">' +
+                    'XXX' +                                     // time
+                '</td>' +
+            '</tr>' + 
+        '</table>' +
+    '</div>';
+    var obj = $('<div></div>').html(html).children();
+    /* data */
+    obj.find('.postid').val(post.id);
+    obj.find('.postindent').val(indent);
+    obj.find('.posttitle').css('paddingLeft', 10 + 30*indent);
+    obj.find('.posttitle').text(post.title);
+    obj.find('.metadatauser').text(post.user);
+    obj.find('.metadatatime').text(post.formatted_time);
+    /* events */
+    obj.click(postItemClick);
+    obj.dblclick(postItemDoubleClick);
+    return obj;
+};
+
+
 /* Given a post id, returns an object with methods that make it easier to update
  * the UI after operations. If the current post list does not contain a post
  * with the same id, this function returns false. */
@@ -161,6 +205,20 @@ postui.getPostObjectFromId = function(post_id) {
     post.isChildPostUnread = function () {
         var reply_container = this.getPostDiv().next();
         return reply_container.find('.unread, .newunread').length > 0;
+    };
+
+    post.addChildPost = function (post_data) {
+        /* Create the new child post's '.post' div. */
+        var indent = parseInt(this.getPostDiv().find('.postindent').val());
+        var post_div = postui.createUnreadPost(post_data, indent + 1);
+
+        /* Add it to the reply container (.hiddenposts or .childposts). */
+        this.getPostDiv().next().append(post_div);
+        this.getPostDiv().next().append('<div class="childposts"></div>');
+
+        var toplevel = this.getTopLevelParent();
+        toplevel.fixReadStatus();
+        toplevel.fixExpanderStatus();
     };
 
     post.getPostDiv = function () {
