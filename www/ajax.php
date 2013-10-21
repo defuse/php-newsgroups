@@ -71,7 +71,7 @@ function send_ajax_post($post)
 
 function send_ajax_post_list($posts)
 {
-    $safe_time = htmlentities(time(), ENT_QUTOES);
+    $safe_time = htmlentities(time(), ENT_QUOTES);
     $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
     $xml .= "<response>";
     $xml .= "<status>success</status>";
