@@ -93,13 +93,20 @@ $( document ).ready(function () {
     });
 
     $( '.refreshbutton' ).click( function() {
+        ng_ui.checkForNewCancellations();
         ng_ui.checkForNewPosts(false);
     });
 
-    /* Auto updates */
+    /* Automatically check for new posts. */
     ajax.last_update_time = $('#currenttime').attr('value');
     setInterval(function () {
         ng_ui.checkForNewPosts(true);
+    }, 30000);
+
+    /* Automatically check for deleted posts. */
+    ajax.last_cancel_id = $('#last_cancel_id').attr('value');
+    setInterval(function () {
+        ng_ui.checkForNewCancellations();
     }, 30000);
 
 });
@@ -137,6 +144,21 @@ ng_ui.expanderClick = function(e) {
         /* Don't trigger the .post click event. Don't display the post. */
         e.stopPropagation();
     }
+};
+
+ng_ui.checkForNewCancellations = function () {
+    ajax.getNewCancellations(ng_ui.groupName(), function (cancellations) {
+        for (var i = 0; i < cancellations.length; i++) {
+            var cancelled_post_id = cancellations[i];
+            var post = postui.getPostObjectFromId(cancelled_post_id);
+            if (post !== false) {
+                post.remove();
+            }
+            if (cancelled_post_id == ng_ui.viewing_id) {
+                postui.hidePostViewer();
+            }
+        }
+    });
 };
 
 ng_ui.checkForNewPosts = function(silent) {

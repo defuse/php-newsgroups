@@ -33,6 +33,17 @@ if (isset($_POST['get_posts_after']) && !empty($_POST['get_posts_after'])) {
     }
 }
 
+if (isset($_POST['get_cancellations_after']) && !empty($_POST['get_cancellations_after'])) {
+    try {
+        $group = new Newsgroup($_POST['newsgroup']);
+        $last_cancellation = (int)$_POST['get_cancellations_after'];
+        $cancellations = $group->getCancellationsSince($last_cancellation);
+        send_ajax_cancellation_list($cancellations);
+    } catch (GroupDoesNotExistException $e) {
+        send_ajax_failure();
+    }
+}
+
 if ($user && isset($_POST['mark_unread_id']) && !empty($_POST['mark_unread_id'])) {
     try {
         $post = new Post($_POST['mark_unread_id']);
@@ -78,6 +89,19 @@ function send_ajax_post_list($posts)
     $xml .= "<currenttime>$safe_time</currenttime>";
     foreach ($posts as $post) {
         $xml .= get_post_xml($post, false);
+    }
+    $xml .= "</response>";
+    send_xml_response($xml);
+}
+
+function send_ajax_cancellation_list($cancellations) {
+    $currentid = Newsgroup::GetLastCancellationId();
+    $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";
+    $xml .= "<response>";
+    $xml .= "<status>success</status>";
+    $xml .= "<currentid>" . htmlentities($currentid, ENT_QUOTES) . "</currentid>";
+    foreach ($cancellations as $cancel) {
+        $xml .= "<cancel>" . htmlentities($cancel, ENT_QUOTES) . "</cancel>";
     }
     $xml .= "</response>";
     send_xml_response($xml);

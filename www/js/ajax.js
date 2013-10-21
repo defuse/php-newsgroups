@@ -6,6 +6,7 @@ var ajax;
 if (!ajax) var ajax = {};
 
 ajax.last_update_time = 0;
+ajax.last_cancel_id = 0;
 
 ajax.getPost = function(id, f, mark_read) {
     var data = { };
@@ -39,6 +40,26 @@ ajax.getNewPosts = function(group_name, f) {
             f(null);
         }
     }, "xml"); 
+};
+
+ajax.getNewCancellations = function(group_name, f) {
+    var data = {};
+    data.get_cancellations_after = ajax.last_cancel_id;
+    data.newsgroup = group_name;
+    $.post("ajax.php", data, function (data) {
+        var stat = $(data).find('status').text();
+        if (stat === 'success') {
+            ajax.last_cancel_id = $(data).find('currentid').text();
+            var cancels = $(data).find('cancel');
+            var cancellations = [];
+            for (var i = 0; i < cancels.length; i++) {
+                cancellations.push(parseInt($(cancels[i]).html(), 10));
+            }
+            f(cancellations);
+        } else {
+            f(null);
+        }
+    }, "xml");
 };
 
 ajax.markUnread = function (post_id, f) {

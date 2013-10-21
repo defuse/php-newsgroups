@@ -55,6 +55,7 @@ class MainView
             <input type="hidden" id="groupname" value="<?php echo htmlentities($this->current_group->getName(), ENT_QUOTES); ?>" />
             <input type="hidden" id="grouppagenumber" value="<?php echo htmlentities($this->page + 1, ENT_QUOTES); ?>" />
             <input type="hidden" id="currenttime" value="<?php echo htmlentities(time(), ENT_QUOTES); ?>" />
+            <input type="hidden" id="last_cancel_id" value="<?php echo htmlentities(Newsgroup::GetLastCancellationId(), ENT_QUOTES); ?>" />
             <!-- newsgroup.js sets up the click events, so we don't need a form. -->
             <div id="beside_groupcontentsheader">
                 <input type="button" class="refreshbutton" value="Refresh" />

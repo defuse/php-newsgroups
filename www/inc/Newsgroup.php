@@ -203,6 +203,14 @@ class Post
             $child->recursiveDelete();
         }
 
+        /* Create a cancellation for this post. */
+        $q = $DB->prepare(
+            "INSERT INTO cancellations (group_id, post_id) VALUES (:group_id, :post_id)"
+        );
+        $q->bindValue(':group_id', $this->group_id);
+        $q->bindValue(':post_id', $this->id);
+        $q->execute();
+
         /* Delete the actual post. */
         $q = $DB->prepare("DELETE FROM posts WHERE id = :id");
         $q->bindValue(':id', $this->id);
@@ -308,6 +316,25 @@ class Newsgroup
         return $new_posts;
     }
 
+    public function getCancellationsSince($last_cancellation_id)
+    {
+        global $DB;
+
+        $q = $DB->prepare(
+            "SELECT post_id FROM cancellations
+             WHERE id > :id AND group_id = :group_id"
+        );
+        $q->bindValue(':id', $last_cancellation_id);
+        $q->bindValue(':group_id', $this->group_id);
+        $q->execute();
+
+        $new_cancellations = array();
+        while (($row = $q->fetch()) !== FALSE) {
+            $new_cancellations[] = $row['post_id'];
+        }
+        return $new_cancellations;
+    }
+
     public function getTopLevelPosts($page = null)
     {
         $root = new Post($this->root_post_id);
@@ -408,6 +435,22 @@ class Newsgroup
             $groups[] = new Newsgroup($name);
         }
         return $groups;
+    }
+
+    public static function GetLastCancellationId()
+    {
+        global $DB;
+        $q = $DB->prepare(
+            "SELECT id FROM cancellations ORDER BY id DESC LIMIT 1"
+        );
+        $q->execute();
+
+        $row = $q->fetch();
+        if ($row === FALSE) {
+            return 0;
+        } else {
+            return (int)$row['id'];
+        }
     }
 
     private static function GetGroupNames()
