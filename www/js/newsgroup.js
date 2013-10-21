@@ -140,7 +140,7 @@ ng_ui.expanderClick = function(e) {
 };
 
 ng_ui.checkForNewPosts = function(silent) {
-    ajax.getNewPosts(groupName(), function (posts) {
+    ajax.getNewPosts(ng_ui.groupName(), function (posts) {
         if (posts.length === 0) {
             if (!silent) {
                 alert('No new posts.');
